@@ -3,14 +3,12 @@ package com.peerrequest.app.services;
 import com.peerrequest.app.model.Review;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.UUID;
-
 public interface ReviewService<F, U> extends CrudService<Review, Review.ReviewSelector, F, U> {
-    void addMessage(int reviewID, UUID userID, DateTimeFormat timeStamp, String content);
+    void addMessage(long reviewID, long userID, DateTimeFormat timeStamp, String content);
 
-    void deleteMessage(UUID commentID);
+    void deleteMessage(long commentID);
 
-    void notifyResearcher(UUID reviewID);
+    void notifyResearcher(long reviewID);
 
-    void notifyReviewerOfEdit(UUID reviewID);
+    void notifyReviewerOfEdit(long reviewID);
 }
