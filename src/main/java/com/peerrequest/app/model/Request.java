@@ -8,7 +8,14 @@ public class Request {
     @Setter
     RequestSelector id;
 
+    @Getter
+    @Setter
+    RequestState requestState;
+
     public record RequestSelector(long id) {
     }
 
+    public enum RequestState {
+        ACCEPTED, DECLINED, PENDING;
+    }
 }
