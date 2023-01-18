@@ -8,6 +8,10 @@ public class DirectRequestProcess {
     @Setter
     DirectRequestProcessSelector id;
 
+    @Getter
+    @Setter
+    int openSlots;
+
     public record DirectRequestProcessSelector(long id) {
     }
 }
