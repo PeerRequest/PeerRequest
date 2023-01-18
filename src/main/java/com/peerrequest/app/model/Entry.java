@@ -1,25 +1,56 @@
 package com.peerrequest.app.model;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * This class represents an entry.
+ *
+ * @author Ludger Halpick
+ * @author Michael Mildt
+ * @version 0.0.1
+ */
 public class Entry {
+
+    /**
+     * Constructor of an entry.
+     *
+     * @param id            id of the entry
+     * @param researcherID  id of the user who created the entry
+     * @param documentID    id of the document attached to the entry
+     * @param title         title of the entry
+     * @param authors       authors of the entry
+     */
+    public Entry(EntrySelector id, User.UserSelector researcherID,
+                 Document.DocumentSelector documentID, String title, String authors) {
+        this.id = id;
+        this.researcherID = researcherID;
+        this.documentID = documentID;
+        this.title = title;
+        this.authors = authors;
+    }
     @Getter
-    @Setter
-    EntrySelector id;
+    private final EntrySelector id;
+
+    @Getter
+    private final User.UserSelector researcherID;
+
+    @Getter
+    private final Document.DocumentSelector documentID;
 
     @Getter
     @Setter
-    Document document;
+    private Document document;
 
     @Getter
     @Setter
-    String title;
+    private final String title;
 
     @Getter
     @Setter
-    String authors;
+    private final String authors;
 
-    public record EntrySelector(Category.CategorySelector categorySelector, long id) {
+    public record EntrySelector(Category.CategorySelector categorySelector, long entryID) {
     }
 }
