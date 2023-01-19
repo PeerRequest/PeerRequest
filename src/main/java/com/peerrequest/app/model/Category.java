@@ -91,6 +91,9 @@ public class Category {
         EXTERNAL
     }
 
-    public record CategorySelector(long categoryID) {
-    }
+    public record CategorySelector(long categoryID) { }
+
+    public record CategoryUpdater(String name, CategoryLabel label, int year,
+                                  ZonedDateTime deadline, float minScore, float maxScore, float scoreStepSize) { }
+
 }

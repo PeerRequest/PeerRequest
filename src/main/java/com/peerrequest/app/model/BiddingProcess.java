@@ -65,8 +65,9 @@ public class BiddingProcess {
      */
     public static final int MAX_RATING = 5;
 
-    public record BiddingProcessSelector(long biddingProcessID) {
-    }
+    public record BiddingProcessSelector(long biddingProcessID) { }
+
+    public record BiddingProcessUpdater(ZonedDateTime deadline) { }
 
 
     public List<BiddingSlot> evaluateBidding() {

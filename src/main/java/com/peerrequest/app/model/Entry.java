@@ -57,4 +57,8 @@ public class Entry {
 
     public record EntrySelector(long entryID) {
     }
+
+    public record EntryUpdater(String title, String authors) {
+
+    }
 }

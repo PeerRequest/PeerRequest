@@ -22,4 +22,6 @@ public class Document {
 
     public record DocumentSelector(String documentID) {
     }
+
+    public record DocumentUpdater() { }
 }

@@ -37,4 +37,6 @@ public class DirectRequestProcess {
 
     public record DirectRequestProcessSelector(long directRequestProcessID) {
     }
+
+    public record DirectRequestProcessUpdater(int openSlots) { }
 }

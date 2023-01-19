@@ -60,6 +60,8 @@ public abstract class Notification {
     public record NotificationSelector(long notificationID) {
     }
 
+    public record NotificationUpdater() { }
+
     /**
      * This class represents a review notification.
      *

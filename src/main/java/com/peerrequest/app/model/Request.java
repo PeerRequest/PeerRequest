@@ -29,8 +29,9 @@ public abstract class Request {
     @Getter
     private final User.UserSelector reviewerID;
 
-    public record RequestSelector(long requestID) {
-    }
+    public record RequestSelector(long requestID) { }
+
+    public record RequestUpdater(RequestState state) { }
 
     /**
      * Represents the states of a request.

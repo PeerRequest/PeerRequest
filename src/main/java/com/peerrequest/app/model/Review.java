@@ -30,6 +30,7 @@ public class Review {
     private final User.UserSelector reviewerID;
 
     @Getter
+    @Setter
     private Document.DocumentSelector reviewDocumentID;
 
     @Getter
@@ -89,4 +90,8 @@ public class Review {
 
     public record ReviewSelector(Entry.EntrySelector entrySelector, long reviewID) {
     }
+
+    public record ReviewUpdater(Document.DocumentSelector reviewDocumentID, ConfidenceLevel confidenceLevel,
+                                String summary, String mainWeaknesses, String mainStrengths, String questionsForAuthors,
+                                String answersFromAuthors, String otherComments, float score) { }
 }
