@@ -12,14 +12,15 @@ public class BiddingProcessesController {
     @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess putBiddingProcess(@PathVariable final long categoryId,
                                             @RequestBody final BiddingProcess biddingProcess) {
-        return mockBiddingProcess();
+        this.mockUp = biddingProcess;
+        return this.mockUp;
     }
 
     @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess patchBiddingProcess(@PathVariable final long categoryId,
                                               @RequestBody final BiddingProcess.BiddingProcessUpdater updater) {
         mockBiddingProcess().setDeadline((updater.deadline()));
-        return mockBiddingProcess();
+        return mockUp;
     }
 
     @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
