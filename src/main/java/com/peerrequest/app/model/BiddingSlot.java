@@ -49,5 +49,7 @@ public class BiddingSlot {
     @Setter
     private int reviewSlots = 1;
 
-    public record BiddingSlotSelector (long biddingSlotID) {}
+    public record BiddingSlotSelector(long biddingSlotID) { }
+
+    public record BiddingSlotUpdater(int reviewSlots) { }
 }

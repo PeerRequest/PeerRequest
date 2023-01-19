@@ -37,5 +37,7 @@ public class Rating {
     @Setter
     private int rating;
 
-    public record RatingSelector(long ratingID){}
+    public record RatingSelector(long ratingID) { }
+
+    public record RatingUpdater(int rating) { }
 }

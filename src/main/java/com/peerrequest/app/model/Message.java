@@ -46,4 +46,6 @@ public class Message {
     private final String content;
 
     public record MessageSelector(long messageID) {}
+
+    public record MessageUpdater(String content) { }
 }
