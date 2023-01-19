@@ -77,7 +77,7 @@ public class Review {
          */
         MEDIUM,
         /**
-         * Confidence level when teh reviewer is confident in the subject.
+         * Confidence level when the reviewer is confident in the subject.
          */
         HIGH
     }
@@ -89,5 +89,12 @@ public class Review {
      * @param id            id of the Review
      */
     public record ReviewSelector(Entry.EntrySelector entrySelector, long id) {
+    }
+
+
+    public record ReviewUpdater(Document reviewDocument, ConfidenceLevel confidenceLevel, String summary,
+                                String mainWeakness, String mainStrengths, String questionsForAuthors,
+                                String answersFromAuthors, String otherComments, float score) {
+
     }
 }
