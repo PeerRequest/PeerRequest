@@ -57,10 +57,7 @@ public class ReviewsController {
                                       @PathVariable final int entryId,
                                       @PathVariable final int reviewId,
                                       @RequestBody final Review.ReviewUpdater reviewUpdater) {
-        Review updatedReview =  mockReview();
-        updatedReview.setScore(5);
-        updatedReview.setSummary("This is a brand new summary.");
-        return updatedReview;
+        return mockReview();
     }
 
     private Category mockCategory() {
