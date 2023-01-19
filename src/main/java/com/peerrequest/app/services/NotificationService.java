@@ -5,8 +5,8 @@ import com.peerrequest.app.model.*;
 import java.util.List;
 
 /**
- * Interface class responsible for CRUD operations regarding instances of Notification objects
- * as well as sending those notifications.
+ * Interface class responsible for CRUD operations regarding objects of the class Notification
+ * as well as sending those notification to the users.
  * @param <F> EntityFilter
  * @param <U> EntityUpdater
  */
