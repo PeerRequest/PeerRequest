@@ -3,7 +3,7 @@ package com.peerrequest.app.services;
 import com.peerrequest.app.model.Document;
 
 /**
- * Interface responsible for CRUD operations for Document objects.
+ * Interface responsible for CRUD operations for objects of the class Document.
  * @param <F> EntityFilter
  * @param <U> EntityUpdater
  */
