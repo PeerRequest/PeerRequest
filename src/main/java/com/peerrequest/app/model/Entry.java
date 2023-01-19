@@ -22,9 +22,10 @@ public class Entry {
      * @param title         title of the entry
      * @param authors       authors of the entry
      */
-    public Entry(EntrySelector id, User.UserSelector researcherID,
+    public Entry(EntrySelector id, Category.CategorySelector categoryID, User.UserSelector researcherID,
                  Document.DocumentSelector documentID, String title, String authors) {
         this.id = id;
+        this.categoryID = categoryID;
         this.researcherID = researcherID;
         this.documentID = documentID;
         this.title = title;
@@ -32,6 +33,9 @@ public class Entry {
     }
     @Getter
     private final EntrySelector id;
+
+    @Getter
+    private final Category.CategorySelector categoryID;
 
     @Getter
     private final User.UserSelector researcherID;
@@ -51,6 +55,6 @@ public class Entry {
     @Setter
     private final String authors;
 
-    public record EntrySelector(Category.CategorySelector categorySelector, long entryID) {
+    public record EntrySelector(long entryID) {
     }
 }
