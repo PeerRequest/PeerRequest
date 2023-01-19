@@ -1,14 +1,16 @@
 package com.peerrequest.app.services;
 
 import com.peerrequest.app.model.Review;
+import com.peerrequest.app.model.User;
+
 import java.time.ZonedDateTime;
 
 public interface ReviewService<F, U> extends CrudService<Review, Review.ReviewSelector, F, U> {
-    void addMessage(long reviewID, long userID, ZonedDateTime timeStamp, String content);
+    void addMessage(Review.ReviewSelector reviewID, User.UserSelector userID, ZonedDateTime timeStamp, String content);
 
     void deleteMessage(long commentID);
 
-    void notifyResearcher(long reviewID);
+    void notifyResearcherOfEdit(Review.ReviewSelector reviewID);
 
-    void notifyReviewerOfEdit(long reviewID);
+    void notifyReviewerOfEdit(Review.ReviewSelector reviewID);
 }
