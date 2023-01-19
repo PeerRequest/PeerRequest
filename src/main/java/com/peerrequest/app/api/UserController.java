@@ -15,14 +15,18 @@ public class UserController {
 
     @GetMapping(value = "/users/{userId}/reviews", produces = "application/json")
     public List<Review> getReviews(@PathVariable int userId) {
+        List<Review> reviewsList = new ArrayList<>();
+        reviewsList.add(mockReview());
+        return reviewsList;
+    }
+
+    @GetMapping(value = "/users/{userId}/entries", produces = "application/json")
+    public List<Entry> getEntries(@PathVariable int userId) {
         List<Entry> entryList = new ArrayList<>();
         entryList.add(mockEntryOne());
         entryList.add(mockEntryTwo());
         return entryList;
     }
-
-    @GetMapping(value = "/users/{userId}/entries", produces = "application/json")
-    public List<Review> getReviews(@PathVariable int userId)
 
     //returns mock user
     private User mockUser() {
