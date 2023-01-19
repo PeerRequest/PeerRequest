@@ -53,7 +53,8 @@ public class BiddingProcess {
     private final List<BiddingSlot> biddingSlots = new ArrayList<>();
 
     @Getter
-    private final ZonedDateTime deadline;
+    @Setter
+    private ZonedDateTime deadline;
 
     /**
      * Minimum number a user can use for a bid.

@@ -33,7 +33,7 @@ public abstract class Request {
 
     @Getter
     @Setter
-    private final RequestState requestState;
+    private RequestState requestState;
 
     public record RequestSelector(long requestID) { }
 
