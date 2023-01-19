@@ -31,7 +31,7 @@ public class UserController {
     //returns mock user
     private User mockUser() {
         User.UserSelector userId = new User.UserSelector("007");
-        User user = new User(userId,"James", "Bond", "mockdata@user.com");
+        User user = new User(userId, "James", "Bond", "mockdata@user.com");
         return user;
     }
     // returns mock entries
@@ -53,7 +53,7 @@ public class UserController {
 
     // returns mock review
     private Review mockReview() {
-        Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntryOne().getId(),700);
+        Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntryOne().getId(), 700);
         Review review = new Review(reviewId, mockUser().getId(), mockEntryOne().getId());
         return review;
     }
