@@ -1,21 +1,43 @@
 package com.peerrequest.app.model;
 
 import lombok.Getter;
-import lombok.Setter;
 
+/**
+ * This class represents a user.
+ *
+ * @author User1 Halpick
+ * @author User5 Mildt
+ * @version 0.0.1
+ */
 public class User {
-    @Getter
-    @Setter
-    UserSelector id;
+
+    /**
+     * Constructor for a user.
+     *
+     * @param id         id of the user
+     * @param firstName  first name(s) of the user
+     * @param lastName   last name of the user
+     * @param email      email address of the user
+     */
+    public User(UserSelector id, String firstName, String lastName, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 
     @Getter
-    @Setter
-    String name;
+    private final UserSelector id;
 
     @Getter
-    @Setter
-    String email;
+    private final String firstName;
 
-    public record UserSelector(String id) {
+    @Getter
+    private final String lastName;
+
+    @Getter
+    private final String email;
+
+    public record UserSelector(String userID) {
     }
 }
