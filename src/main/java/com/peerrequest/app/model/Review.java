@@ -4,6 +4,9 @@ package com.peerrequest.app.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents a review.
  *
@@ -19,15 +22,19 @@ public class Review {
      * @param id          id of the review
      * @param reviewerID  id of the reviewer
      */
-    public Review(ReviewSelector id, User.UserSelector reviewerID) {
+    public Review(ReviewSelector id, User.UserSelector reviewerID, Entry.EntrySelector entryID) {
         this.id = id;
         this.reviewerID = reviewerID;
+        this.entryID = entryID;
     }
     @Getter
     private final ReviewSelector id;
 
     @Getter
     private final User.UserSelector reviewerID;
+
+    @Getter
+    private final Entry.EntrySelector entryID;
 
     @Getter
     @Setter
@@ -68,6 +75,10 @@ public class Review {
     @Getter
     @Setter
     private float score;
+
+    @Getter
+    @Setter
+    private List<Message> messageBoard = new ArrayList<>();
 
 
     /**

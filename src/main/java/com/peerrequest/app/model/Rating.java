@@ -3,6 +3,9 @@ package com.peerrequest.app.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents a bid on one entry of a bidding process.
  *
@@ -32,6 +35,14 @@ public class Rating {
 
     @Getter
     private final User.UserSelector reviewerID;
+
+    /**
+     * Reviewer of this rating referenced by reviewerID.
+     * Might be null.
+     */
+    @Getter
+    @Setter
+    private User reviewer;
 
     @Getter
     @Setter

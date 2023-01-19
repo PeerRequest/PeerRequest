@@ -52,4 +52,12 @@ public class BiddingSlot {
     public record BiddingSlotSelector(long biddingSlotID) { }
 
     public record BiddingSlotUpdater(int reviewSlots) { }
+
+    public void addRating(Rating rating) {
+        ratings.add(rating);
+    }
+
+    public void removeRating(User user) {
+        ratings.remove(user);
+    }
 }
