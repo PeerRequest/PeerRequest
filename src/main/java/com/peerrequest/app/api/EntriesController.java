@@ -50,7 +50,7 @@ public class EntriesController {
         Entry updatedEntry = mockEntry();
         updatedEntry.setAuthors("Karol Laseconde");
         updatedEntry.setTitle("Updated Title");
-        return mockEntry();
+        return updatedEntry;
     }
 
     @DeleteMapping(value ="categories/{categoryId}/entries/{entryId}", consumes = "application/json")
