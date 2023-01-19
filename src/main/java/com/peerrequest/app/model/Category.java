@@ -49,13 +49,15 @@ public class Category {
     private final User.UserSelector researcherID;
 
     @Getter
-    private final String name;
+    @Setter
+    private String name;
 
     @Getter
     private final CategoryLabel label;
 
     @Getter
-    private final int year;
+    @Setter
+    private int year;
 
     @Getter
     private final ZonedDateTime deadline;
