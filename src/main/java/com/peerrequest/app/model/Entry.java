@@ -48,11 +48,9 @@ public class Entry {
     private Document document;
 
     @Getter
-    @Setter
     private final String title;
 
     @Getter
-    @Setter
     private final String authors;
 
     public record EntrySelector(long entryID) {

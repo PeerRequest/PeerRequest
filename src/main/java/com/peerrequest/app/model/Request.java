@@ -2,6 +2,7 @@ package com.peerrequest.app.model;
 
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This abstract class represents a request.
@@ -21,6 +22,7 @@ public abstract class Request {
     public Request(RequestSelector id, User.UserSelector reviewerID) {
         this.id = id;
         this.reviewerID = reviewerID;
+        this.requestState = RequestState.PENDING;
     }
 
     @Getter
@@ -28,6 +30,10 @@ public abstract class Request {
 
     @Getter
     private final User.UserSelector reviewerID;
+
+    @Getter
+    @Setter
+    private final RequestState requestState;
 
     public record RequestSelector(long requestID) { }
 
