@@ -13,5 +13,5 @@ public interface DocumentAttachment<P> {
      * @param selector the selected object
      * @return the document attached to the selected object
      */
-    Document document(P selector);
+    Document.DocumentSelector document(P selector);
 }
