@@ -3,7 +3,7 @@ package com.peerrequest.app.services;
 import com.peerrequest.app.model.User;
 
 /**
- * Interface class responsible for user management and authentication via KeyCloak.
+ * Interface class responsible for user management.
  */
 public interface UserService {
     /**
