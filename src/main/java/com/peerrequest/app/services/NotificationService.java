@@ -34,7 +34,7 @@ public interface NotificationService<F, U> extends CrudService<Notification, Not
      * @param entries the entries that have been allocated to the receiving user
      */
     void sendBiddingAllocationNotification(User.UserSelector sendingUserID, User.UserSelector receivingUserID,
-                                           Category.CategorySelector categoryID, List<Entry> entries);
+                                           Category.CategorySelector categoryID, List<Entry.EntrySelector> entries);
 
     /**
      * Sending a notification to a user in context of an entry.
