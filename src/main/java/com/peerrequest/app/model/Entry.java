@@ -49,12 +49,16 @@ public class Entry {
 
     @Getter
     @Setter
-    private final String title;
+    private String title;
 
     @Getter
     @Setter
-    private final String authors;
+    private String authors;
 
     public record EntrySelector(long entryID) {
+    }
+
+    public record EntryUpdater(String title, String authors) {
+
     }
 }
