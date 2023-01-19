@@ -47,10 +47,7 @@ public class EntriesController {
     public Entry patchEntry(@PathVariable final int categoryId,
                                     @PathVariable final int entryId,
                                     @RequestBody final Entry.EntryUpdater entryUpdater) {
-        Entry updatedEntry = mockEntry();
-        updatedEntry.setAuthors("Karol Laseconde");
-        updatedEntry.setTitle("Updated Title");
-        return updatedEntry;
+        return mockEntry();
     }
 
     @DeleteMapping(value ="categories/{categoryId}/entries/{entryId}", consumes = "application/json")
