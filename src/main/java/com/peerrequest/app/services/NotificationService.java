@@ -1,7 +1,6 @@
 package com.peerrequest.app.services;
 
-import com.peerrequest.app.model.Entry;
-import com.peerrequest.app.model.Notification;
+import com.peerrequest.app.model.*;
 
 import java.util.List;
 
@@ -20,7 +19,8 @@ public interface NotificationService<F, U> extends CrudService<Notification, Not
      * @param categoryID id of the category of the bidding
      * @param message id of the actual notification message
      */
-    void sendBiddingNotification(int sendingUserID, int receivingUserID, int categoryID,
+    void sendBiddingNotification(User.UserSelector sendingUserID, User.UserSelector receivingUserID,
+                                 Category.CategorySelector categoryID,
                                  Notification.BiddingProcessNotification.BiddingProcessMessage message);
 
     /**
@@ -30,7 +30,8 @@ public interface NotificationService<F, U> extends CrudService<Notification, Not
      * @param categoryID id of the category of the bidding
      * @param entries the entries that have been allocated to the receiving user
      */
-    void sendBiddingAllocationNotification(int sendingUserID, int receivingUserID, int categoryID, List<Entry> entries);
+    void sendBiddingAllocationNotification(User.UserSelector sendingUserID, User.UserSelector receivingUserID,
+                                           Category.CategorySelector categoryID, List<Entry> entries);
 
     /**
      * Sending a notification to a user in context of an entry.
@@ -39,8 +40,8 @@ public interface NotificationService<F, U> extends CrudService<Notification, Not
      * @param entryID id the entry in context
      * @param message the actual notification message
      */
-    void sendEntryNotification(int sendingUserID, int receivingUserID, int entryID,
-                               Notification.EntryNotification.EntryMessage message);
+    void sendEntryNotification(User.UserSelector sendingUserID, User.UserSelector receivingUserID,
+                               Entry.EntrySelector entryID, Notification.EntryNotification.EntryMessage message);
 
     /**
      * Sending a notification to a user in context of a review.
@@ -49,12 +50,12 @@ public interface NotificationService<F, U> extends CrudService<Notification, Not
      * @param reviewID id the review in context
      * @param message the actual notification message
      */
-    void sendReviewNotification(int sendingUserID, int receivingUserID, int reviewID,
-                                Notification.ReviewNotification.ReviewMessage message);
+    void sendReviewNotification(User.UserSelector sendingUserID, User.UserSelector receivingUserID,
+                                Review.ReviewSelector reviewID, Notification.ReviewNotification.ReviewMessage message);
 
     /**
      * Re-sending a notification in case the mail-server could not be reached.
      * @param notificationID the id of the notification that has to be resent
      */
-    void sendNotification(int notificationID);
+    void sendNotification(Notification.NotificationSelector notificationID);
 }
