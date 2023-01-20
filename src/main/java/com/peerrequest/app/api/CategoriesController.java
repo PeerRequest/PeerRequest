@@ -12,33 +12,37 @@ public class CategoriesController {
 
     @GetMapping(value = "/categories", produces = "application/json")
     public List<Category> getCategories() {
-        return List.of(mockCategory());
+        return List.of(mockUpCategory);
     }
 
     @GetMapping(value = "/categories/{categoryId}", produces = "application/json")
     public Category getCategory(@PathVariable final int categoryId) {
-        return mockCategory();
+        return mockUpCategory;
     }
 
     @PostMapping(value = "/categories", produces = "application/json")
     public Category createCategory() {
-        return mockCategory();
+        return mockUpCategory;
     }
 
     @PatchMapping(value = "/categories/{categoryId}", consumes = "application/json", produces = "application/json")
-    public Category partialUpdateCategory(@RequestBody final Category.CategoryUpdater categoryUpdater) {
-        return mockCategory();
+    public Category patchCategory(@RequestBody final Category.CategoryUpdater categoryUpdater) {
+        mockCategory().setName(categoryUpdater.name());
+        mockCategory().setYear(categoryUpdater.year());
+        return mockUpCategory;
     }
 
     @DeleteMapping(value = "categories/{categoryId}/", consumes = "application/json")
     public void deleteCategory(@PathVariable final int categoryId) {
     }
 
+    private Category mockUpCategory;
+
 
     // returns mock category
     private Category mockCategory() {
         Category.CategorySelector categoryId = new Category.CategorySelector(12);
-        Category category = new Category(categoryId,
+        this.mockUpCategory = new Category(categoryId,
                 new User.UserSelector("140314"),
                 "Best International Conference",
                 Category.CategoryLabel.INTERNAL,
@@ -46,7 +50,7 @@ public class CategoriesController {
                 0,
                 5,
                 1);
-        return category;
+        return mockUpCategory;
     }
 
     //returns mock user
