@@ -65,7 +65,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public MimeMessage createMimeMessage() {
-        return null;
+        //TODO Implement createMimeMessage()
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -78,7 +79,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public MimeMessage createMimeMessage(InputStream contentStream) throws MailException {
-        return null;
+        //TODO Implement createMimeMessage(InputStream contentStream)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -92,7 +94,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(MimeMessage mimeMessage) throws MailException {
-
+        //TODO Implement send(MimeMessage mimeMessage)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -106,7 +109,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(MimeMessage... mimeMessages) throws MailException {
-
+        //TODO Implement send(MimeMessage... mimeMessages)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -123,7 +127,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(MimeMessagePreparator mimeMessagePreparator) throws MailException {
-
+        //TODO Implement send(MimeMessagePreparator mimeMessagePreparator)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -140,7 +145,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(MimeMessagePreparator... mimeMessagePreparators) throws MailException {
-
+        //TODO Implement send(MimeMessagePreparator... mimeMessagePreparators)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -153,7 +159,8 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(SimpleMailMessage simpleMessage) throws MailException {
-
+        //TODO Implement send(SimpleMailMessage simpleMessage)
+        throw new RuntimeException("not implemented");
     }
 
     /**
@@ -166,6 +173,7 @@ public class EmailSender implements JavaMailSender {
      */
     @Override
     public void send(SimpleMailMessage... simpleMessages) throws MailException {
-
+        //TODO Implement send(SimpleMailMessage... simpleMessages)
+        throw new RuntimeException("not implemented");
     }
 }
