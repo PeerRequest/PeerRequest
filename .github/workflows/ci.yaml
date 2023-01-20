@@ -1,0 +1,43 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  checkstyle-job:
+    runs-on: ubuntu-latest
+    name: Checkstyle
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run check style
+        uses: nikitasavinov/checkstyle-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          tool_name: 'CheckStyle Report'
+          filter_mode: 'file'
+          level: 'error'
+          fail_on_error: true
+          checkstyle_version: '10.6.0'
+          checkstyle_config: 'config/checkstyle/checkstyle.xml'
+  gradle-check-and-test:
+    runs-on: ubuntu-latest
+    name: Gradle check and test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      - name: Check with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: check
+      - name: Test with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: test
