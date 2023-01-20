@@ -27,10 +27,7 @@ public class CategoriesController {
 
     @PatchMapping(value = "/categories/{categoryId}", consumes = "application/json", produces = "application/json")
     public Category partialUpdateCategory(@RequestBody final Category.CategoryUpdater categoryUpdater) {
-        Category updatedCategory = mockCategory();
-        updatedCategory.setName("Better International Conference");
-        updatedCategory.setYear(1984);
-        return updatedCategory;
+        return mockCategory();
     }
 
     @DeleteMapping(value = "categories/{categoryId}/", consumes = "application/json")
