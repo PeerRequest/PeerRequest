@@ -19,7 +19,7 @@ jobs:
           reporter: 'github-pr-check'
           tool_name: 'CheckStyle'
           level: 'error'
-          filter_mode: true
+          fail_on_error: true
           checkstyle_version: '10.6.0'
           checkstyle_config: 'config/checkstyle/checkstyle.xml'
   gradle-check-and-test:
