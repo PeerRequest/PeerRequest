@@ -21,14 +21,15 @@ public class CategoriesController {
     }
 
     @PostMapping(value = "/categories", produces = "application/json")
-    public Category createCategory() {
+    public Category createCategory( @RequestBody final Category category) {
+        this.mockUpCategory = category;
         return mockUpCategory;
     }
 
     @PatchMapping(value = "/categories/{categoryId}", consumes = "application/json", produces = "application/json")
     public Category patchCategory(@RequestBody final Category.CategoryUpdater categoryUpdater) {
-        mockCategory().setName(categoryUpdater.name());
-        mockCategory().setYear(categoryUpdater.year());
+        this.mockUpCategory.setName(categoryUpdater.name());
+        this.mockUpCategory.setYear(categoryUpdater.year());
         return mockUpCategory;
     }
 
@@ -37,6 +38,10 @@ public class CategoriesController {
     }
 
     private Category mockUpCategory;
+
+    public CategoriesController(){
+        mockCategory();
+    }
 
 
     // returns mock category
