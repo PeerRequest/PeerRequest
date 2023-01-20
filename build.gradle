@@ -9,6 +9,14 @@ group = 'com.peerrequest'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
+jar {
+    enabled = false
+}
+
+bootJar {
+    enabled = true
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
