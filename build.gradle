@@ -53,6 +53,10 @@ tasks.named('test') {
 
 apply plugin: 'checkstyle'
 checkstyle {
+    ignoreFailures = false
+    maxWarnings = 0
+    maxErrors = 0
+
     project.ext.checkstyleVersion = '10.6.0'
     project.ext.sevntuChecksVersion = '1.44.1'
 
