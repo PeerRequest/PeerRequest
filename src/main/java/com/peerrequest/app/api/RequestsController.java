@@ -14,7 +14,7 @@ public class RequestsController {
         return mockDirectRequestProcess();
     }
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
+    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
     public DirectRequestProcess putDirectRequestProcess(@PathVariable final long categoryId,
                                                         @PathVariable final long entryId,
                                                         @RequestBody final DirectRequestProcess directRequestProcess) {
@@ -22,7 +22,7 @@ public class RequestsController {
         return directRequestProcessMockUp;
     }
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
+    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
     public DirectRequestProcess patchDirectRequestProcess(@PathVariable final long categoryId,
                                                           @PathVariable final long entryId,
                                                           @RequestBody final DirectRequestProcess
@@ -38,7 +38,7 @@ public class RequestsController {
         return mockDirectRequest();
     }
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}", produces = "application/json")
+    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}", produces = "application/json")
     public Request putRequest(@PathVariable final long categoryId,
                               @PathVariable final long entryId,
                               @PathVariable final long requestId,
@@ -47,7 +47,7 @@ public class RequestsController {
         return directRequestMockUp;
     }
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}", produces = "application/json")
+    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}", produces = "application/json")
     public Request patchRequest(@PathVariable final long categoryId,
                                 @PathVariable final long entryId,
                                 @PathVariable final long requestId,
