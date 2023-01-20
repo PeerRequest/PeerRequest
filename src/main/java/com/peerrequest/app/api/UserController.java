@@ -33,6 +33,13 @@ public class UserController {
     private Entry mockUpEntryTwo;
     private Review mockUpReview;
 
+    public UserController() {
+        mockUser();
+        mockEntryOne();
+        mockEntryTwo();
+        mockReview();
+    }
+
     //returns mock user
     private User mockUser() {
         User.UserSelector userId = new User.UserSelector("007");
