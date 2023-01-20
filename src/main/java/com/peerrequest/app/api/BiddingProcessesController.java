@@ -9,14 +9,14 @@ import java.time.ZonedDateTime;
 @RequestMapping
 public class BiddingProcessesController {
 
-    @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
+    @PutMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess putBiddingProcess(@PathVariable final long categoryId,
                                             @RequestBody final BiddingProcess biddingProcess) {
         this.mockUp = biddingProcess;
         return this.mockUp;
     }
 
-    @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
+    @PatchMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess patchBiddingProcess(@PathVariable final long categoryId,
                                               @RequestBody final BiddingProcess.BiddingProcessUpdater updater) {
         mockBiddingProcess().setDeadline((updater.deadline()));
@@ -28,7 +28,7 @@ public class BiddingProcessesController {
         return mockBiddingProcess();
     }
 
-    @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
+    @DeleteMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public void deleteBiddingProcess(@PathVariable final long categoryId) {
 
     }
