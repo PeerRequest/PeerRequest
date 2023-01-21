@@ -8,10 +8,6 @@ import lombok.Setter;
 
 /**
  * This class represents a category.
- *
- * @author User1 Halpick
- * @author User5 Mildt
- * @version 0.0.1
  */
 public class Category {
 

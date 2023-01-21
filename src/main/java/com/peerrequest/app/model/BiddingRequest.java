@@ -4,9 +4,6 @@ import lombok.Getter;
 
 /**
  * This class represents a bidding request.
- *
- * @author User5 Mildt
- * @version 0.0.1
  */
 public class BiddingRequest extends Request {
 

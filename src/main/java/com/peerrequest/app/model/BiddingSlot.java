@@ -6,9 +6,6 @@ import lombok.Setter;
 
 /**
  * This class represents a bidding slot.
- *
- * @author User5 Mildt
- * @version 0.0.1
  */
 public class BiddingSlot {
 
