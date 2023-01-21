@@ -1,17 +1,24 @@
 package com.peerrequest.app.services;
 
+import com.peerrequest.app.model.Message;
 import com.peerrequest.app.model.Review;
 import com.peerrequest.app.model.User;
-import com.peerrequest.app.model.Messsage;
-
 import java.time.ZonedDateTime;
 
+
+/**
+ * Describes the functionality of a  ReviewService.
+ *
+ * @param <F> Review Filter
+ * @param <U> Review Updater
+ */
 public interface ReviewService<F, U> extends CrudService<Review, Review.ReviewSelector, F, U> {
-    void addMessage(Review.ReviewSelector reviewID, User.UserSelector userID, ZonedDateTime timeStamp, String content);
+    void addMessage(Review.ReviewSelector reviewSelector, User.UserSelector userSelector, ZonedDateTime timeStamp,
+                    String content);
 
-    void deleteMessage(Message.MessageSelector commentID);
+    void deleteMessage(Message.MessageSelector messageSelector);
 
-    void notifyResearcherOfEdit(Review.ReviewSelector reviewID);
+    void notifyResearcherOfEdit(Review.ReviewSelector reviewSelector);
 
-    void notifyReviewerOfEdit(Review.ReviewSelector reviewID);
+    void notifyReviewerOfEdit(Review.ReviewSelector reviewSelector);
 }

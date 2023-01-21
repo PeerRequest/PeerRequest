@@ -1,12 +1,11 @@
 package com.peerrequest.app.model;
 
 
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.ZonedDateTime;
-import java.util.Optional;
-import java.util.HashMap;
 
 /**
  * This abstract class represents a generic notification.
@@ -17,50 +16,49 @@ import java.util.HashMap;
  */
 public abstract class Notification {
 
-    /**
-     * Constructor of a notification
-     *
-     * @param id          id of the notification
-     * @param receiverID  id of the user who receives the notification
-     * @param emitterID   id of the user who emitted the notification
-     * @param subject     subject of the notification
-     * @param message     message of the notification
-     * @param timeStamp   timestamp of the creation of the notification
-     */
-    public Notification(NotificationSelector id, User.UserSelector receiverID,
-                        User.UserSelector emitterID, String subject, String message, ZonedDateTime timeStamp) {
-        this.id = id;
-        this.receiverID = receiverID;
-        this.emitterID = emitterID;
-        this.subject = subject;
-        this.message = message;
-        this.timeStamp = timeStamp;
-    }
     @Getter
     private final NotificationSelector id;
-
     @Getter
-    private final User.UserSelector receiverID;
-
+    private final User.UserSelector receiverSelector;
     @Getter
-    private final User.UserSelector emitterID;
-
+    private final User.UserSelector emitterSelector;
     @Getter
     private final String subject;
-
     /**
      * Complete notification message with every wildcard filled.
      */
     @Getter
     private final String message;
-
     @Getter
     private final ZonedDateTime timeStamp;
 
-    public record NotificationSelector(long notificationID) {
+    /**
+     * Constructor of a notification.
+     *
+     * @param id               id of the notification
+     * @param receiverSelector id of the user who receives the notification
+     * @param emitterSelector  id of the user who emitted the notification
+     * @param subject          subject of the notification
+     * @param message          message of the notification
+     * @param timeStamp        timestamp of the creation of the notification
+     */
+    public Notification(NotificationSelector id, User.UserSelector receiverSelector,
+                        User.UserSelector emitterSelector, String subject, String message, ZonedDateTime timeStamp) {
+        this.id = id;
+        this.receiverSelector = receiverSelector;
+        this.emitterSelector = emitterSelector;
+        this.subject = subject;
+        this.message = message;
+        this.timeStamp = timeStamp;
     }
 
-    public record NotificationUpdater() { }
+    /**
+     * Identifies a Notification.
+     *
+     * @param id id of the Notification
+     */
+    public record NotificationSelector(long id) {
+    }
 
     /**
      * This class represents a review notification.
@@ -71,27 +69,27 @@ public abstract class Notification {
      */
     public static class ReviewNotification extends Notification {
 
-        /**
-         * Constructor of a review notification.
-         *
-         * @param reviewID id of the review which issued the notification
-         */
-        public ReviewNotification(NotificationSelector id, User.UserSelector receiverID,
-                                  User.UserSelector emitterID, String subject, String message,
-                                  ZonedDateTime timeStamp, Review.ReviewSelector reviewID) {
-            super(id, receiverID, emitterID, subject, message, timeStamp);
-            this.reviewID = reviewID;
-        }
         @Getter
-        private final Review.ReviewSelector reviewID;
-
+        private final Review.ReviewSelector reviewSelector;
         /**
-         * The Review referenced by `reviewID`.
+         * The Review referenced by `reviewSelector`.
          * Might be null.
          */
         @Getter
         @Setter
         private Review review;
+
+        /**
+         * Constructor of a review notification.
+         *
+         * @param reviewSelector id of the review which issued the notification
+         */
+        public ReviewNotification(NotificationSelector id, User.UserSelector receiverSelector,
+                                  User.UserSelector emitterSelector, String subject, String message,
+                                  ZonedDateTime timeStamp, Review.ReviewSelector reviewSelector) {
+            super(id, receiverSelector, emitterSelector, subject, message, timeStamp);
+            this.reviewSelector = reviewSelector;
+        }
 
 
         /**
@@ -135,27 +133,27 @@ public abstract class Notification {
      */
     public static class EntryNotification extends Notification {
 
-        /**
-         * Constructor of a review notification.
-         *
-         * @param entryID id of the entry which issued the notification
-         */
-        public EntryNotification(NotificationSelector id, User.UserSelector receiverID,
-                                 User.UserSelector emitterID, String subject, String message,
-                                 ZonedDateTime timeStamp, Entry.EntrySelector entryID) {
-            super(id, receiverID, emitterID, subject, message, timeStamp);
-            this.entryID = entryID;
-        }
         @Getter
-        private final Entry.EntrySelector entryID;
-
+        private final Entry.EntrySelector entrySelector;
         /**
-         * The Entry referenced by `entryID`.
+         * The Entry referenced by `id`.
          * Might be null.
          */
         @Getter
         @Setter
         private Entry entry;
+
+        /**
+         * Constructor of a review notification.
+         *
+         * @param entrySelector id of the entry which issued the notification
+         */
+        public EntryNotification(NotificationSelector id, User.UserSelector receiverSelector,
+                                 User.UserSelector emitterSelector, String subject, String message,
+                                 ZonedDateTime timeStamp, Entry.EntrySelector entrySelector) {
+            super(id, receiverSelector, emitterSelector, subject, message, timeStamp);
+            this.entrySelector = entrySelector;
+        }
 
         /**
          * Message templates for a review message.
@@ -203,7 +201,7 @@ public abstract class Notification {
     }
 
     /**
-     * This class represents an bidding process notification.
+     * This class represents a bidding process notification.
      *
      * @author User1 Halpick
      * @author User5 Mildt
@@ -211,46 +209,49 @@ public abstract class Notification {
      */
     public static class BiddingProcessNotification extends Notification {
 
-        /**
-         * Constructor of a bidding process notification except for the message BIDDING_PROCESS_ALLOCATION.
-         *
-         * @param categoryID  id of the category of the bidding process which issued the notification
-         */
-        public BiddingProcessNotification(NotificationSelector id, User.UserSelector receiverID,
-                                          User.UserSelector emitterID, String subject, String message,
-                                          ZonedDateTime timeStamp, Category.CategorySelector categoryID) {
-            super(id, receiverID, emitterID, subject, message, timeStamp);
-            this.categoryID = categoryID;
-        }
-
-        /**
-         * Constructor of the BIDDING_PROCESS_ALLOCATION bidding process notification.
-         *
-         * @param categoryID  id of the category of the bidding process which issued the notification
-         * @param entries     id
-         */
-        public BiddingProcessNotification(NotificationSelector id, User.UserSelector receiverID,
-                                          User.UserSelector emitterID, String subject, String message,
-                                          ZonedDateTime timeStamp, Category.CategorySelector categoryID,
-                                          HashMap<Entry.EntrySelector, Optional<Entry>> entries) {
-            super(id, receiverID, emitterID, subject, message, timeStamp);
-            this.categoryID = categoryID;
-            this.entries = entries;
-        }
+        @Getter
+        private final Category.CategorySelector categorySelector;
         @Getter
         private HashMap<Entry.EntrySelector, Optional<Entry>> entries;
-
-        @Getter
-        private final Category.CategorySelector categoryID;
-
         /**
-         * The Category referenced by `categoryID`.
+         * The Category referenced by `id`.
          * Might be null.
          */
         @Getter
         @Setter
         private Category.CategorySelector category;
 
+        /**
+         * Constructor of a bidding process notification except for the message BIDDING_PROCESS_ALLOCATION.
+         *
+         * @param categorySelector id of the category of the bidding process which issued the notification
+         */
+        public BiddingProcessNotification(NotificationSelector id, User.UserSelector receiverSelector,
+                                          User.UserSelector emitterSelector, String subject, String message,
+                                          ZonedDateTime timeStamp, Category.CategorySelector categorySelector) {
+            super(id, receiverSelector, emitterSelector, subject, message, timeStamp);
+            this.categorySelector = categorySelector;
+        }
+
+        /**
+         * Constructor of the BIDDING_PROCESS_ALLOCATION bidding process notification.
+         *
+         * @param categorySelector id of the category of the bidding process which issued the notification
+         * @param entries          id
+         */
+        public BiddingProcessNotification(NotificationSelector id, User.UserSelector receiverSelector,
+                                          User.UserSelector emitterSelector, String subject, String message,
+                                          ZonedDateTime timeStamp, Category.CategorySelector categorySelector,
+                                          HashMap<Entry.EntrySelector, Optional<Entry>> entries) {
+            super(id, receiverSelector, emitterSelector, subject, message, timeStamp);
+            this.categorySelector = categorySelector;
+            this.entries = entries;
+        }
+
+
+        /**
+         * Message templates for a bidding process message.
+         */
         public enum BiddingProcessMessage {
             // TODO: add messages
             /**

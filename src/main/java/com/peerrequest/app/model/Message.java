@@ -1,8 +1,7 @@
 package com.peerrequest.app.model;
 
-import lombok.Getter;
-
 import java.time.ZonedDateTime;
+import lombok.Getter;
 
 /**
  * This class represents a message.
@@ -10,42 +9,26 @@ import java.time.ZonedDateTime;
  * @author User5 Mildt
  * @version 0.0.1
  */
-public class Message {
-
+public record Message(@Getter com.peerrequest.app.model.Message.MessageSelector id,
+                      @Getter Review.ReviewSelector reviewSelector, @Getter User.UserSelector creatorSelector,
+                      @Getter ZonedDateTime timeStamp, @Getter String content) {
     /**
      * Constructor of a message.
      *
-     * @param id         id of the message
-     * @param reviewID   id of the review of this message
-     * @param creatorID  id of the user who created this message
-     * @param timeStamp  timestamp of the creation of this message
-     * @param content    content of this message
+     * @param id              id of the message
+     * @param reviewSelector  id of the review of this message
+     * @param creatorSelector id of the user who created this message
+     * @param timeStamp       timestamp of the creation of this message
+     * @param content         content of this message
      */
-    public Message(MessageSelector id, Review.ReviewSelector reviewID,
-                   User.UserSelector creatorID, ZonedDateTime timeStamp, String content) {
-        this.id = id;
-        this.reviewID = reviewID;
-        this.creatorID = creatorID;
-        this.timeStamp = timeStamp;
-        this.content = content;
+    public Message {
     }
 
-    @Getter
-    private final MessageSelector id;
-
-    @Getter
-    private final Review.ReviewSelector reviewID;
-
-    @Getter
-    private final User.UserSelector creatorID;
-
-    @Getter
-    private final ZonedDateTime timeStamp;
-
-    @Getter
-    private final String content;
-
-    public record MessageSelector(long messageID) {}
-
-    public record MessageUpdater(String content) { }
+    /**
+     * Identifies a Message.
+     *
+     * @param id id of a message
+     */
+    public record MessageSelector(long id) {
+    }
 }
