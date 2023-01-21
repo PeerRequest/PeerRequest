@@ -9,10 +9,6 @@ import lombok.Setter;
 
 /**
  * This abstract class represents a generic notification.
- *
- * @author Ludger Halpick
- * @author Michael Mildt
- * @version 0.0.1
  */
 public abstract class Notification {
 
@@ -62,10 +58,6 @@ public abstract class Notification {
 
     /**
      * This class represents a review notification.
-     *
-     * @author Ludger Halpick
-     * @author Michael Mildt
-     * @version 0.0.1
      */
     public static class ReviewNotification extends Notification {
 
@@ -126,10 +118,6 @@ public abstract class Notification {
 
     /**
      * This class represents an entry notification.
-     *
-     * @author Ludger Halpick
-     * @author Michael Mildt
-     * @version 0.0.1
      */
     public static class EntryNotification extends Notification {
 
@@ -202,10 +190,6 @@ public abstract class Notification {
 
     /**
      * This class represents a bidding process notification.
-     *
-     * @author Ludger Halpick
-     * @author Michael Mildt
-     * @version 0.0.1
      */
     public static class BiddingProcessNotification extends Notification {
 

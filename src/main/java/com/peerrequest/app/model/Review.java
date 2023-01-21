@@ -8,10 +8,6 @@ import lombok.Setter;
 
 /**
  * This class represents a review.
- *
- * @author Luder Halpick
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class Review {
 

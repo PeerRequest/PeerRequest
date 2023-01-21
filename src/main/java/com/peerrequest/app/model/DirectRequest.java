@@ -5,9 +5,6 @@ import lombok.Getter;
 
 /**
  * This class represents a direct request.
- *
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class DirectRequest extends Request {
 

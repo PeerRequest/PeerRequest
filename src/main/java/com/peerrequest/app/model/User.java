@@ -4,10 +4,6 @@ import lombok.Getter;
 
 /**
  * This class represents a user.
- *
- * @author Ludger Halpick
- * @author Michael Mildt
- * @version 0.0.1
  */
 public record User(@Getter com.peerrequest.app.model.User.UserSelector id, @Getter String firstName,
                    @Getter String lastName, @Getter String email) {

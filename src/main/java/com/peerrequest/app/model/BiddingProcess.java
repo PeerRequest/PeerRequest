@@ -9,9 +9,6 @@ import lombok.Setter;
 
 /**
  * This class represents a bidding process of a category.
- *
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class BiddingProcess {
 

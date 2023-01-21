@@ -5,10 +5,6 @@ import lombok.Setter;
 
 /**
  * This class represents a direct request process.
- *
- * @author Nikola Boban
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class DirectRequestProcess {
 

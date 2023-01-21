@@ -5,9 +5,6 @@ import lombok.Setter;
 
 /**
  * This class represents a bid on one entry of a bidding process.
- *
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class Rating {
     @Getter

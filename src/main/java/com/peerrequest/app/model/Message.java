@@ -5,9 +5,6 @@ import lombok.Getter;
 
 /**
  * This class represents a message.
- *
- * @author Michael Mildt
- * @version 0.0.1
  */
 public record Message(@Getter com.peerrequest.app.model.Message.MessageSelector id,
                       @Getter Review.ReviewSelector reviewSelector, @Getter User.UserSelector creatorSelector,

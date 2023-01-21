@@ -6,10 +6,6 @@ import lombok.Setter;
 
 /**
  * This class represents an entry.
- *
- * @author Ludger Halpick
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class Entry {
 

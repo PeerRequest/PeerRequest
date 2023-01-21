@@ -6,10 +6,6 @@ import lombok.Setter;
 
 /**
  * This abstract class represents a request.
- *
- * @author Nikola Boban
- * @author Michael Mildt
- * @version 0.0.1
  */
 public abstract class Request {
 

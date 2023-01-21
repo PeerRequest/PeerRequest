@@ -6,9 +6,6 @@ import lombok.Setter;
 
 /**
  * This class represents a document.
- *
- * @author Ludger Halpick
- * @version 0.0.1
  */
 public class Document {
     @Getter
