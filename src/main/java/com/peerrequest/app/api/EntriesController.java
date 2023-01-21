@@ -38,7 +38,8 @@ public class EntriesController {
             produces = "application/json")
     public Entry postEntry(@PathVariable final int categoryId,
                              @RequestBody final Entry entry) {
-        return mockEntry();
+        this.entryMockUp = entry;
+        return this.entryMockUp;
     }
 
     @PatchMapping(value = "categories/{categoryId}/entries/{entryId}",
@@ -54,7 +55,14 @@ public class EntriesController {
     public void deleteEntry(@PathVariable final int categoryId, @PathVariable final int entryId) {
     }
 
+    private categoryMockUp;
+    private entryMockUp;
+
     private Category mockCategory() {
+        if (this.categoryMockUp != null) {
+                return categoryMockUp;
+        }
+
         Category.CategorySelector categoryId = new Category.CategorySelector(12);
         Category category = new Category(categoryId,
                 new User.UserSelector("140314"),
@@ -68,6 +76,10 @@ public class EntriesController {
     }
 
     private Entry mockEntry() {
+        if (this.entryMockUp != null) {
+                return entryMockUp;
+        }
+        
         Entry.EntrySelector entryId = new Entry.EntrySelector(42);
         User.UserSelector userId = new User.UserSelector("123");
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
