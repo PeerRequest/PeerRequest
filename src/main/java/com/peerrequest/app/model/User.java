@@ -9,35 +9,25 @@ import lombok.Getter;
  * @author Michael Mildt
  * @version 0.0.1
  */
-public class User {
+public record User(@Getter com.peerrequest.app.model.User.UserSelector id, @Getter String firstName,
+                   @Getter String lastName, @Getter String email) {
 
     /**
      * Constructor for a user.
      *
-     * @param id         id of the user
-     * @param firstName  first name(s) of the user
-     * @param lastName   last name of the user
-     * @param email      email address of the user
+     * @param id        id of the user
+     * @param firstName first name(s) of the user
+     * @param lastName  last name of the user
+     * @param email     email address of the user
      */
-    public User(UserSelector id, String firstName, String lastName, String email) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+    public User {
     }
 
-    @Getter
-    private final UserSelector id;
-
-    @Getter
-    private final String firstName;
-
-    @Getter
-    private final String lastName;
-
-    @Getter
-    private final String email;
-
-    public record UserSelector(String userID) {
+    /**
+     * Identifies a User.
+     *
+     * @param id id of a User
+     */
+    public record UserSelector(String id) {
     }
 }

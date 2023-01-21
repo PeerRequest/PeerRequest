@@ -11,17 +11,19 @@ import lombok.Setter;
  * @version 0.0.1
  */
 public class Document {
+    @Getter
+    @Setter
+    private DocumentSelector id;
 
     public Document(DocumentSelector id) {
         this.id = id;
     }
 
-    @Getter
-    @Setter
-    private DocumentSelector id;
-
-    public record DocumentSelector(String documentID) {
+    /**
+     * Identifies a Document.
+     *
+     * @param id id of the Document
+     */
+    public record DocumentSelector(String id) {
     }
-
-    public record DocumentUpdater() { }
 }

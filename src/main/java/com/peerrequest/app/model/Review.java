@@ -1,11 +1,10 @@
 package com.peerrequest.app.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This class represents a review.
@@ -16,69 +15,57 @@ import java.util.List;
  */
 public class Review {
 
-    /**
-     * Constructor for a review.
-     *
-     * @param id          id of the review
-     * @param reviewerID  id of the reviewer
-     */
-    public Review(ReviewSelector id, User.UserSelector reviewerID, Entry.EntrySelector entryID) {
-        this.id = id;
-        this.reviewerID = reviewerID;
-        this.entryID = entryID;
-    }
     @Getter
     private final ReviewSelector id;
-
     @Getter
-    private final User.UserSelector reviewerID;
-
+    private final User.UserSelector reviewerSelector;
     @Getter
-    private final Entry.EntrySelector entryID;
-
+    private final Entry.EntrySelector entrySelector;
     @Getter
     @Setter
-    private Document.DocumentSelector reviewDocumentID;
-
+    private Document.DocumentSelector reviewDocumentSelector;
     @Getter
     @Setter
     private Document reviewDocument;
-
     @Getter
     @Setter
     private ConfidenceLevel confidenceLevel;
-
     @Getter
     @Setter
     private String summary;
-
     @Getter
     @Setter
     private String mainWeakness;
-
     @Getter
     @Setter
     private String mainStrengths;
-
     @Getter
     @Setter
     private String questionsForAuthors;
-
     @Getter
     @Setter
     private String answersFromAuthors;
-
     @Getter
     @Setter
     private String otherComments;
-
     @Getter
     @Setter
     private float score;
-
     @Getter
     @Setter
     private List<Message> messageBoard = new ArrayList<>();
+
+    /**
+     * Constructor for a review.
+     *
+     * @param id               id of the review
+     * @param reviewerSelector id of the reviewer
+     */
+    public Review(ReviewSelector id, User.UserSelector reviewerSelector, Entry.EntrySelector entrySelector) {
+        this.id = id;
+        this.reviewerSelector = reviewerSelector;
+        this.entrySelector = entrySelector;
+    }
 
 
     /**
@@ -99,10 +86,12 @@ public class Review {
         HIGH
     }
 
-    public record ReviewSelector(Entry.EntrySelector entrySelector, long reviewID) {
+    /**
+     * Identifies a Review.
+     *
+     * @param entrySelector specifies the entry this review belongs to. (Might be null)
+     * @param id            id of the Review
+     */
+    public record ReviewSelector(Entry.EntrySelector entrySelector, long id) {
     }
-
-    public record ReviewUpdater(Document.DocumentSelector reviewDocumentID, ConfidenceLevel confidenceLevel,
-                                String summary, String mainWeaknesses, String mainStrengths, String questionsForAuthors,
-                                String answersFromAuthors, String otherComments, float score) { }
 }

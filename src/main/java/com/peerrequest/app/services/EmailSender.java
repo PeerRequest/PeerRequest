@@ -1,11 +1,16 @@
 package com.peerrequest.app.services;
 
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.*;
+import java.io.InputStream;
+import org.springframework.lang.NonNull;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-
-import java.io.InputStream;
 
 /**
  * The class responsible for sending E-mails.
@@ -22,29 +27,15 @@ public class EmailSender implements JavaMailSender {
     private JavaMailSender mailSender;
 
     /**
-     * Private constructor to prevent creation outside of itself.
+     * Private constructor to prevent creation outside itself.
      */
     private EmailSender() {
     }
 
     /**
-     * This method send an email to the receiver.
-     * @param receiver the user the email goes to
-     * @param subject the subject of the email
-     * @param message the message of the email
-     */
-    public void sendMail(String receiver, String subject, String message) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(receiver);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-        mailSender.send(mailMessage);
-    }
-
-    /**
-     * This method returns the reference to instance of the class.
-     * Since this methode is static, it can be accessed using the class name
-     * @return instance of the class EmailSender
+     * Returns the current instance.
+     *
+     * @return instance of the current EmailSender
      */
     public static EmailSender getEmailSender() {
         if (instance == null) {
@@ -52,6 +43,21 @@ public class EmailSender implements JavaMailSender {
         }
 
         return instance;
+    }
+
+    /**
+     * This method sends an email to the receiver.
+     *
+     * @param receiver the user the email goes to
+     * @param subject  the subject of the email
+     * @param message  the message of the email
+     */
+    public void sendMail(String receiver, String subject, String message) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(receiver);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+        mailSender.send(mailMessage);
     }
 
     /**
@@ -64,6 +70,7 @@ public class EmailSender implements JavaMailSender {
      * @see #send(MimeMessage[])
      */
     @Override
+    @NonNull
     public MimeMessage createMimeMessage() {
         //TODO Implement createMimeMessage()
         throw new RuntimeException("not implemented");
@@ -78,7 +85,8 @@ public class EmailSender implements JavaMailSender {
      * @throws MailParseException in case of message creation failure
      */
     @Override
-    public MimeMessage createMimeMessage(InputStream contentStream) throws MailException {
+    @NonNull
+    public MimeMessage createMimeMessage(@NonNull InputStream contentStream) throws MailException {
         //TODO Implement createMimeMessage(InputStream contentStream)
         throw new RuntimeException("not implemented");
     }
@@ -93,7 +101,7 @@ public class EmailSender implements JavaMailSender {
      * @see #createMimeMessage
      */
     @Override
-    public void send(MimeMessage mimeMessage) throws MailException {
+    public void send(@NonNull MimeMessage mimeMessage) throws MailException {
         //TODO Implement send(MimeMessage mimeMessage)
         throw new RuntimeException("not implemented");
     }
@@ -108,16 +116,18 @@ public class EmailSender implements JavaMailSender {
      * @see #createMimeMessage
      */
     @Override
-    public void send(MimeMessage... mimeMessages) throws MailException {
+    public void send(@NonNull MimeMessage... mimeMessages) throws MailException {
         //TODO Implement send(MimeMessage... mimeMessages)
         throw new RuntimeException("not implemented");
     }
 
     /**
      * Send the JavaMail MIME message prepared by the given MimeMessagePreparator.
+     *
      * <p>Alternative way to prepare MimeMessage instances, instead of
      * {@link #createMimeMessage()} and {@link #send(MimeMessage)} calls.
      * Takes care of proper exception conversion.
+     * </p>
      *
      * @param mimeMessagePreparator the preparator to use
      * @throws MailPreparationException    in case of failure when preparing the message
@@ -126,16 +136,18 @@ public class EmailSender implements JavaMailSender {
      * @throws MailSendException           in case of failure when sending the message
      */
     @Override
-    public void send(MimeMessagePreparator mimeMessagePreparator) throws MailException {
+    public void send(@NonNull MimeMessagePreparator mimeMessagePreparator) throws MailException {
         //TODO Implement send(MimeMessagePreparator mimeMessagePreparator)
         throw new RuntimeException("not implemented");
     }
 
     /**
      * Send the JavaMail MIME messages prepared by the given MimeMessagePreparators.
+     *
      * <p>Alternative way to prepare MimeMessage instances, instead of
      * {@link #createMimeMessage()} and {@link #send(MimeMessage[])} calls.
      * Takes care of proper exception conversion.
+     * </p>
      *
      * @param mimeMessagePreparators the preparator to use
      * @throws MailPreparationException    in case of failure when preparing a message
@@ -144,7 +156,7 @@ public class EmailSender implements JavaMailSender {
      * @throws MailSendException           in case of failure when sending a message
      */
     @Override
-    public void send(MimeMessagePreparator... mimeMessagePreparators) throws MailException {
+    public void send(@NonNull MimeMessagePreparator... mimeMessagePreparators) throws MailException {
         //TODO Implement send(MimeMessagePreparator... mimeMessagePreparators)
         throw new RuntimeException("not implemented");
     }
@@ -158,7 +170,7 @@ public class EmailSender implements JavaMailSender {
      * @throws MailSendException           in case of failure when sending the message
      */
     @Override
-    public void send(SimpleMailMessage simpleMessage) throws MailException {
+    public void send(@NonNull SimpleMailMessage simpleMessage) throws MailException {
         //TODO Implement send(SimpleMailMessage simpleMessage)
         throw new RuntimeException("not implemented");
     }
@@ -172,7 +184,7 @@ public class EmailSender implements JavaMailSender {
      * @throws MailSendException           in case of failure when sending a message
      */
     @Override
-    public void send(SimpleMailMessage... simpleMessages) throws MailException {
+    public void send(@NonNull SimpleMailMessage... simpleMessages) throws MailException {
         //TODO Implement send(SimpleMailMessage... simpleMessages)
         throw new RuntimeException("not implemented");
     }
