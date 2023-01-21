@@ -36,7 +36,8 @@ public class ReviewsController {
     public Review postReview(@PathVariable final int categoryId,
                                @PathVariable final int entryId,
                                @RequestBody final Review review) {
-        return mockReview();
+        this.reviewMockup = review;
+        return this.reviewMockup;
     }
 
     @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document",
@@ -46,7 +47,8 @@ public class ReviewsController {
                                     @PathVariable final int entryId,
                                     @PathVariable final int reviewId,
                                     @RequestBody final Document document) {
-        return mockReview().getReviewDocument();
+        this.reviewMockup.setReviewDocument(document);
+        return this.reviewMockup.getReviewDocument();                             
     }
 
 
@@ -60,7 +62,15 @@ public class ReviewsController {
         return mockReview();
     }
 
+    private Category categoryMockUp;
+    private Entry entryMockUp;
+    private Review reviewMockup;
+
     private Category mockCategory() {
+        if (this.categoryMockUp != null) {
+                return categoryMockUp;
+        }
+
         Category.CategorySelector categoryId = new Category.CategorySelector(12);
         Category category = new Category(categoryId,
                 new User.UserSelector("140314"),
@@ -74,6 +84,10 @@ public class ReviewsController {
     }
 
     private Entry mockEntry() {
+        if (this.entryMockUp != null) {
+                return entryMockUp;
+        }
+
         Entry.EntrySelector entryId = new Entry.EntrySelector(42);
         User.UserSelector userId = new User.UserSelector("123");
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
@@ -83,6 +97,10 @@ public class ReviewsController {
     }
 
     private Review mockReview() {
+        if (this.reviewMockup != null) {
+                return reviewMockup;
+        }
+
         Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntry().getId(), 13);
         Review review = new Review(reviewId, new User.UserSelector("89624"));
         Document.DocumentSelector documentId = new Document.DocumentSelector("19126");
@@ -90,4 +108,5 @@ public class ReviewsController {
         review.setReviewDocument(document);
         return review;
     }
+
 }
