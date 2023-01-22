@@ -60,7 +60,7 @@ public class EntriesController {
 
     private Category mockCategory() {
         if (this.categoryMockUp != null) {
-                return categoryMockUp;
+            return categoryMockUp;
         }
 
         Category.CategorySelector categoryId = new Category.CategorySelector(12);
@@ -72,6 +72,7 @@ public class EntriesController {
                 0,
                 5,
                 1);
+        this.categoryMockUp = category;
         return category;
     }
 
