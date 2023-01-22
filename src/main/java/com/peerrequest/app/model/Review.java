@@ -1,72 +1,67 @@
 package com.peerrequest.app.model;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * This class represents a review.
- *
- * @author Luder Halpick
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class Review {
+
+    @Getter
+    private final ReviewSelector id;
+    @Getter
+    private final User.UserSelector reviewerSelector;
+    @Getter
+    private final Entry.EntrySelector entrySelector;
+    @Getter
+    @Setter
+    private Document.DocumentSelector reviewDocumentSelector;
+    @Getter
+    @Setter
+    private Document reviewDocument;
+    @Getter
+    @Setter
+    private ConfidenceLevel confidenceLevel;
+    @Getter
+    @Setter
+    private String summary;
+    @Getter
+    @Setter
+    private String mainWeakness;
+    @Getter
+    @Setter
+    private String mainStrengths;
+    @Getter
+    @Setter
+    private String questionsForAuthors;
+    @Getter
+    @Setter
+    private String answersFromAuthors;
+    @Getter
+    @Setter
+    private String otherComments;
+    @Getter
+    @Setter
+    private float score;
+    @Getter
+    @Setter
+    private List<Message> messageBoard = new ArrayList<>();
 
     /**
      * Constructor for a review.
      *
-     * @param id          id of the review
-     * @param reviewerID  id of the reviewer
+     * @param id               id of the review
+     * @param reviewerSelector id of the reviewer
      */
-    public Review(ReviewSelector id, User.UserSelector reviewerID) {
+    public Review(ReviewSelector id, User.UserSelector reviewerSelector, Entry.EntrySelector entrySelector) {
         this.id = id;
-        this.reviewerID = reviewerID;
+        this.reviewerSelector = reviewerSelector;
+        this.entrySelector = entrySelector;
     }
-    @Getter
-    private final ReviewSelector id;
-
-    @Getter
-    private final User.UserSelector reviewerID;
-
-    @Getter
-    private Document.DocumentSelector reviewDocumentID;
-
-    @Getter
-    @Setter
-    private Document reviewDocument;
-
-    @Getter
-    @Setter
-    private ConfidenceLevel confidenceLevel;
-
-    @Getter
-    @Setter
-    private String summary;
-
-    @Getter
-    @Setter
-    private String mainWeakness;
-
-    @Getter
-    @Setter
-    private String mainStrengths;
-
-    @Getter
-    @Setter
-    private String questionsForAuthors;
-
-    @Getter
-    @Setter
-    private String answersFromAuthors;
-
-    @Getter
-    @Setter
-    private String otherComments;
-
-    @Getter
-    @Setter
-    private float score;
 
 
     /**
@@ -87,7 +82,13 @@ public class Review {
         HIGH
     }
 
-    public record ReviewSelector(Entry.EntrySelector entrySelector, long reviewID) {
+    /**
+     * Identifies a Review.
+     *
+     * @param entrySelector specifies the entry this review belongs to. (Might be null)
+     * @param id            id of the Review
+     */
+    public record ReviewSelector(Entry.EntrySelector entrySelector, long id) {
     }
 
 

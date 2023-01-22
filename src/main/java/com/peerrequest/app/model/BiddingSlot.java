@@ -1,42 +1,20 @@
 package com.peerrequest.app.model;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * This class represents a bidding slot.
- *
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class BiddingSlot {
 
-    /**
-     * Constructor for a bidding slot.
-     *
-     * @param id                id of the bidding slot
-     * @param biddingProcessID  id of the bidding process of the bidding slot
-     * @param entryID           id of the entry of the bidding slot
-     */
-    public BiddingSlot(BiddingSlotSelector id,
-                       BiddingProcess.BiddingProcessSelector biddingProcessID, Entry.EntrySelector entryID) {
-        this.id = id;
-        this.biddingProcessID = biddingProcessID;
-        this.entryID = entryID;
-    }
-
     @Getter
     private final BiddingSlotSelector id;
-
     @Getter
-    private final BiddingProcess.BiddingProcessSelector biddingProcessID;
-
+    private final BiddingProcess.BiddingProcessSelector biddingProcessSelector;
     @Getter
-    @Setter
-    private final Entry.EntrySelector entryID;
-
+    private final Entry.EntrySelector entrySelector;
     /**
      * Ratings of a bidding slot.
      * May be null.
@@ -44,10 +22,38 @@ public class BiddingSlot {
     @Getter
     @Setter
     private List<Rating> ratings;
-
     @Getter
     @Setter
     private int reviewSlots = 1;
 
-    public record BiddingSlotSelector (long biddingSlotID) {}
+    /**
+     * Constructor for a bidding slot.
+     *
+     * @param id                     id of the bidding slot
+     * @param biddingProcessSelector id of the bidding process of the bidding slot
+     * @param entrySelector          id of the entry of the bidding slot
+     */
+    public BiddingSlot(BiddingSlotSelector id,
+                       BiddingProcess.BiddingProcessSelector biddingProcessSelector,
+                       Entry.EntrySelector entrySelector) {
+        this.id = id;
+        this.biddingProcessSelector = biddingProcessSelector;
+        this.entrySelector = entrySelector;
+    }
+
+    public void addRating(Rating rating) {
+        ratings.add(rating);
+    }
+
+    public void removeRating(Rating user) {
+        ratings.remove(user);
+    }
+
+    /**
+     * Identifies a BiddingSlot.
+     *
+     * @param id id of the BiddingSlot
+     */
+    public record BiddingSlotSelector(long id) {
+    }
 }

@@ -5,36 +5,34 @@ import lombok.Setter;
 
 /**
  * This class represents a direct request process.
- *
- * @author Nikola Boban
- * @author Michael Mildt
- * @version 0.0.1
  */
 public class DirectRequestProcess {
 
-    /**
-     * Constructor for a direct request process.
-     *
-     * @param id       id of the direct request process
-     * @param entryID  id of the entry of the direct request process
-     */
-    public DirectRequestProcess(DirectRequestProcessSelector id, Entry.EntrySelector entryID) {
-        this.id = id;
-        this.entryID = entryID;
-    }
-
     @Getter
-    @Setter
     private final DirectRequestProcessSelector id;
-
     @Getter
-    @Setter
-    private final Entry.EntrySelector entryID;
-
+    private final Entry.EntrySelector entrySelector;
     @Getter
     @Setter
     private int openSlots;
 
-    public record DirectRequestProcessSelector(long directRequestProcessID) {
+    /**
+     * Constructor for a direct request process.
+     *
+     * @param id            id of the direct request process
+     * @param entrySelector id of the entry of the direct request process
+     */
+    public DirectRequestProcess(DirectRequestProcessSelector id,
+                                Entry.EntrySelector entrySelector) {
+        this.id = id;
+        this.entrySelector = entrySelector;
+    }
+
+    /**
+     * Identifies a DirectRequestProcess.
+     *
+     * @param id id of the DirectRequestProcess
+     */
+    public record DirectRequestProcessSelector(long id) {
     }
 }
