@@ -4,10 +4,12 @@ import com.peerrequest.app.model.Category;
 import com.peerrequest.app.model.Document;
 import com.peerrequest.app.model.Entry;
 import com.peerrequest.app.model.User;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+/**
+ * Defines the controller for Entries.
+ */
 @RestController
 @RequestMapping
 public class EntriesController {
@@ -54,6 +56,7 @@ public class EntriesController {
 
     @DeleteMapping(value = "categories/{categoryId}/entries/{entryId}", consumes = "application/json")
     public void deleteEntry(@PathVariable final int categoryId, @PathVariable final int entryId) {
+        throw new RuntimeException("not implemented");
     }
 
     private Entry mockEntry() {
@@ -64,11 +67,10 @@ public class EntriesController {
         Entry.EntrySelector entryId = new Entry.EntrySelector(42);
         User.UserSelector userId = new User.UserSelector("123");
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
-        Entry entry = new Entry(entryId,
+        return new Entry(entryId,
                 new Category.CategorySelector(12),
                 userId, documentId, "great Paper #01",
                 "Karol Bender");
-        return entry;
     }
 
     private Document mockDocument() {

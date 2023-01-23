@@ -13,52 +13,47 @@ import lombok.Setter;
  */
 public class Entry {
 
-    /**
-     * Constructor of an entry.
-     *
-     * @param id            id of the entry
-     * @param researcherID  id of the user who created the entry
-     * @param documentID    id of the document attached to the entry
-     * @param title         title of the entry
-     * @param authors       authors of the entry
-     */
-    public Entry(EntrySelector id, Category.CategorySelector categoryID, User.UserSelector researcherID,
-                 Document.DocumentSelector documentID, String title, String authors) {
-        this.id = id;
-        this.categoryId = categoryID;
-        this.researcherId = researcherID;
-        this.documentId = documentID;
-        this.title = title;
-        this.authors = authors;
-    }
     @Getter
     private final EntrySelector id;
-
     @Getter
     private final Category.CategorySelector categoryId;
-
     @Getter
     private final User.UserSelector researcherId;
-
     @Getter
     private final Document.DocumentSelector documentId;
-
     @Getter
     @Setter
     private Document document;
-
     @Getter
     @Setter
-    private String title;
-
+    private final String title;
     @Getter
     @Setter
-    private String authors;
+    private final String authors;
+
+    /**
+     * Constructor of an entry.
+     *
+     * @param id           id of the entry
+     * @param researcherId id of the user who created the entry
+     * @param documentId   id of the document attached to the entry
+     * @param title        title of the entry
+     * @param authors      authors of the entry
+     */
+    public Entry(EntrySelector id, Category.CategorySelector categoryId, User.UserSelector researcherId,
+                 Document.DocumentSelector documentId, String title, String authors) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.researcherId = researcherId;
+        this.documentId = documentId;
+        this.title = title;
+        this.authors = authors;
+    }
 
     /**
      * Identifies an Entry.
      *
-     * @param entryId   id of the Review
+     * @param entryId id of the Review
      */
     public record EntrySelector(long entryId) {
     }
@@ -66,8 +61,8 @@ public class Entry {
     /**
      * Identifies the updater for an Entry.
      *
-     * @param title     title of the entry to be updated
-     * @param authors   authors of the entry to be updated
+     * @param title   title of the entry to be updated
+     * @param authors authors of the entry to be updated
      */
     public record EntryUpdater(String title, String authors) {
 
