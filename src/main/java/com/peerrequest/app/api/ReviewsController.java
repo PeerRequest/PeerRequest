@@ -102,7 +102,7 @@ public class ReviewsController {
         }
 
         Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntry().getId(), 13);
-        Review review = new Review(reviewId, new User.UserSelector("89624"));
+        Review review = new Review(reviewId, new User.UserSelector("89624"), mockEntry().getId());
         Document.DocumentSelector documentId = new Document.DocumentSelector("19126");
         Document document = new Document(documentId);
         review.setReviewDocument(document);

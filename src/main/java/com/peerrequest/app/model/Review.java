@@ -97,11 +97,4 @@ public class Review {
                                 String answersFromAuthors, String otherComments, float score) {
 
     }
-
-
-    public record ReviewUpdater(Document reviewDocument, ConfidenceLevel confidenceLevel, String summary,
-                                String mainWeakness, String mainStrengths, String questionsForAuthors,
-                                String answersFromAuthors, String otherComments, float score) {
-
-    }
 }
