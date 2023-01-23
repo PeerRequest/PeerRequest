@@ -25,9 +25,9 @@ public class Entry {
     public Entry(EntrySelector id, Category.CategorySelector categoryID, User.UserSelector researcherID,
                  Document.DocumentSelector documentID, String title, String authors) {
         this.id = id;
-        this.categoryID = categoryID;
-        this.researcherID = researcherID;
-        this.documentID = documentID;
+        this.categoryId = categoryID;
+        this.researcherId = researcherID;
+        this.documentId = documentID;
         this.title = title;
         this.authors = authors;
     }
@@ -35,13 +35,13 @@ public class Entry {
     private final EntrySelector id;
 
     @Getter
-    private final Category.CategorySelector categoryID;
+    private final Category.CategorySelector categoryId;
 
     @Getter
-    private final User.UserSelector researcherID;
+    private final User.UserSelector researcherId;
 
     @Getter
-    private final Document.DocumentSelector documentID;
+    private final Document.DocumentSelector documentId;
 
     @Getter
     @Setter
@@ -58,9 +58,9 @@ public class Entry {
     /**
      * Identifies an Entry.
      *
-     * @param entryID   id of the Review
+     * @param entryId   id of the Review
      */
-    public record EntrySelector(long entryID) {
+    public record EntrySelector(long entryId) {
     }
 
     /**
