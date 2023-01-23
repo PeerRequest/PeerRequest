@@ -55,8 +55,8 @@ public class EntriesController {
     public void deleteEntry(@PathVariable final int categoryId, @PathVariable final int entryId) {
     }
 
-    private categoryMockUp;
-    private entryMockUp;
+    private Category categoryMockUp;
+    private Entry entryMockUp;
 
     private Category mockCategory() {
         if (this.categoryMockUp != null) {
