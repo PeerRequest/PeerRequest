@@ -55,9 +55,20 @@ public class Entry {
     @Setter
     private String authors;
 
+    /**
+     * Identifies an Entry.
+     *
+     * @param entryID   id of the Review
+     */
     public record EntrySelector(long entryID) {
     }
 
+    /**
+     * Identifies the updater for an entry.
+     *
+     * @param title     title of the entry to be updated
+     * @param authors   authors of the entry to be updated
+     */
     public record EntryUpdater(String title, String authors) {
 
     }
