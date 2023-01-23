@@ -64,7 +64,7 @@ public class Entry {
     }
 
     /**
-     * Identifies the updater for an entry.
+     * Identifies the updater for an Entry.
      *
      * @param title     title of the entry to be updated
      * @param authors   authors of the entry to be updated
