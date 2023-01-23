@@ -1,11 +1,16 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.model.*;
+import com.peerrequest.app.model.Document;
+import com.peerrequest.app.model.Entry;
+import com.peerrequest.app.model.Review;
+import com.peerrequest.app.model.User;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
-import java.util.List;
 
+/**
+ * Defines the controller for Reviews.
+ */
 public class ReviewsController {
 
     private Review reviewMockup;
@@ -69,8 +74,7 @@ public class ReviewsController {
         }
 
         Review.ReviewSelector reviewId = new Review.ReviewSelector(new Entry.EntrySelector(42), 13);
-        Review review = new Review(reviewId, new User.UserSelector("89624"), new Entry.EntrySelector(42));
-        return review;
+        return new Review(reviewId, new User.UserSelector("89624"), new Entry.EntrySelector(42));
     }
 
     private Document mockDocument() {
