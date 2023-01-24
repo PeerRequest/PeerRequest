@@ -5,7 +5,15 @@ import com.peerrequest.app.model.Document;
 import com.peerrequest.app.model.Entry;
 import com.peerrequest.app.model.User;
 import java.util.List;
-import org.springframework.web.bind.annotation.*;
+import java.util.Objects;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Defines the controller for Entries.
@@ -17,28 +25,28 @@ public class EntriesController {
     private Entry entryMockUp;
 
     @GetMapping(value = "categories/{categoryId}/entries",
-            produces = "application/json")
+        produces = "application/json")
     public List<Entry> getEntries(@PathVariable final int categoryId) {
         return List.of(mockEntry());
     }
 
     @GetMapping(value = "categories/{categoryId}/entries/{entryId}",
-            produces = "application/json")
+        produces = "application/json")
     public Entry getEntry(@PathVariable final int categoryId,
                           @PathVariable final int entryId) {
         return mockEntry();
     }
 
     @GetMapping(value = "categories/{categoryId}/entries/{entryId}/paper",
-            produces = "application/json")
+        produces = "application/json")
     public Document getResearchPaper(@PathVariable final int categoryId,
                                      @PathVariable final int entryId) {
         return mockDocument();
     }
 
     @PostMapping(value = "categories/{categoryId}/entries",
-            consumes = "application/json",
-            produces = "application/json")
+        consumes = "application/json",
+        produces = "application/json")
     public Entry postEntry(@PathVariable final int categoryId,
                            @RequestBody final Entry entry) {
         this.entryMockUp = entry;
@@ -46,11 +54,11 @@ public class EntriesController {
     }
 
     @PatchMapping(value = "categories/{categoryId}/entries/{entryId}",
-            consumes = "application/json",
-            produces = "application/json")
+        consumes = "application/json",
+        produces = "application/json")
     public Entry patchEntry(@PathVariable final int categoryId,
                             @PathVariable final int entryId,
-                            @RequestBody final Entry.EntryUpdater entryUpdater) {
+                            @RequestBody final Objects entryUpdater) {
         return mockEntry();
     }
 
@@ -68,9 +76,9 @@ public class EntriesController {
         User.UserSelector userId = new User.UserSelector("123");
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
         return new Entry(entryId,
-                new Category.CategorySelector(12),
-                userId, documentId, "great Paper #01",
-                "Karol Bender");
+            new Category.CategorySelector(12),
+            userId, documentId, "great Paper #01",
+            "Karol Bender");
     }
 
     private Document mockDocument() {

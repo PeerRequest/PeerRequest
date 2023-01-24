@@ -89,24 +89,4 @@ public class Review {
      */
     public record ReviewSelector(Entry.EntrySelector entrySelector, long id) {
     }
-
-
-    /**
-     * Identifies the updater for a Review.
-     *
-     * @param reviewDocument      document belonging to the review
-     * @param confidenceLevel     confidence level of the review
-     * @param summary             summary of the review
-     * @param mainWeakness        main weakness indicated by the review
-     * @param mainStrengths       main strengths indicated by the review
-     * @param questionsForAuthors questions for authors in the review
-     * @param answersFromAuthors  answers from authors in the review
-     * @param otherComments       other comments in the review
-     * @param score               score given in the review
-     */
-    public record ReviewUpdater(Document reviewDocument, ConfidenceLevel confidenceLevel, String summary,
-                                String mainWeakness, String mainStrengths, String questionsForAuthors,
-                                String answersFromAuthors, String otherComments, float score) {
-
-    }
 }

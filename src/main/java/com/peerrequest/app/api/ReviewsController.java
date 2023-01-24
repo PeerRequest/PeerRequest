@@ -5,7 +5,13 @@ import com.peerrequest.app.model.Entry;
 import com.peerrequest.app.model.Review;
 import com.peerrequest.app.model.User;
 import java.util.List;
-import org.springframework.web.bind.annotation.*;
+import java.util.Objects;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 /**
@@ -16,13 +22,13 @@ public class ReviewsController {
     private Review reviewMockup;
 
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews",
-            produces = "application/json")
+        produces = "application/json")
     public List<Review> getReviews(@PathVariable final int categoryId, @PathVariable final int entryId) {
         return List.of(mockReview());
     }
 
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}",
-            produces = "application/json")
+        produces = "application/json")
     public Review getReview(@PathVariable final int categoryId,
                             @PathVariable final int entryId,
                             @PathVariable final int reviewId) {
@@ -30,7 +36,7 @@ public class ReviewsController {
     }
 
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document",
-            produces = "application/json")
+        produces = "application/json")
     public Document getReviewDocument(@PathVariable final int categoryId,
                                       @PathVariable final int entryId,
                                       @PathVariable final int reviewId) {
@@ -38,8 +44,8 @@ public class ReviewsController {
     }
 
     @PostMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews",
-            consumes = "application/json",
-            produces = "application/json")
+        consumes = "application/json",
+        produces = "application/json")
     public Review postReview(@PathVariable final int categoryId,
                              @PathVariable final int entryId,
                              @RequestBody final Review review) {
@@ -48,8 +54,8 @@ public class ReviewsController {
     }
 
     @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document",
-            consumes = "application/json",
-            produces = "application/json")
+        consumes = "application/json",
+        produces = "application/json")
     public Document putReviewDocument(@PathVariable final int categoryId,
                                       @PathVariable final int entryId,
                                       @PathVariable final int reviewId,
@@ -58,12 +64,12 @@ public class ReviewsController {
     }
 
     @PatchMapping(value = "categories/{categoryId}/entries/{entryId}/reviews/{reviewId}",
-            consumes = "application/json",
-            produces = "application/json")
+        consumes = "application/json",
+        produces = "application/json")
     public Review patchReview(@PathVariable final int categoryId,
                               @PathVariable final int entryId,
                               @PathVariable final int reviewId,
-                              @RequestBody final Review.ReviewUpdater reviewUpdater) {
+                              @RequestBody final Objects reviewUpdater) {
         return mockReview();
     }
 
