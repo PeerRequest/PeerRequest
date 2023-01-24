@@ -38,7 +38,9 @@
         <span class="block truncate text-sm font-medium"> kaori@peerrequest.com </span>
       </div>
       <DropdownItem>My Papers</DropdownItem>
-      <DropdownItem>My Reviews</DropdownItem>
+      <DropdownItem>
+        <a href="/my-reviews">My Reviews</a>
+      </DropdownItem>
       <DropdownItem slot="footer">Sign out</DropdownItem>
     </Dropdown>
   </div>
