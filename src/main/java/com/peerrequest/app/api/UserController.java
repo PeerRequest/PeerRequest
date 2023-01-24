@@ -77,7 +77,7 @@ public class UserController {
         Entry.EntrySelector entryId = new Entry.EntrySelector(42);
         Category.CategorySelector categoryId = new Category.CategorySelector(10);
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
-        this.mockUpEntryOne = new Entry(entryId, categoryId, this.mockUpUser.getId(), documentId,
+        this.mockUpEntryOne = new Entry(entryId, categoryId, this.mockUpUser.id(), documentId,
             "great Paper #01", "Karol Bender");
         return mockUpEntryOne;
     }
@@ -86,7 +86,7 @@ public class UserController {
         Entry.EntrySelector entryId = new Entry.EntrySelector(420);
         Category.CategorySelector categoryId = new Category.CategorySelector(10);
         Document.DocumentSelector documentId = new Document.DocumentSelector("3560");
-        this.mockUpEntryTwo = new Entry(entryId, categoryId, this.mockUpUser.getId(), documentId,
+        this.mockUpEntryTwo = new Entry(entryId, categoryId, this.mockUpUser.id(), documentId,
             "great Paper #02", "Karol Bender");
         return mockUpEntryTwo;
     }
@@ -94,7 +94,7 @@ public class UserController {
     // returns mock review
     private Review mockReview() {
         Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntryOne().getId(), 700);
-        this.mockUpReview = new Review(reviewId, this.mockUpUser.getId(), mockEntryOne().getId());
+        this.mockUpReview = new Review(reviewId, this.mockUpUser.id(), mockEntryOne().getId());
         return mockUpReview;
     }
 }
