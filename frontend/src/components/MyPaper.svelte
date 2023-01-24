@@ -10,5 +10,4 @@
     <TableBodyCell>
         <BreadcrumbItem href="/categories/{myPaper.category.id}">{myPaper.category.name}</BreadcrumbItem>
     </TableBodyCell>
-    <!-- <TableBodyCell>{myPaper.category.year}</TableBodyCell> -->
 </TableBodyRow>
