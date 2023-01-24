@@ -124,7 +124,8 @@ const users = [
     {id: 20, name: "Keiran Aguilar"},
     {id: 21, name: "Zach Phelps"},
     {id: 22, name: "Myla Navarro"},
-    {id: 23, name: "Roosevelt Booth"}
+    {id: 23, name: "Roosevelt Booth"},
+    {id: 24, name: "Kaori Chihiro"}
 ];
 
 export default {
