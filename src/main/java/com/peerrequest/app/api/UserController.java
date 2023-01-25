@@ -21,21 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class UserController {
 
-    private Entry.EntrySelector entryId;
-
-    /**
-     * Method used to return all reviews of a specific user.
-     *
-     * @param userId the id of the user
-     * @return a list with all the reviews of the user
-     */
-    @GetMapping(value = "/users/{userId}/reviews", produces = "application/json")
-    public List<Review> getReviews(@PathVariable int userId) {
-        List<Review> reviewsList = new ArrayList<>();
-        reviewsList.add(this.mockUpReview);
-        return reviewsList;
-    }
-
     /**
      * Method used to return all entries of a specific user.
      *
@@ -48,6 +33,40 @@ public class UserController {
         entryList.add(this.mockUpEntryOne);
         entryList.add(this.mockUpEntryTwo);
         return entryList;
+    }
+
+    /**
+     * Method used to return a specific user.
+     *
+     * @return a list with all the entries of the user
+     */
+    @GetMapping(value = "/users/{userId}", produces = "application/json")
+    public User getUser() {
+        return mockUpUser;
+    }
+
+    /**
+     * Method used to return all entries of the logged-in user.
+     *
+     * @return a list with all the entries of the user
+     */
+    @GetMapping(value = "/users/self/entries", produces = "application/json")
+    public List<Entry> getSelfEntries() {
+        List<Entry> entryList = new ArrayList<>();
+        entryList.add(this.mockUpEntryOne);
+        entryList.add(this.mockUpEntryTwo);
+        return entryList;
+    }
+
+    /**
+     * Method used to return the logged-in user.
+     *
+     * @param userId the id of the user
+     * @return a list with all the entries of the user
+     */
+    @GetMapping(value = "/users/self", produces = "application/json")
+    public User getSelfUser(@PathVariable int userId) {
+        return mockUpUser;
     }
 
     private User mockUpUser;
