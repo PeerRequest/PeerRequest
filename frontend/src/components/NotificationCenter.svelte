@@ -1,7 +1,9 @@
 <script>
     import mock_data from "../mock_data.js";
 
-    const messages = mock_data.notification;
+    const notifiactions = mock_data.notification;
+
+    let show = false;
 </script>
 
 <style>
@@ -22,7 +24,7 @@
     }
 </style>
 
-<button class="relative p-1">
+<button class="relative p-1" on:click={() => (show = !show)}>
     <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -38,5 +40,36 @@
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
     </svg>
-    <span class="badge">{messages.length}</span>
+    <span class="badge">{notifiactions.length}</span>
 </button>
+
+{#if show}
+    <!-- clicking anywhere on the page will close the popup -->
+    <button
+            tabindex="-1"
+            class="fixed inset-0 w-full h-full cursor-default focus:outline-none"
+            on:click|preventDefault={() => (show = false)}
+    />
+
+    <div
+            class="absolute top-[50px] right-20 p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded shadow-md messages"
+    >
+        <ul class="space-y-3">
+            {#each notifiactions as n}
+                <li class="p-3 border rounded">
+                    <p>{n.message}</p>
+                    <div class="mt-1">
+                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm">
+                            Ignore
+                        </button>
+                    </div>
+                </li>
+            {/each}
+        </ul>
+        <div class="flex justify-end mt-3">
+            <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm">
+                Ignore All
+            </button>
+        </div>
+    </div>
+{/if}
