@@ -37,9 +37,11 @@
         <span class="block text-sm text-gray-900 dark:text-white"> Kaori Chihiro </span>
         <span class="block truncate text-sm font-medium"> kaori@peerrequest.com </span>
       </div>
-      <DropdownItem>
-        <a href="/my-papers">My Papers</a>
-      </DropdownItem>
+      <a href="/my-papers">
+        <DropdownItem>
+          My Papers
+        </DropdownItem>
+      </a>
       <DropdownItem>My Reviews</DropdownItem>
       <DropdownItem slot="footer">Sign out</DropdownItem>
     </Dropdown>
