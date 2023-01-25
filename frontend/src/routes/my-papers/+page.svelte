@@ -23,10 +23,8 @@
 
 
     <MyPapers>
-        {#each papers as p}
-            {#if user.name === p.researcher}
-                <MyPaper bind:myPaper={p}/>
-            {/if}
+        {#each papers.filter((p) => p.researcher === user.name) as p}
+            <MyPaper bind:myPaper={p}/>
         {/each}
     </MyPapers>
 
