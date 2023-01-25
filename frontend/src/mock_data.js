@@ -127,9 +127,16 @@ const users = [
     {id: 23, name: "Roosevelt Booth"}
 ];
 
+const notification = [
+    {id: 1, type: "Review", subject: "Important Subject 1", message: "Very important message 1"},
+    {id: 2, type: "Review", subject: "Important Subject 2", message: "Very important message 2"},
+    {id: 3, type: "Review", subject: "Important Subject 3", message: "Very important message 3"}
+]
+
 export default {
     pagination,
     categories,
     papers,
-    users
+    users,
+    notification
 };
