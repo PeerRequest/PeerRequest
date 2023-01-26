@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping
 public class DirectRequestsController {
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
+    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
     public DirectRequestProcess getDirectRequestProcess(@PathVariable final long categoryId,
                                                         @PathVariable final long entryId) {
         return mockDirectRequestProcess();
     }
 
-    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
+    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
     public DirectRequestProcess putDirectRequestProcess(@PathVariable final long categoryId,
                                                         @PathVariable final long entryId,
                                                         @RequestBody final DirectRequestProcess directRequestProcess) {
@@ -25,7 +25,7 @@ public class DirectRequestsController {
         return directRequestProcessMockUp;
     }
 
-    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
+    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
     public DirectRequestProcess patchDirectRequestProcess(@PathVariable final long categoryId,
                                                           @PathVariable final long entryId,
                                                           @RequestBody final DirectRequestProcessUpdater updater) {
@@ -33,7 +33,7 @@ public class DirectRequestsController {
         return directRequestProcessMockUp;
     }
 
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}",
+    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
         produces = "application/json")
     public Request getDirectRequest(@PathVariable final long categoryId,
                               @PathVariable final long entryId,
@@ -41,7 +41,7 @@ public class DirectRequestsController {
         return mockDirectRequest();
     }
 
-    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}",
+    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests",
         produces = "application/json")
     public Request putDirectRequest(@PathVariable final long categoryId,
                               @PathVariable final long entryId,
@@ -51,7 +51,7 @@ public class DirectRequestsController {
         return directRequestMockUp;
     }
 
-    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/requests/{requestId}",
+    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
         produces = "application/json")
     public Request patchDirectRequest(@PathVariable final long categoryId,
                                 @PathVariable final long entryId,
