@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping
-public class RequestsController {
+public class DirectRequestsController {
 
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/requests", produces = "application/json")
     public DirectRequestProcess getDirectRequestProcess(@PathVariable final long categoryId,
