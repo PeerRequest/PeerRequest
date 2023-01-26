@@ -1,7 +1,7 @@
 <script>
     import mock_data from "../mock_data.js";
 
-    const notifiactions = mock_data.notification;
+    let notifiactions = mock_data.notification;
 
     let show = false;
 </script>
@@ -52,14 +52,14 @@
     />
 
     <div
-            class="absolute top-[50px] right-20 p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded shadow-md messages"
+            class="absolute z-50 top-[50px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded shadow-md messages lg:overflow-visible"
     >
         <ul class="space-y-3">
             {#each notifiactions as n}
                 <li class="p-3 border rounded">
                     <p>{n.message}</p>
                     <div class="mt-1">
-                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm">
+                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => notifiactions = notifiactions.filter(item => item !== n)}>
                             Ignore
                         </button>
                     </div>
@@ -67,9 +67,13 @@
             {/each}
         </ul>
         <div class="flex justify-end mt-3">
-            <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm">
-                Ignore All
-            </button>
+            {#if notifiactions.length !== 0}
+                <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => notifiactions = []}>
+                    Ignore All
+                </button>
+            {:else}
+                No Notifications
+            {/if}
         </div>
     </div>
 {/if}
