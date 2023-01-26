@@ -3,8 +3,9 @@
     import mock_data from "../../mock_data.js";
     import {BreadcrumbItem, Heading} from "flowbite-svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
-    import MyPapers from "../../components/MyPapers.svelte";
-    import MyPaper from "../../components/MyPaper.svelte";
+    import Papers from "../../components/Papers.svelte";
+    import Paper from "../../components/Paper.svelte";
+
 
     const user = mock_data.users[23];
     const papers = mock_data.papers;
@@ -21,14 +22,18 @@
     </ResponsiveBreadCrumb>
     <Heading class="mb-4" tag="h2">My Papers</Heading>
 
-
-    <MyPapers>
+    <Papers>
         {#each papers as p}
             {#if user.name === p.researcher}
-                <MyPaper bind:myPaper={p}/>
+                <Paper
+                        href="/categories/{p.category.id}/{p.id}"
+                        title={p.title}
+                        category={p.category}
+                        show_category=true
+                />
             {/if}
         {/each}
-    </MyPapers>
+    </Papers>
 
 
 </Container>
