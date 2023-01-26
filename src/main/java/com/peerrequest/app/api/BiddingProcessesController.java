@@ -14,6 +14,14 @@ public class BiddingProcessesController {
 
     // BiddingProcess
 
+    /**
+     * Creates a BiddingProcess.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param biddingProcess biddingProcess to add
+     *
+     * @return added biddingProcess
+     */
     @PutMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess putBiddingProcess(@PathVariable final long categoryId,
                                             @RequestBody final BiddingProcess biddingProcess) {
@@ -21,6 +29,14 @@ public class BiddingProcessesController {
         return this.mockUpBiddingProcess;
     }
 
+    /**
+     * Patches a biddingProcess.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param updater updater containing a new ZonedDateTime 'deadline'
+     *
+     * @return returns updated biddingProcess
+     */
     @PatchMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess patchBiddingProcess(@PathVariable final long categoryId,
                                               @RequestBody final BiddingProcessUpdater updater) {
@@ -28,11 +44,23 @@ public class BiddingProcessesController {
         return mockUpBiddingProcess;
     }
 
+    /**
+     * Gets a biddingProcess.
+     *
+     * @param categoryId category of the biddingProcess
+     *
+     * @return biddingProcess of the category
+     */
     @GetMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public BiddingProcess getBiddingProcess(@PathVariable final long categoryId) {
         return mockBiddingProcess();
     }
 
+    /**
+     * Deletes a BiddingProcess.
+     *
+     * @param categoryId category of the biddingRequest
+     */
     @DeleteMapping(value = "/categories/{categoryId}/biddingProcess", produces = "application/json")
     public void deleteBiddingProcess(@PathVariable final long categoryId) {
         mockUpBiddingProcess = null;
@@ -40,12 +68,28 @@ public class BiddingProcessesController {
 
     // BiddingRequest
 
+    /**
+     * Gets a biddingRequest.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param requestId biddingRequest for the biddingProcess
+     *
+     * @return the biddingRequest with requestId
+     */
     @GetMapping(value = "/categories/{categoryId}/biddingProcess/requests/{requestId}", produces = "application/json")
     public BiddingRequest getBiddingRequest(@PathVariable final long categoryId,
                                             @PathVariable final long requestId) {
         return mockRequest();
     }
 
+    /**
+     * Creates a biddingRequest.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param request biddingRequest to add
+     *
+     * @return added biddingRequest
+     */
     @PutMapping(value = "/categories/{categoryId}/biddingProcess/requests", produces = "application/json")
     public BiddingRequest putBiddingRequest(@PathVariable final long categoryId,
                                             @RequestBody final BiddingRequest request) {
@@ -53,6 +97,15 @@ public class BiddingProcessesController {
         return mockUpRequest;
     }
 
+    /**
+     * Patches a biddingRequest.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param requestId request for the bidding Process
+     * @param updater updater containing Request.State ACCEPTED or DECLINED
+     *
+     * @return the updated biddingRequest
+     */
     @PatchMapping(value = "/categories/{categoryId}/biddingProcess/requests/{requestId}", produces = "application/json")
     public BiddingRequest patchBiddingRequest(@PathVariable final long categoryId,
                                               @PathVariable final long requestId,
@@ -63,19 +116,41 @@ public class BiddingProcessesController {
 
     // BiddingProcessService methods
 
+    /**
+     * Refreshes a biddingProcess.
+     *
+     * @param categoryId category of the bidding Process
+     *
+     * @return the refreshed biddingProcess
+     */
     @PostMapping(value = "/categories/{categoryId}/biddingProcess/refresh", produces = "application/json")
     public BiddingProcess refreshBiddingProcess(@PathVariable final long categoryId) {
         //todo: add BiddingProcessService.refreshBiddingProcess(...)
         throw new RuntimeException("not implemented");
     }
 
-    @PostMapping(value = "/categories/{categoryId}/biddingProcess/allocate", produces = "application/json")
-    public BiddingProcess allocateBiddingProcess(@PathVariable final long categoryId,
+    /**
+     * Assigns an allocation of a biddingProcess and deletes the biddingProcess afterwards.
+     *
+     * @param categoryId category of the biddingProcess
+     * @param allocation allocation of reviewers to entries represented in biddingSlots
+     */
+    @DeleteMapping(value = "/categories/{categoryId}/biddingProcess/allocate", produces = "application/json")
+    public void allocateBiddingProcess(@PathVariable final long categoryId,
                                                  @RequestBody final List<BiddingSlot> allocation) {
         //todo: add BiddingProcessService.allocateBiddingProcess(...)
         throw new RuntimeException("not implemented");
     }
 
+    /**
+     * Adds the bids of a reviewer to a biddingProcess.
+     *
+     * @param categoryId category of the biddingProcess.
+     * @param userId user who bid
+     * @param bids bids of the user
+     *
+     * @return BiddingProcess
+     */
     @PostMapping(value = "/categories/{categoryId}/biddingProcess/bid", produces = "application/json")
     public BiddingProcess bidBiddingProcess(@PathVariable final long categoryId,
                                             @RequestBody final String userId,
@@ -84,12 +159,18 @@ public class BiddingProcessesController {
         throw new RuntimeException("not implemented");
     }
 
+    /**
+     * Evaluates a biddingProcess after the researcher ended the biddingProcess before the deadline.
+     *
+     * @param categoryId category of the biddingProcess
+     *
+     * @return the evaluated biddingProcess
+     */
     @PostMapping(value = "/categories/{categoryId}/biddingProcess/evaluate", produces = "application/json")
     public BiddingProcess evaluateBiddingProcess(@PathVariable final long categoryId) {
         //todo: add BiddingProcessService.evaluateBiddingProcess(...)
         throw new RuntimeException("not implemented");
     }
-
 
 
     // MOCKUPS ///////////////////////////////////////////////////////////////////////////////////////////////////
