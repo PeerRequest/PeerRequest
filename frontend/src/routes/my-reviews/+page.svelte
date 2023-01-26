@@ -3,11 +3,12 @@
     import mock_data from "../../mock_data.js";
     import {BreadcrumbItem, Heading} from "flowbite-svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
-    import MyReviews from "../../components/MyReviews.svelte";
-    import MyReview from "../../components/MyReview.svelte";
+    import Reviews from "../../components/Reviews.svelte";
+    import Review from "../../components/Review.svelte";
+
     const user = mock_data.users[23];
-    const papers = mock_data.papers;
     const reviews = mock_data.reviews;
+
 </script>
 
 <svelte:head>
@@ -22,13 +23,17 @@
     <Heading class="mb-4" tag="h2">My Reviews</Heading>
 
 
-    <MyReviews>
-        {#each reviews as r}
-            {#if user.name === r.reviewer}
-                <MyReview bind:myReview={r}/>
-            {/if}
+    <Reviews show_category=true show_paper=true>
+        {#each reviews.filter((r) => user.name === r.reviewer) as r}
+            <Review
+                    href="/categories/{r.paper.category.id}/{r.paper.id}/{r.id}"
+                    id={r.id}
+                    paper={r.paper}
+                    show_paper=true
+                    show_category=true
+            />
         {/each}
-    </MyReviews>
+    </Reviews>
 
 
 </Container>
