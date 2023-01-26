@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping
 public class DirectRequestsController {
 
+    // DirectRequestProcess
+
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
     public DirectRequestProcess getDirectRequestProcess(@PathVariable final long categoryId,
                                                         @PathVariable final long entryId) {
@@ -33,9 +35,11 @@ public class DirectRequestsController {
         return directRequestProcessMockUp;
     }
 
+    // DirectRequest
+
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
         produces = "application/json")
-    public Request getDirectRequest(@PathVariable final long categoryId,
+    public DirectRequest getDirectRequest(@PathVariable final long categoryId,
                               @PathVariable final long entryId,
                               @PathVariable final long requestId) {
         return mockDirectRequest();
@@ -43,7 +47,7 @@ public class DirectRequestsController {
 
     @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests",
         produces = "application/json")
-    public Request putDirectRequest(@PathVariable final long categoryId,
+    public DirectRequest putDirectRequest(@PathVariable final long categoryId,
                               @PathVariable final long entryId,
                               @PathVariable final long requestId,
                               @RequestBody final DirectRequest request) {
@@ -53,7 +57,7 @@ public class DirectRequestsController {
 
     @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
         produces = "application/json")
-    public Request patchDirectRequest(@PathVariable final long categoryId,
+    public DirectRequest patchDirectRequest(@PathVariable final long categoryId,
                                 @PathVariable final long entryId,
                                 @PathVariable final long requestId,
                                 @RequestBody final RequestUpdater updater) {
@@ -64,7 +68,7 @@ public class DirectRequestsController {
     // MOCK DATA //////////////////////////////////////////////////////////////////////////////////////////////
 
     private DirectRequestProcess directRequestProcessMockUp;
-    private Request directRequestMockUp;
+    private DirectRequest directRequestMockUp;
 
     private DirectRequestProcess mockDirectRequestProcess() {
 
@@ -80,7 +84,7 @@ public class DirectRequestsController {
         return directRequestProcessMockUp;
     }
 
-    private Request mockDirectRequest() {
+    private DirectRequest mockDirectRequest() {
         if (this.directRequestMockUp != null) {
             return this.directRequestMockUp;
         }
