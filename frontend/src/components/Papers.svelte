@@ -2,7 +2,6 @@
     import {Table, TableBody, TableHead, TableHeadCell} from "flowbite-svelte";
 
     export let category_type;
-    export let title;
     export let show_category;
 </script>
 

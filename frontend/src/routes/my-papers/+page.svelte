@@ -6,7 +6,6 @@
     import Papers from "../../components/Papers.svelte";
     import Paper from "../../components/Paper.svelte";
 
-
     const user = mock_data.users[23];
     const papers = mock_data.papers;
 </script>
@@ -23,15 +22,13 @@
     <Heading class="mb-4" tag="h2">My Papers</Heading>
 
     <Papers>
-        {#each papers as p}
-            {#if user.name === p.researcher}
+        {#each papers.filter((p) => p.researcher === user.name) as p}
                 <Paper
                         href="/categories/{p.category.id}/{p.id}"
                         title={p.title}
                         category={p.category}
                         show_category=true
                 />
-            {/if}
         {/each}
     </Papers>
 
