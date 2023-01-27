@@ -52,7 +52,7 @@
     />
 
     <div
-            class="absolute z-50 top-[50px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded shadow-md messages lg:overflow-visible"
+            class="absolute z-50 top-[50px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded shadow-md overflow-y-auto max-h-[275px]"
     >
         <ul class="space-y-3">
             {#each notifiactions as n}

@@ -130,7 +130,13 @@ const users = [
 const notification = [
     {id: 1, type: "Review", subject: "Important Subject 1", message: "Very important message 1"},
     {id: 2, type: "Review", subject: "Important Subject 2", message: "Very important message 2"},
-    {id: 3, type: "Review", subject: "Important Subject 3", message: "Very important message 3"}
+    {id: 3, type: "Review", subject: "Important Subject 3", message: "Very important message 3"},
+    {id: 1, type: "Review", subject: "Important Subject 4", message: "Very important message 4"},
+    {id: 2, type: "Review", subject: "Important Subject 5", message: "Very important message 5"},
+    {id: 3, type: "Review", subject: "Important Subject 6", message: "Very important message 6"},
+    {id: 1, type: "Review", subject: "Important Subject 7", message: "Very important message 7"},
+    {id: 2, type: "Review", subject: "Important Subject 8", message: "Very important message 8"},
+    {id: 3, type: "Review", subject: "Important Subject 9", message: "Very important message 9"}
 ]
 
 export default {
