@@ -53,7 +53,11 @@
         <Button color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper</Button>
     </div>
 
-    <Papers category_type={mocks[data.category_id - 1].type}>
+
+    <Papers
+            category_type={mocks[data.category_id - 1].type}
+            show_slots=true
+    >
         {#each papers as p}
             {#if p.category === mocks[data.category_id - 1]}
                 <Paper
@@ -61,6 +65,7 @@
                         title={p.title}
                         slots={p.slots}
                         category={p.category}
+                        show_slots=true
                 />
             {/if}
         {/each}

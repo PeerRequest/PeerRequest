@@ -2,7 +2,9 @@
     import {Table, TableBody, TableHead, TableHeadCell} from "flowbite-svelte";
 
     export let category_type;
-    export let show_category;
+    export let show_slots = false;
+    export let show_category = false;
+
 </script>
 
 <Table noborder={false} shadow={true}>
@@ -13,7 +15,7 @@
             <TableHeadCell>Conference</TableHeadCell>
         {/if}
 
-        {#if (category_type != null) && (category_type === "Internal") }
+        {#if show_slots && category_type === "Internal"}
             <TableHeadCell>Open Review Slots</TableHeadCell>
             <TableHeadCell></TableHeadCell>
         {/if}
