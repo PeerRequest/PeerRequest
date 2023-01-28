@@ -6,23 +6,21 @@ import lombok.Setter;
 /**
  * This class represents a bid on one entry of a bidding process.
  */
-public class Rating {
+public class Rating implements Comparable<Rating> {
     @Getter
     private final RatingSelector id;
     @Getter
     private final BiddingSlot.BiddingSlotSelector biddingSlotSelector;
     @Getter
     private final User.UserSelector reviewerSelector;
-    /**
-     * Reviewer of this rating referenced by reviewerSelector.
-     * Might be null.
-     */
-    @Getter
-    @Setter
-    private User reviewer;
+
     @Getter
     @Setter
     private int rating;
+
+    @Getter
+    @Setter
+    private RatingState ratingState;
 
     /**
      * Constructor for a rating.
@@ -36,6 +34,30 @@ public class Rating {
         this.id = id;
         this.biddingSlotSelector = biddingSlotSelector;
         this.reviewerSelector = reviewerSelector;
+        this.ratingState = RatingState.NOT_EVALUATED;
+    }
+
+    @Override
+    public int compareTo(Rating r) {
+        return Integer.compare(this.rating, r.getRating());
+    }
+
+    /**
+     * Represents the state of a Rating.
+     */
+    public enum RatingState {
+        /**
+         * Rating state when the reviewer of the rating was allocated to the bidding slot.
+         */
+        ALLOCATED,
+        /**
+         * Rating state when the reviewer of the rating was not allocated to the bidding slot.
+         */
+        NOT_ALLOCATED,
+        /**
+         * Rating state when the rating was not evaluated by the bidding process yet.
+         */
+        NOT_EVALUATED
     }
 
     /**
