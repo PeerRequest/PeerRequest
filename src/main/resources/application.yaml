@@ -1,0 +1,15 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: ${PR_KEYCLOAK_CLIENT_ID}
+            client-secret: ${PR_KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: ${PR_KEYCLOAK_URL}/realms/PeerRequest
+            user-name-attribute: preferred_username
