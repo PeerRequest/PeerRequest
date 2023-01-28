@@ -10,9 +10,9 @@ then
   DATABASE_PORT=$(echo "$DATABASE_URL" | grep -oP "postgres://.*@.*:\K(\d+)/" | cut -d/ -f1)
   DATABASE_NAME=$(echo "$DATABASE_URL" | grep -oP "postgres://.*@.*:.*/\K(.+?)$")
 
-  export SPRING_DATASOURCE_URL="jdbc:postgresql://$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
-  export SPRING_DATASOURCE_USERNAME=$DATABASE_USER
-  export SPRING_DATASOURCE_PASSWORD=$DATABASE_PASSWORD
+  export PR_DATABASE_URL="jdbc:postgresql://$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME"
+  export PR_DATABASE_USER=$DATABASE_USER
+  export PR_DATABASE_PASSWORD=$DATABASE_PASSWORD
 fi
 
 $@
