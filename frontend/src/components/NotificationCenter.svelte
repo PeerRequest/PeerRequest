@@ -54,15 +54,19 @@
     <!-- popup itself -->
     <div
             class="absolute z-50 top-[50px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded
-            shadow-md overflow-y-auto max-h-[275px]"
+            shadow-md overflow-y-auto max-h-[235px]"
     >
         <ul class="space-y-3">
             {#each notifications as n}
                 <li class="p-3 border rounded">
+                    <p class="font-bold">{n.subject}</p>
                     <p>{n.message}</p>
                     <div class="mt-1">
                         <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => notifications = notifications.filter(item => item !== n)}>
-                            Ignore
+                            Accept
+                        </button>
+                        <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => notifications = notifications.filter(item => item !== n)}>
+                            Decline
                         </button>
                     </div>
                 </li>
@@ -70,8 +74,8 @@
         </ul>
         <div class="flex justify-end mt-3">
             {#if notifications.length !== 0}
-                <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => notifications = []}>
-                    Ignore All
+                <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => notifications = []}>
+                    Decline All
                 </button>
             {:else}
                 No Notifications
