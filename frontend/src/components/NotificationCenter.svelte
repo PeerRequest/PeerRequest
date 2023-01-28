@@ -5,6 +5,19 @@
     let notifications = mock_data.notification;
 
     let show = false;
+
+    //TODO : Implement Buttons
+    function acceptButton(n) {
+        notifications = notifications.filter(item => item !== n)
+    }
+
+    function declineButton(n) {
+        notifications = notifications.filter(item => item !== n)
+    }
+
+    function declineAllButton() {
+        notifications = []
+    }
 </script>
 
 <!-- notification bell -->
@@ -46,10 +59,11 @@
                     <p class="font-bold">{n.subject}</p>
                     <p>{n.message}</p>
                     <div class="mt-1">
-                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => notifications = notifications.filter(item => item !== n)}>
+
+                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => acceptButton()}>
                             Accept
                         </button>
-                        <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => notifications = notifications.filter(item => item !== n)}>
+                        <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineButton()}>
                             Decline
                         </button>
                     </div>
@@ -58,7 +72,7 @@
         </ul>
         <div class="flex justify-center mt-3">
             {#if notifications.length !== 0}
-                <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => notifications = []}>
+                <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineAllButton()}>
                     Decline All
                 </button>
             {:else}
