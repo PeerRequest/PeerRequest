@@ -1,5 +1,6 @@
 <script>
     import mock_data from "../mock_data.js";
+    import { fade } from 'svelte/transition';
 
     let notifications = mock_data.notification;
 
@@ -37,11 +38,11 @@
     <!-- popup itself -->
     <div
             class="absolute z-50 top-[50px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded
-            shadow-md overflow-y-auto max-h-[235px]"
+            shadow-md overflow-y-auto max-h-[235px] w-[512px] text-center"
     >
         <ul class="space-y-3">
             {#each notifications as n}
-                <li class="p-3 border rounded">
+                <li class="p-3 border rounded relative" transition:fade>
                     <p class="font-bold">{n.subject}</p>
                     <p>{n.message}</p>
                     <div class="mt-1">
@@ -55,7 +56,7 @@
                 </li>
             {/each}
         </ul>
-        <div class="flex justify-end mt-3">
+        <div class="flex justify-center mt-3">
             {#if notifications.length !== 0}
                 <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => notifications = []}>
                     Decline All
