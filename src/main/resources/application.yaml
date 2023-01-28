@@ -13,3 +13,7 @@ spring:
           keycloak:
             issuer-uri: ${PR_KEYCLOAK_URL}/realms/PeerRequest
             user-name-attribute: preferred_username
+  datasource:
+    url: ${PR_DATABASE_URL}
+    username: ${PR_DATABASE_USER}
+    password: ${PR_DATABASE_PASSWORD}
