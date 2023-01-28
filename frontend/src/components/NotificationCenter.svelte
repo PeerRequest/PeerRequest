@@ -60,10 +60,10 @@
                     <p>{n.message}</p>
                     <div class="mt-1">
 
-                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => acceptButton()}>
+                        <button class="px-2 text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => acceptButton(n)}>
                             Accept
                         </button>
-                        <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineButton()}>
+                        <button class="px-2 text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineButton(n)}>
                             Decline
                         </button>
                     </div>
