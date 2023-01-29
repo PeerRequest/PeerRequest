@@ -66,6 +66,12 @@ const categories = [
 const bidding = [
     {id: 1,
     category: categories[1]
+    },
+    {id: 4,
+    category: categories[4]
+    },
+    {id: 6,
+    category: categories[6]
     }
 ]
 
@@ -104,7 +110,14 @@ const papers = [
         researcher: "Tommy Partridge",
         category: categories[4],
         slots: 0
-    }
+    },
+    {
+        id: 6,
+        title: "Great Paper #006",
+        researcher: "Ravi Pearce",
+        category: categories[1],
+        slots: 2
+    },
 ];
 
 const users = [
