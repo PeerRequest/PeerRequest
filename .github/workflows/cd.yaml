@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+      #todo: remove
+      - auto-deploy
 
 jobs:
   deploy:
