@@ -1,11 +1,12 @@
 package com.peerrequest.app;
 
+import com.peerrequest.app.interceptors.UserCookieInterceptor;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -42,12 +43,11 @@ public class WebConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         // build filters for all static files for the frontend
         var fileFrontendMatchers =
-            findFileTypes(new File("public").listFiles())
-                .stream().map(extension -> "/**/*." + extension)
-                .toList().toArray(new String[0]);
+            findFileTypes(new File("public").listFiles()).stream().map(extension -> "/**/*." + extension).toList()
+                .toArray(new String[0]);
 
         if (fileFrontendMatchers.length == 0) {
             throw new RuntimeException("fileFrontendMatchers empty");
@@ -64,9 +64,10 @@ public class WebConfiguration implements WebMvcConfigurer {
             .resourceChain(true)
             .addResolver(new PathResourceResolver() {
                 @Override
-                protected Resource getResource(@NonNull String resourcePath, @NonNull Resource location)
-                    throws IOException {
-                    if (resourcePath.startsWith(BASE_API_PATH) || resourcePath.startsWith(BASE_API_PATH.substring(1))) {
+                protected Resource getResource(@NonNull String resourcePath, @NonNull Resource location) {
+                    if (resourcePath.startsWith(BASE_API_PATH) || resourcePath.startsWith(BASE_API_PATH.substring(1))
+                        || resourcePath.startsWith(LogoutController.LOGOUT_URL)
+                        || resourcePath.startsWith(LogoutController.LOGOUT_URL.substring(1))) {
                         return null;
                     }
 
@@ -75,4 +76,8 @@ public class WebConfiguration implements WebMvcConfigurer {
             });
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new UserCookieInterceptor());
+    }
 }

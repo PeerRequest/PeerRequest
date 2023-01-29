@@ -34,10 +34,12 @@ public class SecurityConfiguration {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/error").permitAll()
+                .requestMatchers(LogoutController.LOGOUT_URL).permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login((login) -> login
-                .successHandler(new RefererRedirectionAuthenticationSuccessHandler()))
+                .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
+            )
             .oauth2Client(withDefaults());
 
         var map = new LinkedHashMap<RequestMatcher, AuthenticationEntryPoint>();
@@ -49,6 +51,8 @@ public class SecurityConfiguration {
         http
             .exceptionHandling()
             .authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(map));
+
+
         // @formatter:on
         return http.build();
     }
