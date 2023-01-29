@@ -4,10 +4,8 @@
     export let href;
     export let title;
     export let id;
-    export let category;
-    export let slots;
-    export let show_slots = false;
-    export let show_category = false;
+    export let category = null;
+    export let slots = null;
 </script>
 
 
@@ -16,7 +14,7 @@
         <BreadcrumbItem href="/categories/{category.id}/{id}">{title}</BreadcrumbItem>
     </TableBodyCell>
 
-    {#if show_category}
+    {#if category !== null}
         <TableBodyCell>
             <BreadcrumbItem
                     href="/categories/{category.id}">{category.name}</BreadcrumbItem>
@@ -24,7 +22,7 @@
     {/if}
 
 
-    {#if show_slots && category.type === "Internal"}
+    {#if (slots !== null) && (category.type === "Internal")}
         <TableBodyCell>{slots}</TableBodyCell>
         <TableBodyCell>
             <Button disabled={slots<=0} href={href} outline size="xs">
