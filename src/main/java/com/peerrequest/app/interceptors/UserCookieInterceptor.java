@@ -16,6 +16,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * An Interceptor including user data for the current user as response headers.
  */
 public class UserCookieInterceptor implements HandlerInterceptor {
+    public static final String COOKIE = "current-user";
+
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                              @Nullable Object handler) {
@@ -26,8 +28,11 @@ public class UserCookieInterceptor implements HandlerInterceptor {
                 new User(new User.UserSelector(oauth2User.getAttribute("sid")), oauth2User.getAttribute("given_name"),
                     oauth2User.getAttribute("family_name"), oauth2User.getAttribute("email"));
 
+            var json = user.toJson();
+            json.put("account_management_url", oauth2User.getAttribute("iss") + "/account");
+
             var cookie =
-                new Cookie("current-user", URLEncoder.encode(user.toJson().toJSONString(), StandardCharsets.UTF_8));
+                new Cookie(COOKIE, URLEncoder.encode(json.toJSONString(), StandardCharsets.UTF_8));
             cookie.setPath("/");
             cookie.setHttpOnly(false);
             cookie.setSecure(true);
