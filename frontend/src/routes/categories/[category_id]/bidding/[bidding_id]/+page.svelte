@@ -3,10 +3,18 @@
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
-    import Category from "../../../../../components/Category.svelte";
-    import Categories from "../../../../../components/Categories.svelte";
+    import Biddings from "../../../../../components/Biddings.svelte";
+    import Bidding from "../../../../../components/Bidding.svelte";
 
     const pages = mock_data.pagination;
+
+    // my stuff start
+    const biddingElements = mock_data.bidding[0];
+    const categories = mock_data.categories;
+    const papers = mock_data.papers;
+    // my stuff end
+
+
 
     const previous = () => {
         alert("Previous btn clicked. Make a call to your server to fetch data.");
@@ -24,14 +32,20 @@
     <ResponsiveBreadCrumb>
         <BreadcrumbItem home href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
+        <BreadcrumbItem>TestTest</BreadcrumbItem>
     </ResponsiveBreadCrumb>
     <Heading class="mb-4" tag="h2">Just A Bidding Process</Heading>
 
-    <Categories>
-        {#each mock_data.categories as c }
-            <Category bind:category={c} />
+    <Biddings>
+        {#each papers as p}
+            {#if p.category.id === biddingElements.category.id}
+                <Bidding
+                        title={p.title}
+                        href="/categories/{p.category.id}/{p.id}"
+                />
+            {/if}
         {/each}
-    </Categories>
+    </Biddings>
 
     <div class="mx-auto m-8">
         <Pagination icon on:next={next} on:previous={previous} {pages}>
