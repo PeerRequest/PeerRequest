@@ -22,14 +22,14 @@
     <Heading class="mb-4" tag="h2">My Papers</Heading>
 
     <Papers
-            show_category=true
+            category=papers.category[0]
     >
         {#each papers.filter((p) => p.researcher === user.name) as p}
             <Paper
                     href="/categories/{p.category.id}/{p.id}"
+                    id={p.id}
                     title={p.title}
                     category={p.category}
-                    show_category=true
             />
         {/each}
     </Papers>
