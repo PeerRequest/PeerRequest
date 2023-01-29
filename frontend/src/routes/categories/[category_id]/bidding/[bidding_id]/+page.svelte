@@ -1,5 +1,5 @@
 <script>
-    import { BreadcrumbItem, ChevronLeft, ChevronRight, Heading, Pagination } from "flowbite-svelte";
+    import {BreadcrumbItem, ChevronLeft, ChevronRight, Heading, Pagination, Secondary} from "flowbite-svelte";
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
@@ -35,6 +35,12 @@
         <BreadcrumbItem>TestTest</BreadcrumbItem>
     </ResponsiveBreadCrumb>
     <Heading class="mb-4" tag="h2">Just A Bidding Process</Heading>
+    <Heading tag="h6">
+        <Secondary> Owner: TODO </Secondary>
+    </Heading>
+    <Heading class="mb-5" tag="h6">
+        <Secondary>Review Deadline: TODO</Secondary>
+    </Heading>
 
     <Biddings>
         {#each papers as p}
