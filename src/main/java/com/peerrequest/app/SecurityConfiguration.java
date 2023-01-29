@@ -2,14 +2,20 @@ package com.peerrequest.app;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.util.LinkedHashMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * A Security Configuration for Spring Security guarding all endpoints behind authorization.
@@ -21,16 +27,28 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // @formatter:off
         http
+            .headers()
+            .frameOptions()
+            .sameOrigin();
+
+        http
             .authorizeHttpRequests((authorize) -> authorize
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login((login) -> login
                 .successHandler(new RefererRedirectionAuthenticationSuccessHandler()))
             .oauth2Client(withDefaults());
 
+        var map = new LinkedHashMap<RequestMatcher, AuthenticationEntryPoint>();
+        map.put(new AntPathRequestMatcher("/api"), new Http403ForbiddenEntryPoint());
+        map.put(new AntPathRequestMatcher("/api/**"), new Http403ForbiddenEntryPoint());
+        map.put(new AntPathRequestMatcher("/**"),
+            new LoginUrlAuthenticationEntryPoint("/oauth2/authorization/keycloak"));
+
         http
             .exceptionHandling()
-            .authenticationEntryPoint(new Http403ForbiddenEntryPoint());
+            .authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(map));
         // @formatter:on
         return http.build();
     }
