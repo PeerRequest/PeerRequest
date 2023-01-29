@@ -54,7 +54,7 @@
 
 {#if category_type === "Internal"}
     <div class="flex flex-row justify-between items-center">
-        <Heading size="md" tag="h4">Choose The Number Of <br> Reserved Open Slots</Heading>
+        <Heading size="md" tag="h4">Choose The Number Of <br> Open Slots</Heading>
         <input class="justify-end" id= selected_open_slots type=number min= { reviewers.length === 0 ? 1 : 0 } value= 1 >
     </div>
 
