@@ -24,12 +24,12 @@
   }
 </script>
 
-<div class="flex flex-1 items-center ">
+<div class="flex flex-1 space-x-[174px] items-center ">
   <Fileupload {...fileuploadprops} bind:value={annotations_file} inputClass="my-auto annotations_file_input"
               on:change={() => upload_state = ""}
               size="lg"
   />
-  <Button class="m-auto" color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}
+  <Button color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}
           disabled={!annotations_file} on:click={file_upload}
           outline size="md">
     {#if upload_state === "uploading"}
