@@ -18,13 +18,12 @@
     import mock_data from "../mock_data.js";
 
     // my stuff start
-    const bidding = mock_data.bidding[0];
-    const categories = mock_data.categories;
-    const bidding_href = "/categories/2/bidding/1";
-    const direct_href = "/categories/2";
+    export let bidding = mock_data.bidding[0];
+
+    let bidding_href = "/categories/2/bidding/1";
+    let direct_href = "/categories/2";
     let href = bidding_href;
     // my stuff end
-
 
     export let show = false;
     export let hide = () => {
@@ -36,8 +35,6 @@
 
     let strategy = "bidding";
 
-
-
     export let papers = [];
     let paper_matches = {};
 
@@ -48,6 +45,7 @@
     function apply_query(q) {
         query = q;
     }
+
 
     function papers_drop_down_color(matches, reviewer) {
         const papers = Object.entries(matches).filter(([key, value]) => value && key.startsWith(reviewer.id.toString())).length;
