@@ -53,7 +53,7 @@ docker rm peerrequest-db
 - `--name peerrequest-db` Name the container
 - `--rm` Remove container when database process returns
 - `--tmpfs /var/lib/postgresql/data` store database data directory in RAM (data is **ephemeral**)
-- `-p 127.0.0.1:5432:5432` expose database port on your local machine at port `5432` (only accessible on your machine)
-- `-p 5432:5432` expose database port on your local machine at port `5432` (accessible in your **local network**)
+- `-p 127.0.0.1:5432:5432` expose database port on your local machine at port `5432` (only accessible from your machine)
+- `-p 5432:5432` expose database port on your local machine at port `5432` (accessible from your **local network**)
 - `-e POSTGRES_USER=pg` set database user (will also be your database name)
 - `-e POSTGRES_PASSWORD=pg` set database password
