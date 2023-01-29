@@ -63,6 +63,12 @@ const categories = [
     }
 ];
 
+const bidding = [
+    {id: 1,
+    category: categories[1]
+    }
+]
+
 const papers = [
     {
         id: 1,
@@ -130,6 +136,7 @@ const users = [
 export default {
     pagination,
     categories,
+    bidding,
     papers,
     users
 };
