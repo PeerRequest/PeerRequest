@@ -56,16 +56,17 @@
 
     <Papers
             category_type={mocks[data.category_id - 1].type}
-            show_slots=true
+            slots=2
+            category=papers.category[0]
     >
         {#each papers as p}
             {#if p.category === mocks[data.category_id - 1]}
                 <Paper
                         href="/categories/{p.category.id}/{p.id}"
+                        id={p.id}
                         title={p.title}
                         slots={p.slots}
                         category={p.category}
-                        show_slots=true
                 />
             {/if}
         {/each}
