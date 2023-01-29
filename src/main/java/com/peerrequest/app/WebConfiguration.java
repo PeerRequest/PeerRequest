@@ -65,7 +65,9 @@ public class WebConfiguration implements WebMvcConfigurer {
             .addResolver(new PathResourceResolver() {
                 @Override
                 protected Resource getResource(@NonNull String resourcePath, @NonNull Resource location) {
-                    if (resourcePath.startsWith(BASE_API_PATH) || resourcePath.startsWith(BASE_API_PATH.substring(1))) {
+                    if (resourcePath.startsWith(BASE_API_PATH) || resourcePath.startsWith(BASE_API_PATH.substring(1))
+                        || resourcePath.startsWith(LogoutController.LOGOUT_URL)
+                        || resourcePath.startsWith(LogoutController.LOGOUT_URL.substring(1))) {
                         return null;
                     }
 
