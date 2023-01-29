@@ -36,12 +36,7 @@
     }
 
     function addReviewer(u) {
-        let inputValOpenSlots = document.getElementById("selected_open_slots").value;
-        if (reviewers.length + 1 <= inputValOpenSlots) {
-            reviewers = reviewers.concat([u])
-        } else {
-            alert("Warning! Not enough open slots!")
-        }
+        reviewers = reviewers.concat([u]);
     }
 </script>
 
@@ -59,8 +54,8 @@
 
 {#if category_type === "Internal"}
     <div class="flex flex-row justify-between items-center">
-        <Heading size="md" tag="h4">Choose The Number Of Review Slots</Heading>
-        <input class="justify-end" id= selected_open_slots type=number min= { reviewers.length > 0 ? reviewers.length : 1 } value= 1 >
+        <Heading size="md" tag="h4">Choose The Number Of <br> Reserved Open Slots</Heading>
+        <input class="justify-end" id= selected_open_slots type=number min= { reviewers.length === 0 ? 1 : 0 } value= 1 >
     </div>
 
     <Button color="primary">
