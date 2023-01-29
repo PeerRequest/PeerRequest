@@ -40,6 +40,7 @@
   },
   "type": "module",
   "dependencies": {
-    "pspdfkit": "^2022.5.1"
+    "pspdfkit": "^2022.5.1",
+    "svelte-star-rating": "^2.0.1"
   }
 }
