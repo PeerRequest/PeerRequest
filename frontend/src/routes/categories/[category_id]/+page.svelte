@@ -50,14 +50,14 @@
         {/if}
     </div>
     <div class="w-full flex justify-end">
-        <Button color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper</Button>
+        <Button class="mb-4" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper</Button>
     </div>
 
 
     <Papers
+            category=papers.category[0]
             category_type={mocks[data.category_id - 1].type}
             slots=2
-            category=papers.category[0]
     >
         {#each papers as p}
             {#if p.category === mocks[data.category_id - 1]}
