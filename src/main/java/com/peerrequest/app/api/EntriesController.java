@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Defines the controller for Entries.
  */
 @RestController
-@RequestMapping
+@ApiControllerPrefix
 public class EntriesController {
 
     private Entry entryMockUp;
