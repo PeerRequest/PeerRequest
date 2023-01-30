@@ -17,7 +17,7 @@ const config = {
             pages: '../public',
             fallback: 'index.html'
         }),
-    }
+    },
 };
 
 export default config;
