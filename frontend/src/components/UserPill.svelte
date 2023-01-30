@@ -31,7 +31,11 @@
                 My Papers
             </DropdownItem>
         </a>
-        <DropdownItem>My Reviews</DropdownItem>
+        <a href="/my-reviews">
+            <DropdownItem>
+                My Reviews
+            </DropdownItem>
+        </a>
         <DropdownDivider/>
         <a href={current_user.account_management_url} target="_blank">
             <DropdownItem slot="footer">Account Management</DropdownItem>
