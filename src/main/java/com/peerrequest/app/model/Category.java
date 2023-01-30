@@ -1,73 +1,58 @@
 package com.peerrequest.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.ZonedDateTime;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 
 /**
  * This class represents a category.
  */
+@Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty("id")
     @Getter
-    private final CategorySelector id;
+    private Long id;
+
     @Getter
-    private final User.UserSelector researcherSelector;
+    @Column(nullable = false)
+    private String researcherId;
     @Getter
-    private final String title;
+    @Column(nullable = false)
+    private String title;
     @Getter
-    private final CategoryLabel label;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CategoryLabel label;
     @Getter
-    private final int year;
+    @Column(nullable = false)
+    private int year;
     @Getter
-    private final ZonedDateTime deadline;
+    private ZonedDateTime deadline;
     /**
      * Minimum score a user can rate an entry of this category in a review.
      */
     @Getter
-    private final float minScore;
+    @Column(nullable = false)
+    private float minScore;
     /**
      * Maximum score a user can rate an entry of this category in a review.
      */
     @Getter
-    private final float maxScore;
+    @Column(nullable = false)
+    private float maxScore;
     @Getter
-    @Setter
+    @Column(nullable = false)
     private float scoreStepSize;
 
-    /**
-     * Constructor of a category.
-     *
-     * @param id                 id of the category
-     * @param researcherSelector id of the researcher of the category
-     * @param title               name of the category
-     * @param label              label of the category
-     * @param year               year of the category
-     * @param deadline           deadline of the category
-     * @param minScore           minimum score a user can rate an entry of this category in a review
-     * @param maxScore           maximum score a user can rate an entry of this category in a review
-     * @param scoreStepSize      step size of the score scala of in a review of an entry from this category
-     */
-    public Category(@JsonProperty("id") final CategorySelector id,
-                    @JsonProperty("researcher_id") final User.UserSelector researcherSelector,
-                    @JsonProperty("title") final String title,
-                    @JsonProperty("category_type") final CategoryLabel label,
-                    @JsonProperty("year") final int year,
-                    @JsonProperty("deadline") final ZonedDateTime deadline,
-                    @JsonProperty("minScore") final float minScore,
-                    @JsonProperty("maxScore") final float maxScore,
-                    @JsonProperty("scoreStepSize") final float scoreStepSize) {
-        this.id = id;
-        this.researcherSelector = researcherSelector;
-        this.title = title;
-        this.label = label;
-        this.year = year;
-        this.deadline = deadline;
-        this.minScore = minScore;
-        this.maxScore = maxScore;
-        this.scoreStepSize = scoreStepSize;
+    public Category() {
+
     }
 
     /**
