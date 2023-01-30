@@ -1,6 +1,7 @@
 package com.peerrequest.app.model;
 
 import lombok.Getter;
+import net.minidev.json.JSONObject;
 
 /**
  * This class represents a user.
@@ -17,6 +18,20 @@ public record User(@Getter com.peerrequest.app.model.User.UserSelector id, @Gett
      * @param email     email address of the user
      */
     public User {
+    }
+
+    /**
+     * Transform the given user into JSON.
+     *
+     * @return a JSON object
+     */
+    public JSONObject toJson() {
+        var json = new JSONObject();
+        json.put("id", this.id.id());
+        json.put("first_name", this.firstName());
+        json.put("last_name", this.lastName());
+        json.put("email", this.email());
+        return json;
     }
 
     /**
