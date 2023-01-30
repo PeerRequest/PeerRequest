@@ -12,7 +12,7 @@ public class Entry {
     @Getter
     private final EntrySelector id;
     @Getter
-    private final Category.CategorySelector categorySelector;
+    private final Long categoryId;
     @Getter
     private final User.UserSelector researcherSelector;
     @Getter
@@ -34,10 +34,10 @@ public class Entry {
      * @param title              title of the entry
      * @param authors            authors of the entry
      */
-    public Entry(EntrySelector id, Category.CategorySelector categorySelector, User.UserSelector researcherSelector,
+    public Entry(EntrySelector id, Long categoryId, User.UserSelector researcherSelector,
                  Document.DocumentSelector documentSelector, String title, String authors) {
         this.id = id;
-        this.categorySelector = categorySelector;
+        this.categoryId = categoryId;
         this.researcherSelector = researcherSelector;
         this.documentSelector = documentSelector;
         this.title = title;
