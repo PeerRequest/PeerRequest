@@ -25,7 +25,8 @@ public class CategoriesController {
     private final CategoryService categoryService;
 
     /**
-     * Constructor method
+     * Constructor method.
+     *
      * @param categoryService the category service that handles the database queries
      */
     public CategoriesController(CategoryService categoryService) {
