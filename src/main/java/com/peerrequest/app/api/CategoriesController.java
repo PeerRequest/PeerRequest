@@ -2,8 +2,9 @@ package com.peerrequest.app.api;
 
 import com.peerrequest.app.model.Category;
 import java.util.List;
-
 import com.peerrequest.app.services.CategoryService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,7 +29,7 @@ public class CategoriesController {
     }
 
     @GetMapping(value = "/categories", produces = "application/json")
-    public List<Category> getCategories() {
+    public List<Category> getCategories(@AuthenticationPrincipal OAuth2User oauth2User) {
         return categoryService.findAll();
     }
 
