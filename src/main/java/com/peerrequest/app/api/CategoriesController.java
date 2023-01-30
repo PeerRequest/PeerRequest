@@ -1,8 +1,8 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.model.Category;
-import java.util.List;
 import com.peerrequest.app.services.CategoryService;
+import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +24,9 @@ public class CategoriesController {
 
     private final CategoryService categoryService;
 
+    /**
+     * @param categoryService the category service that handles the database queries
+     */
     public CategoriesController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
