@@ -22,7 +22,7 @@
     <Heading class="mb-4" tag="h2">My Papers</Heading>
 
     <Papers
-            category=papers.category[0]
+            show_category=true
     >
         {#each papers.filter((p) => p.researcher === user.name) as p}
             <Paper
