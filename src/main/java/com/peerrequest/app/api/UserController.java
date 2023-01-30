@@ -1,6 +1,5 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.model.Category;
 import com.peerrequest.app.model.Document;
 import com.peerrequest.app.model.Entry;
 import com.peerrequest.app.model.Review;
@@ -94,18 +93,16 @@ public class UserController {
     // returns mock entries
     private Entry mockEntryOne() {
         Entry.EntrySelector entryId = new Entry.EntrySelector(42);
-        Category.CategorySelector categoryId = new Category.CategorySelector(10);
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
-        this.mockUpEntryOne = new Entry(entryId, categoryId, this.mockUpUser.id(), documentId,
+        this.mockUpEntryOne = new Entry(entryId, 10L, this.mockUpUser.id(), documentId,
             "great Paper #01", "Karol Bender");
         return mockUpEntryOne;
     }
 
     private Entry mockEntryTwo() {
         Entry.EntrySelector entryId = new Entry.EntrySelector(420);
-        Category.CategorySelector categoryId = new Category.CategorySelector(10);
         Document.DocumentSelector documentId = new Document.DocumentSelector("3560");
-        this.mockUpEntryTwo = new Entry(entryId, categoryId, this.mockUpUser.id(), documentId,
+        this.mockUpEntryTwo = new Entry(entryId, 10L, this.mockUpUser.id(), documentId,
             "great Paper #02", "Karol Bender");
         return mockUpEntryTwo;
     }
