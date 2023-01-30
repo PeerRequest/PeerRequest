@@ -76,7 +76,7 @@ public class EntriesController {
         User.UserSelector userId = new User.UserSelector("123");
         Document.DocumentSelector documentId = new Document.DocumentSelector("356");
         return new Entry(entryId,
-            new Category.CategorySelector(12),
+            12L,
             userId, documentId, "great Paper #01",
             "Karol Bender");
     }
