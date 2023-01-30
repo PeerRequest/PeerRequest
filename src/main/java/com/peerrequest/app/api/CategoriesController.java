@@ -1,9 +1,8 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.model.Category;
-import java.util.List;
-
 import com.peerrequest.app.services.CategoryService;
+import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;

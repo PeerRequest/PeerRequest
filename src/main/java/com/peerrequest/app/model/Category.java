@@ -2,8 +2,8 @@ package com.peerrequest.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.ZonedDateTime;
 import jakarta.persistence.*;
+import java.time.ZonedDateTime;
 import lombok.Getter;
 
 
