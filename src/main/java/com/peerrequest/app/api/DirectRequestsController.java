@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
  * The RequestsController handles all directRequests interaction with the backend.
  */
 @RestController
-@RequestMapping
+@ApiControllerPrefix
 public class DirectRequestsController {
 
     // DirectRequestProcess
