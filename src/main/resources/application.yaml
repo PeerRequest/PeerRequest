@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: PeerRequest
   security:
     oauth2:
       client:
@@ -17,3 +19,8 @@ spring:
     url: ${PR_DATABASE_URL}
     username: ${PR_DATABASE_USER}
     password: ${PR_DATABASE_PASSWORD}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+server:
+  port: ${PORT:8080}
