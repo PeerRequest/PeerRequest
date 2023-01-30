@@ -128,9 +128,17 @@ const users = [
     {id: 24, name: "Kaori Chihiro"}
 ];
 
+const reviews = [
+    {
+        id: 1,
+        reviewer: "Kaori Chihiro",
+        paper: papers[1]
+    }
+]
 export default {
     pagination,
     categories,
     papers,
-    users
+    users,
+    reviews
 };
