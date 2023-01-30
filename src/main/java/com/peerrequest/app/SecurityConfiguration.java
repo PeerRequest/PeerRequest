@@ -50,6 +50,8 @@ public class SecurityConfiguration {
             .exceptionHandling()
             .authenticationEntryPoint(new DelegatingAuthenticationEntryPoint(map));
         // @formatter:on
+
+        http.csrf().disable();
         return http.build();
     }
 
