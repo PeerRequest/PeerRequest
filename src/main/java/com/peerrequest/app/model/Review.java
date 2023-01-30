@@ -1,6 +1,5 @@
 package com.peerrequest.app.model;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -77,7 +76,7 @@ public class Review {
          */
         MEDIUM,
         /**
-         * Confidence level when teh reviewer is confident in the subject.
+         * Confidence level when the reviewer is confident in the subject.
          */
         HIGH
     }

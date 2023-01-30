@@ -28,7 +28,7 @@ public class UserController {
      * @return a list with all the entries of the user
      */
     @GetMapping(value = "/users/{userId}/entries", produces = "application/json")
-    public List<Entry> getEntries(@PathVariable int userId) {
+    public List<Entry> getEntries(@PathVariable String userId) {
         List<Entry> entryList = new ArrayList<>();
         entryList.add(this.mockUpEntryOne);
         entryList.add(this.mockUpEntryTwo);
@@ -41,7 +41,7 @@ public class UserController {
      * @return a list with all the entries of the user
      */
     @GetMapping(value = "/users/{userId}", produces = "application/json")
-    public User getUser() {
+    public User getUser(@PathVariable String userId) {
         return mockUpUser;
     }
 
@@ -61,11 +61,10 @@ public class UserController {
     /**
      * Method used to return the logged-in user.
      *
-     * @param userId the id of the user
      * @return a list with all the entries of the user
      */
     @GetMapping(value = "/users/self", produces = "application/json")
-    public User getSelfUser(@PathVariable int userId) {
+    public User getSelfUser() {
         return mockUpUser;
     }
 
