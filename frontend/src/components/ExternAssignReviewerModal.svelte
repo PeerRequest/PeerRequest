@@ -49,7 +49,10 @@
   }
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null} title="Assign Reviewers">
+<Modal bind:open={show} on:hide={() => hide ? hide() : null}>
+  <div class="text-4xl font-extrabold text-gray-900">
+    Assign Reviewers
+  </div>
   <div class="flex flex-row justify-between items-center">
     <div>
       <Heading size="md" tag="h4">Strategy</Heading>

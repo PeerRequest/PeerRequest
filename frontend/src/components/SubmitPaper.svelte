@@ -44,11 +44,11 @@
 <div class="space-y-6">
     <div class="flex flex-row justify-between items-center">
         <Heading size="md" tag="h4"> Enter Paper Title</Heading>
-        <input id= entered_entry_title type= text required>
+        <input class="rounded-lg" id= entered_entry_title type= text required>
     </div>
     <div class="flex flex-row justify-between items-center">
         <Heading size="md" tag="h4"> Enter Paper Authors</Heading>
-        <input id= entered_entry_authors type= text placeholder="(Optional)">
+        <input class="rounded-lg" id= entered_entry_authors type= text placeholder="(Optional)">
     </div>
 
     <PdfUploader/>
@@ -56,7 +56,7 @@
     {#if category_type === "Internal"}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Choose Open Slots</Heading>
-            <input class="justify-end" id= selected_open_slots type=number min= { reviewers.length === 0 ? 1 : 0 } value= 1 >
+            <input class="justify-end rounded-lg" id= selected_open_slots type=number min= { reviewers.length === 0 ? 1 : 0 } value= 1 >
         </div>
 
         <Button class="w-full" color="primary">
