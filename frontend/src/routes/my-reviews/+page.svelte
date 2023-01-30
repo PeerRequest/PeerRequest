@@ -23,14 +23,15 @@
     <Heading class="mb-4" tag="h2">My Reviews</Heading>
 
 
-    <Reviews show_category=true show_paper=true>
+    <Reviews
+            show_category=true
+            show_paper=true>
         {#each reviews.filter((r) => user.name === r.reviewer) as r}
             <Review
                     href="/categories/{r.paper.category.id}/{r.paper.id}/{r.id}"
                     id={r.id}
                     paper={r.paper}
-                    show_paper=true
-                    show_category=true
+                    category={r.paper.category}
             />
         {/each}
     </Reviews>

@@ -3,11 +3,9 @@
 
     export let href;
     export let id;
-    export let reviewer;
-    export let paper;
-    export let show_paper = false;
-    export let show_reviewer = false;
-    export let show_category = false;
+    export let category = null;
+    export let reviewer = null;
+    export let paper = null;
 
 </script>
 
@@ -17,21 +15,21 @@
         <BreadcrumbItem href={href}>Review #{id}</BreadcrumbItem>
     </TableBodyCell>
 
-    {#if show_reviewer}
+    {#if reviewer !== null}
         <TableBodyCell>
             <BreadcrumbItem>{reviewer}</BreadcrumbItem>
         </TableBodyCell>
     {/if}
 
-    {#if show_paper}
+    {#if paper !== null}
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{paper.category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
+            <BreadcrumbItem href="/categories/{category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
         </TableBodyCell>
     {/if}
 
-    {#if show_category}
+    {#if category !== null}
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{paper.category.id}">{paper.category.name}</BreadcrumbItem>
+            <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem>
         </TableBodyCell>
     {/if}
 
