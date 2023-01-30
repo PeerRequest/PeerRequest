@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  *  * and provide them as HTTP-endpoints.
  */
 @RestController
-@RequestMapping
+@ApiControllerPrefix
 public class UserController {
 
     /**
