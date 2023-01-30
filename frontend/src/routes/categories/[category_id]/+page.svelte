@@ -55,9 +55,9 @@
 
 
     <Papers
-            category=papers.category[0]
             category_type={mocks[data.category_id - 1].type}
-            slots=2
+            show_category=true
+            show_slots=true
     >
         {#each papers as p}
             {#if p.category === mocks[data.category_id - 1]}
