@@ -26,14 +26,18 @@
             <span class="block text-sm text-gray-900 dark:text-white"> {current_user.first_name + " " + current_user.last_name} </span>
             <span class="block flex-wrap text-sm font-medium"> {current_user.email} </span>
         </div>
-        <DropdownItem>My Papers</DropdownItem>
+        <a href="/my-papers">
+            <DropdownItem>
+                My Papers
+            </DropdownItem>
+        </a>
         <DropdownItem>My Reviews</DropdownItem>
         <DropdownDivider/>
         <a href={current_user.account_management_url} target="_blank">
             <DropdownItem slot="footer">Account Management</DropdownItem>
         </a>
         <a href="/logout">
-            <DropdownItem slot="footer">Log out</DropdownItem>
+            <DropdownItem slot="footer">Sign out</DropdownItem>
         </a>
     </Dropdown>
 </div>
