@@ -1,4 +1,13 @@
-FROM gradle:7-jdk17 as builder
+FROM node:slim as js-builder
+
+WORKDIR /project/frontend
+COPY frontend/package.json .
+RUN npm install
+ADD frontend .
+RUN mkdir -p ../public && \
+    npm run build
+
+FROM gradle:7-jdk17 as java-builder
 
 WORKDIR /project
 COPY --chown=gradle:gradle . .
@@ -10,7 +19,8 @@ RUN useradd -m -d /app peerrequest
 WORKDIR /app
 
 COPY --chown=peerrequest spring_split_db_url.sh .
-COPY --chown=peerrequest --from=builder /project/build/libs/PeerRequest-Backend-*.jar /app/PeerRequest-Backend.jar
+COPY --chown=peerrequest --from=java-builder /project/build/libs/PeerRequest-Backend-*.jar /app/PeerRequest-Backend.jar
+COPY --chown=peerrequest --from=js-builder /project/public/ public/
 
 EXPOSE 8080
 USER peerrequest
