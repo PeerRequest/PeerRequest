@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * The BiddingProcessesController handles all bidding process and bidding requests interactions with the backend.
  */
 @RestController
-@RequestMapping
+@ApiControllerPrefix
 public class BiddingProcessesController {
 
     // BiddingProcess
