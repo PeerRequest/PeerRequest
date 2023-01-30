@@ -74,7 +74,7 @@ public class BiddingProcess {
      * anymore.
      * If the limit of reviews for a bidding slot is reached, the entry of the bidding slot will not be considered for
      * the assignment anymore.
-     * Complexity: O(N*M*log(N)) ; N = total amount of ratings, M = amount of total review slots from all bidding slots
+     * Complexity: O(N*M) ; N = total amount of ratings, M = amount of total review slots from all bidding slots
      */
     private void evaluate() {
         HashMap<User.UserSelector, Integer> totalUserRatings = new HashMap<>();
@@ -129,10 +129,8 @@ public class BiddingProcess {
         for (int i = totalRatings.size() - 1; i >= 0; i--) {
             totalRatings.get(i).sort(totalUserRatingsComparator);
 
-            Iterator<Rating> iter = totalRatings.get(i).iterator();
-
-            while (iter.hasNext()) {
-                Rating rating = iter.next();
+            while (totalRatings.get(i).size() != 0) {
+                Rating rating = Collections.min(totalRatings.get(i), totalUserRatingsComparator);
                 if (remainingReviewsUser.get(rating.getReviewerSelector()) > 0
                     && remainingReviewsBiddingSlot.get(rating.getBiddingSlotSelector()) > 0) {
 
@@ -145,13 +143,10 @@ public class BiddingProcess {
                     // decreases the total amount of ratings of the selected reviewer by their rating
                     totalUserRatings.put(rating.getReviewerSelector(),
                         totalUserRatings.get(rating.getReviewerSelector()) - rating.getRating());
-                    iter.remove();
-                    // sorts the list again because the order could have been changed after decreasing the rating
-                    totalRatings.get(i).sort(totalUserRatingsComparator);
-                    iter = totalRatings.get(i).iterator();
+                    totalRatings.get(i).remove(rating);
                 } else {
                     rating.setRatingState(Rating.RatingState.NOT_ALLOCATED);
-                    iter.remove();
+                    totalRatings.get(i).remove(rating);
                 }
             }
         }
