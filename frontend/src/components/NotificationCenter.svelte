@@ -59,20 +59,20 @@
 
     <!-- popup itself -->
     <div
-            class="absolute z-50 top-[60px] right-[170px] p-3 mt-1 text-gray-600 bg-white bg-gray-100 rounded
+            class="absolute z-50 top-[60px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
             shadow-md overflow-y-auto max-h-[235px] w-[512px] text-center modal"
     >
         <ul class="space-y-3">
             {#each notifications as n}
-                <li class="p-3 border rounded relative" transition:fade>
+                <li class="p-3 border rounded relative outline outline-gray-100" transition:fade>
                     <p class="font-bold">{n.subject}</p>
                     <p>{n.message}</p>
                     <div class="mt-1">
 
-                        <Button class="px-2 rounded-lg text-sm text-blue-200 bg-blue-700 rounded-sm" on:click={() => acceptButton(n)}>
+                        <Button class="px-2 rounded-lg text-sm rounded-sm" outline color="blue" on:click={() => acceptButton(n)}>
                             Accept
                         </Button>
-                        <Button class="px-2 rounded-lg text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineButton(n)}>
+                        <Button class="px-2 rounded-lg text-sm rounded-sm" outline color="red" on:click={() => declineButton(n)}>
                             Decline
                         </Button>
                     </div>
@@ -81,7 +81,7 @@
         </ul>
         <div class="flex justify-center mt-3">
             {#if notifications.length !== 0}
-                <Button class="px-2 rounded-lg text-sm text-red-200 bg-red-700 rounded-sm" on:click={() => declineAllButton()}>
+                <Button class="px-2 rounded-lg text-sm " outline color="red" on:click={() => declineAllButton()}>
                     Decline All
                 </Button>
             {:else}
