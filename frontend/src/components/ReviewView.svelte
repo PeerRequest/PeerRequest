@@ -5,9 +5,6 @@
     import PdfUploader from "./PdfUploader.svelte";
     import MessageBoard from "./MessageBoard.svelte";
 
-    export let document;
-
-
 </script>
 
 <style>
