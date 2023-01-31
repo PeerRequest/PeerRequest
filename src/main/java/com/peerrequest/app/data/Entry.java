@@ -6,11 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
+import org.hibernate.Hibernate;
 
 /**
  * Represents an Entry.
@@ -108,8 +107,7 @@ public class Entry {
             @JsonProperty("researcher_id") Optional<String> researcherId,
             @JsonProperty("name") String name,
             @JsonProperty("document_id") Optional<String> documentId,
-            @JsonProperty("category_id") Optional<Long> categoryId
-            )
+            @JsonProperty("category_id") Optional<Long> categoryId)
             implements Serializable {
     }
 }
