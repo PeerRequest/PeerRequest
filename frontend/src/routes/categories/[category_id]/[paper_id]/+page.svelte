@@ -33,7 +33,6 @@
         </Badge>
     </Heading>
 
-
     <div class="flex h-full align-items-flex-start">
         <div class="h-full w-[50%] mr-4">
             <PaperView document={document}/>
