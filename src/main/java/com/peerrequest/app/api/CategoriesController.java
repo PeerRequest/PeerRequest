@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,5 +61,11 @@ public class CategoriesController extends ServiceBasedController {
 
         var category = Category.fromDto(dto, user.getAttribute("sub"));
         return this.categoryService.create(category.toDto()).toDto();
+    }
+
+    @DeleteMapping("/categories/{id}")
+    Optional<Category.Dto> deleteCategory(@PathVariable Long id) {
+        var option = this.categoryService.delete(id);
+        return option.map(Category::toDto);
     }
 }
