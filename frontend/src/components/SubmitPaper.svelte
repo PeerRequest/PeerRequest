@@ -59,7 +59,7 @@
             <input class="justify-end rounded-lg" id= selected_open_slots type=number min= { reviewers.length === 0 ? 1 : 0 } value= 1 >
         </div>
 
-        <Button class="w-full" color="primary">
+        <Button class="w-full" color="blue" outline>
             <Chevron>Add Reviewer</Chevron>
         </Button>
         <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" on:show={() => apply_query("")}>

@@ -43,7 +43,7 @@
                 <SubmitPaper category_type={conference_type}/>
                 <hr class="my-8 h-px bg-gray-200 border-0 dark:bg-gray-700">
             {/each}
-            <Button on:click={() => addPaper()}> Add Additional Paper</Button>
+            <Button outline on:click={() => addPaper()}> Add Additional Paper</Button>
             {#if (papers.length !== 0)}
                 <Button class="!p-2" outline color="red"
                         on:click={() => papers = papers.filter(e => e !== papers[papers.length -1])}>Remove Last Paper</Button>
