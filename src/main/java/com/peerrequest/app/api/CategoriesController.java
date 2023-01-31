@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,16 @@ public class CategoriesController extends ServiceBasedController {
 
         return this.categoryService.list(after.orElse(null), limit.orElse(maxPageSize), null).stream()
             .map(Category::toDto).toList();
+    }
+
+    @GetMapping("/categories/{id}")
+    Category.Dto getCategory(@PathVariable Long id) {
+        var option = this.categoryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        return option.get().toDto();
     }
 
     @PostMapping("/categories")
