@@ -77,11 +77,21 @@ public class Category {
      * @return category represented by the DTO
      */
     public static Category fromDto(Dto dto) {
+        return fromDto(dto, dto.researcherId().get());
+    }
+
+    /**
+     * Build a Category from a DTO with a specific researcher ID.
+     *
+     * @param dto DTO
+     * @return category represented by the DTO
+     */
+    public static Category fromDto(Dto dto, String researcherId) {
         return Category.builder()
             .id(dto.id().orElse(null))
             .name(dto.name())
             .year(dto.year())
-            .researcherId(dto.researcherId())
+            .researcherId(researcherId)
             .label(dto.label())
             .deadline(dto.deadline())
             .minScore(dto.minScore())
@@ -95,8 +105,8 @@ public class Category {
      * @return DTO
      */
     public Dto toDto() {
-        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), getResearcherId(), getName(),
-            getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
+        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
+            getName(), getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
     }
 
     @Override
@@ -137,13 +147,13 @@ public class Category {
 
     public record Dto(
         @JsonProperty("id") Optional<Long> id,
-        @JsonProperty("researcher_id") String researcherId,
+        @JsonProperty("researcher_id") Optional<String> researcherId,
         @JsonProperty("name") String name,
         @JsonProperty("year") Integer year,
         @JsonProperty("label") Category.CategoryLabel label,
         @JsonProperty("deadline") ZonedDateTime deadline,
-        @JsonProperty("minScore") Float minScore,
-        @JsonProperty("maxScore") Float maxScore)
+        @JsonProperty("min_score") Float minScore,
+        @JsonProperty("max_score") Float maxScore)
         implements Serializable {
     }
 }
