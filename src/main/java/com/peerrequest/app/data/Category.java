@@ -1,5 +1,6 @@
 package com.peerrequest.app.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,7 +65,13 @@ public class Category {
     protected Category() {
     }
 
-    static Category fromDTO(Dto dto) {
+    /**
+     * Build a Category from a DTO
+     *
+     * @param dto DTO
+     * @return category represented by the DTO
+     */
+    public static Category fromDto(Dto dto) {
         return Category.builder()
             .id(dto.id())
             .name(dto.name())
@@ -76,7 +83,12 @@ public class Category {
             .build();
     }
 
-    Dto toDTO() {
+    /**
+     * Creates a DTO for the current category.
+     *
+     * @return DTO
+     */
+    public Dto toDto() {
         return new Dto(getId(), getResearcherId(), getName(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
     }
 
@@ -116,9 +128,14 @@ public class Category {
      * A DTO for the {@link com.peerrequest.app.data.Category} entity.
      */
 
-    public record Dto(Long id, String researcherId, String name, Category.CategoryLabel label,
-                      ZonedDateTime deadline,
-                      float minScore, float maxScore)
+    public record Dto(
+        @JsonProperty("id") Long id,
+        @JsonProperty("researcher_id") String researcherId,
+        @JsonProperty("name") String name,
+        @JsonProperty("label") Category.CategoryLabel label,
+        @JsonProperty("deadline") ZonedDateTime deadline,
+        @JsonProperty("minScore") Float minScore,
+        @JsonProperty("maxScore") Float maxScore)
         implements Serializable {
     }
 }
