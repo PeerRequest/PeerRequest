@@ -7,6 +7,7 @@
     import Container from "../../../components/Container.svelte";
     import ExternAssignReviewerModal from "../../../components/ExternAssignReviewerModal.svelte";
     import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
+    import EditCategoryModal from "../../../components/EditCategoryModal.svelte";
 
     const pages = mock_data.pagination;
     const mocks = mock_data.categories;
@@ -24,6 +25,7 @@
 
     let show_assign_modal = false;
     let show_submit_modal = false;
+    let show_edit_modal = false;
 </script>
 
 <svelte:head>
@@ -38,11 +40,20 @@
                 <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
                 <BreadcrumbItem>{mocks[data.category_id - 1].name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
-            <Heading tag="h2">{mocks[data.category_id - 1].name}</Heading>
+            <Heading tag="h2">
+                {mocks[data.category_id - 1].name}
+                {#if mocks[data.category_id - 1].type === "Internal" ||
+                mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category()}
+                    <Button class="mx-auto lg:m-0" outline on:click={() => show_edit_modal = true}>
+                        Edit
+                    </Button>
+                {/if}
+            </Heading>
             <Heading tag="h6">
                 <Secondary>Review Deadline: {mocks[data.category_id - 1].deadline}</Secondary>
             </Heading>
         </div>
+
         {#if mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category() }
             <Button size="lg" color="primary" class="mx-auto lg:m-0"
                     on:click={() => show_assign_modal = true}>Assign Reviewers
@@ -97,3 +108,6 @@
 
 <SubmitPaperModal conference_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
                   show="{show_submit_modal}"/>
+
+<EditCategoryModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
+                  show="{show_edit_modal}"/>
