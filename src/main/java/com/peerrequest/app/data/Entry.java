@@ -2,13 +2,13 @@ package com.peerrequest.app.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.Optional;
 import org.hibernate.Hibernate;
 
 /**
