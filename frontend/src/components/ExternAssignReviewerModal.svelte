@@ -4,6 +4,7 @@
     ButtonGroup,
     Checkbox,
     Chevron,
+    CloseButton,
     Dropdown,
     Heading,
     Modal,
@@ -49,10 +50,14 @@
   }
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null}>
-  <div class="text-4xl font-extrabold text-gray-900">
-    Assign Reviewers
-  </div>
+<Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true}>
+  <svelte:fragment slot="header">
+    <div class="text-4xl font-extrabold text-gray-900">
+      Assign Reviewers
+    </div>
+    <CloseButton class="absolute top-3 right-5"
+                 on:click={hide}/>
+  </svelte:fragment>
   <div class="flex flex-row justify-between items-center">
     <div>
       <Heading size="md" tag="h4">Strategy</Heading>

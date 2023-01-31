@@ -24,7 +24,7 @@
   }
 </script>
 
-<div class="flex flex-1 space-x-[174px] items-center ">
+<div class="flex flex-1 items-center justify-between ">
   <Fileupload {...fileuploadprops} bind:value={annotations_file} inputClass="my-auto rounded-lg border !p-0  annotations_file_input"
               on:change={() => upload_state = ""}
               size="lg"

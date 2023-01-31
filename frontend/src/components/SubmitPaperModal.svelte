@@ -2,10 +2,9 @@
     import {
         Modal,
         Button,
-
+        CloseButton
     } from "flowbite-svelte" ;
     import SubmitPaper from "./SubmitPaper.svelte";
-    import PdfUploader from "./PdfUploader.svelte";
 
     export let show = false;
     export let conference_type = "Internal";
@@ -33,22 +32,30 @@
 
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg">
-    <div class="text-4xl font-extrabold text-gray-900">
-        Submit New Paper
-    </div>
+<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg" permanent = {true}>
+    <svelte:fragment slot="header">
+        <div class="text-4xl font-extrabold text-gray-900">
+            Submit New Paper
+        </div>
+        <CloseButton class="absolute top-3 right-5"
+                     on:click={hide}/>
+    </svelte:fragment>
     <form>
         <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center">
             {#each papers as p}
                 <SubmitPaper category_type={conference_type}/>
                 <hr class="my-8 h-px bg-gray-200 border-0 dark:bg-gray-700">
             {/each}
+        </div>
+    </form>
+    <svelte:fragment slot="footer">
+        <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center w-full ">
             <Button outline on:click={() => addPaper()}> Add Additional Paper</Button>
             {#if (papers.length !== 0)}
                 <Button class="!p-2" outline color="red"
                         on:click={() => papers = papers.filter(e => e !== papers[papers.length -1])}>Remove Last Paper</Button>
             {/if}
-            <Button class="w-full flex-grow" type="submit" color="primary" size="xs" on:click={() => finishSubmission()}>Finish Submission</Button>
+            <Button class="w-full" type="submit" color="primary" size="xs" on:click={() => finishSubmission()}>Finish Submission</Button>
         </div>
-    </form>
+    </svelte:fragment>
 </Modal>
