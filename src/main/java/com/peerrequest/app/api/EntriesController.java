@@ -29,14 +29,12 @@ public class EntriesController extends ServiceBasedController {
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
         }
-
         // TODO: Implement after EntryService is finished
         throw new RuntimeException("Not implemented yet");
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}")
     Entry.Dto getEntry(@PathVariable(name = "entry_id") Long id) {
-
         // TODO: Implement after EntryService is finished
         throw new RuntimeException("Not implemented yet");
     }
