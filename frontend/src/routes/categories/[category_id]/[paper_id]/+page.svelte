@@ -34,11 +34,11 @@
     </Heading>
 
     <div class="flex h-full align-items-flex-start">
-        <div class="h-full w-[50%] mr-4">
+        <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
             <PaperView document={document}/>
         </div>
 
-        <div class="w-1/2 mt-7">
+        <div class="lg:w-[50%] md:w-[100%]  mt-7">
             <Reviews>
                 {#each mocks_reviews.filter((r) => r.paper === mocks_papers[data.paper_id - 1]) as r}
                     <Review
