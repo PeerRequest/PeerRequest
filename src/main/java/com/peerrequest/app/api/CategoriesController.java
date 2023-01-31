@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +49,12 @@ public class CategoriesController extends ServiceBasedController {
         return option.get().toDto();
     }
 
+    @DeleteMapping("/categories/{id}")
+    Optional<Category.Dto> deleteCategory(@PathVariable Long id) {
+        var option = this.categoryService.delete(id);
+        return option.map(Category::toDto);
+    }
+
     @PostMapping("/categories")
     Category.Dto createCategories(@RequestBody Category.Dto dto,
                                   @AuthenticationPrincipal OAuth2User user) {
@@ -62,10 +69,22 @@ public class CategoriesController extends ServiceBasedController {
         var category = Category.fromDto(dto, user.getAttribute("sub"));
         return this.categoryService.create(category.toDto()).toDto();
     }
+    
+    @PatchMapping("/categories")
+    Category.Dto patchCategories(@RequestBody Category.Dto dto) {
+        if (dto.id().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
+        }
 
-    @DeleteMapping("/categories/{id}")
-    Optional<Category.Dto> deleteCategory(@PathVariable Long id) {
-        var option = this.categoryService.delete(id);
-        return option.map(Category::toDto);
+        if (dto.researcherId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the researcher_id");
+        }
+
+        var option = this.categoryService.update(dto.id().get(), dto);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        return option.get().toDto();
     }
 }
