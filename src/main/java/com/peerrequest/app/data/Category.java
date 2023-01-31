@@ -66,7 +66,7 @@ public class Category {
     }
 
     /**
-     * Build a Category from a DTO
+     * Build a Category from a DTO.
      *
      * @param dto DTO
      * @return category represented by the DTO
