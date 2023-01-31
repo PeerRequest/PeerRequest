@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+// TODO: Add authors data
 /**
  * Represents an Entry.
  */
