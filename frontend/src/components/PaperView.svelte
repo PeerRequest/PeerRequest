@@ -23,13 +23,13 @@
 
 <div class="flex">
   <a class="mx-auto my-4" href="/lorem_ipsum.pdf" target="_blank">
-    <Button class="lg:hidden" outline>
+    <Button class="md:hidden" outline>
       <span class="px-10">View Paper</span>
     </Button>
   </a>
 </div>
 
 
-  <div class="max-lg:hidden" id="pdfContainer">
+  <div class="max-md:hidden" id="pdfContainer">
     <PdfViewer document={document} />
   </div>
