@@ -2,6 +2,7 @@
     import {
         Modal,
         Button,
+        CloseButton,
         Heading
 
     } from "flowbite-svelte" ;
@@ -18,11 +19,15 @@
     }
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg">
-    <form class="grid gap-y-6">
+<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg" permanent={true}>
+    <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
             Edit Category
         </div>
+        <CloseButton class="absolute top-3 right-5"
+                     on:click={hide}/>
+    </svelte:fragment>
+    <form class="grid gap-y-6">
         <hr/>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name </Heading>
