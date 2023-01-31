@@ -13,6 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +44,10 @@ public class Category {
     @Getter
     @Setter
     private String name;
+    @Column(name = "year", nullable = false)
+    @Getter
+    @Setter
+    private Integer year;
     @Enumerated(EnumType.STRING)
     @Column(name = "label", nullable = false)
     @Getter
@@ -73,8 +78,9 @@ public class Category {
      */
     public static Category fromDto(Dto dto) {
         return Category.builder()
-            .id(dto.id())
+            .id(dto.id().orElse(null))
             .name(dto.name())
+            .year(dto.year())
             .researcherId(dto.researcherId())
             .label(dto.label())
             .deadline(dto.deadline())
@@ -89,7 +95,8 @@ public class Category {
      * @return DTO
      */
     public Dto toDto() {
-        return new Dto(getId(), getResearcherId(), getName(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
+        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), getResearcherId(), getName(),
+            getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
     }
 
     @Override
@@ -129,9 +136,10 @@ public class Category {
      */
 
     public record Dto(
-        @JsonProperty("id") Long id,
+        @JsonProperty("id") Optional<Long> id,
         @JsonProperty("researcher_id") String researcherId,
         @JsonProperty("name") String name,
+        @JsonProperty("year") Integer year,
         @JsonProperty("label") Category.CategoryLabel label,
         @JsonProperty("deadline") ZonedDateTime deadline,
         @JsonProperty("minScore") Float minScore,
