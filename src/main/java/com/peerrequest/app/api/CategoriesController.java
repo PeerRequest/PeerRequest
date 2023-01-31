@@ -4,7 +4,11 @@ import com.peerrequest.app.data.Category;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,5 +34,20 @@ public class CategoriesController extends ServiceBasedController {
 
         return this.categoryService.list(after.orElse(null), limit.orElse(maxPageSize), null).stream()
             .map(Category::toDto).toList();
+    }
+
+    @PostMapping("/categories")
+    Category.Dto createCategories(@RequestBody Category.Dto dto,
+                                  @AuthenticationPrincipal OAuth2User user) {
+        if (dto.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not not be set");
+        }
+
+        if (dto.researcherId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "researcher_id must not not be set");
+        }
+
+        var category = Category.fromDto(dto, user.getAttribute("sub"));
+        return this.categoryService.create(category.toDto()).toDto();
     }
 }
