@@ -32,6 +32,10 @@ public class SecurityConfiguration {
             .sameOrigin();
 
         http
+            .csrf()
+            .disable();
+
+        http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(LogoutController.LOGOUT_URL).permitAll()
