@@ -40,6 +40,9 @@ class CategoryServiceImpl implements CategoryService {
         if (newProps.name() != null) {
             category.setName(newProps.name());
         }
+        if (newProps.year() != null) {
+            category.setYear(newProps.year());
+        }
         if (newProps.deadline() != null) {
             category.setName(newProps.name());
         }
