@@ -1,5 +1,5 @@
 <script>
-    import {Badge, BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
@@ -13,8 +13,9 @@
     export let data;
 </script>
 
+
 <svelte:head>
-    <title>{mocks_papers[data.paper_id - 1].title} | PeerRequest</title>
+    <title>{"Review #" + String(mocks_reviews[data.review_id - 1].id)} | PeerRequest</title>
 </svelte:head>
 
 <Container>
@@ -23,13 +24,18 @@
         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
         <BreadcrumbItem
                 href="/categories/{data.category_id}">{mocks_categories[data.category_id - 1].name}</BreadcrumbItem>
-        <BreadcrumbItem>{mocks_papers[data.paper_id - 1].title}</BreadcrumbItem>
+        <BreadcrumbItem
+                href="/categories/{data.category_id}/{data.paper_id}">{mocks_papers[data.paper_id - 1].title}</BreadcrumbItem>
+        <BreadcrumbItem>{"Review #" + String(mocks_reviews[data.review_id - 1].id)}</BreadcrumbItem>
     </ResponsiveBreadCrumb>
-    <Heading class="mb-4 flex items-center" tag="h2">{mocks_papers[data.paper_id - 1].title}
+
+    <Heading class="mb-1 flex items-center" tag="h2">
+        {"Review #" + String(mocks_reviews[data.review_id - 1].id)}
+    </Heading>
+    <Heading tag="h6">
+        <Secondary> Reviewer: {mocks_reviews[data.review_id - 1].reviewer}</Secondary>
     </Heading>
 
     <ReviewView/>
 
-
-    <!-- CONTENT HERE -->
 </Container>
