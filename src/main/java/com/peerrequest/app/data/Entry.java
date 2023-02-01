@@ -54,7 +54,7 @@ public class Entry {
      * @return entry represented by the DTO
      */
     public static Entry fromDto(Dto dto) {
-        return fromDto(dto, dto.researcherId().get());
+        return fromDto(dto, dto.researcherId().get(), dto.categoryId().get());
     }
 
     /**
@@ -63,13 +63,13 @@ public class Entry {
      * @param dto DTO
      * @return Entry represented by the DTO
      */
-    public static Entry fromDto(Dto dto, String researcherId) {
+    public static Entry fromDto(Dto dto, String researcherId, Long categoryId) {
         return Entry.builder()
                 .id(dto.id().orElse(null))
                 .name(dto.name())
                 .researcherId(researcherId)
                 .documentId(String.valueOf(dto.documentId()))
-                .categoryId(dto.categoryId().get())
+                .categoryId(categoryId)
                 .build();
     }
 
@@ -80,7 +80,7 @@ public class Entry {
      */
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
-                getName(), Optional.ofNullable(getDocumentId()), Optional.ofNullable(getCategoryId()));
+                getName(), getDocumentId(), Optional.ofNullable(getCategoryId()));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class Entry {
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("researcher_id") Optional<String> researcherId,
             @JsonProperty("name") String name,
-            @JsonProperty("document_id") Optional<String> documentId,
+            @JsonProperty("document_id") String documentId,
             @JsonProperty("category_id") Optional<Long> categoryId)
             implements Serializable {
     }
