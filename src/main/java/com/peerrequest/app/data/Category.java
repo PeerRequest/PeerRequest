@@ -62,7 +62,7 @@ public class Category {
     @Getter
     @Setter
     private float minScore;
-    @Column(name = "nax_score", nullable = false)
+    @Column(name = "max_score", nullable = false)
     @Getter
     @Setter
     private float maxScore;
