@@ -3,6 +3,7 @@ package com.peerrequest.app.services;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.repos.EntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class EntryServiceImpl implements EntryService {
 
     @Override
     public List<Entry> list(Long cursor, int maxCount, Entry.Dto filter) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        return repo.list(cursor, Pageable.ofSize(maxCount),
+                null, filter.categoryId().get());
     }
 
     @Override
