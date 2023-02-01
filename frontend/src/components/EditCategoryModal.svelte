@@ -28,10 +28,10 @@
                      on:click={hide}/>
     </svelte:fragment>
     <form class="grid gap-y-6">
-        <hr/>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name </Heading>
-            <input size="50" id= conference_name type= text value={conference.name} required>
+            <input class="min-w-[13.5rem]" id= conference_name type= text value={conference.name} size="{conference.name.length}"
+                   onkeypress="this.style.width = ((this.value.length + 8) * 8) + 'px';" required>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Year </Heading>
@@ -39,8 +39,7 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Deadline </Heading>
-            <!-- for now type = text because of mockup, but type = date is more fitting -->
-            <input id= conference_deadline type= text value={conference.deadline} required>
+            <input id= conference_deadline type= date value={conference.deadline} required>
         </div>
         <Button type="submit" color="primary" size="xs">
             Save
