@@ -2,6 +2,7 @@
     import mock_data from "../mock_data.js";
     import {Button} from "flowbite-svelte";
     import { fade } from 'svelte/transition';
+    import { onMount } from 'svelte';
 
     let notifications = mock_data.notification;
 
@@ -20,17 +21,20 @@
         notifications = []
     }
 
-    document.addEventListener(
-        "click",
-        function(event) {
-            // If user either clicks outside the popup window, then close popup
-            if (
-                !event.target.closest(".modal")
-            ) {
-                show = false            }
-        },
-        false
-    )
+    onMount(() => {
+        document.addEventListener(
+            "click",
+            function(event) {
+                // If user either clicks outside the popup window, then close popup
+                if (
+                    !event.target.closest(".modal")
+                ) {
+                    show = false
+                }
+            },
+            false
+        )
+    })
 </script>
 
 <!-- notification bell -->
