@@ -11,8 +11,6 @@
     <header class="flex">
         <h1 class="font-bold ">{amount}{amount > 1 ? " comments" : " comment" }</h1>
     </header>
-    <hr/>
+    <CommentSection/>
 </main>
 
-
-<CommentSection/>
