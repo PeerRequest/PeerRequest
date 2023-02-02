@@ -9,12 +9,12 @@
 
     const pages = mock_data.pagination;
 
-    // my stuff start
-    const biddingElements = mock_data.bidding[0];
+    const bidding = mock_data.bidding;
     const categories = mock_data.categories;
     const papers = mock_data.papers;
-    // my stuff end
 
+    /** @type {import("./$types").PageData} */
+    export let data;
 
 
     const previous = () => {
@@ -26,26 +26,26 @@
 </script>
 
 <svelte:head>
-    <title>Conferences / Journals | PeerRequest</title>
+    <title>{"Bidding for " + categories[data.category_id - 1].name} | PeerRequest</title>
 </svelte:head>
 
 <Container>
     <ResponsiveBreadCrumb>
         <BreadcrumbItem home href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
-        <BreadcrumbItem>TestTest</BreadcrumbItem>
+        <BreadcrumbItem
+                href="/categories/{categories[data.category_id - 1].id}">{categories[data.category_id - 1].name}</BreadcrumbItem>
+        <BreadcrumbItem>Bidding</BreadcrumbItem>
+
     </ResponsiveBreadCrumb>
-    <Heading class="mb-4" tag="h2">Just A Bidding Process</Heading>
-    <Heading tag="h6">
-        <Secondary> Owner: TODO </Secondary>
-    </Heading>
+    <Heading class="mb-4" tag="h2">{"Bidding for " + categories[data.category_id - 1].name}</Heading>
     <Heading class="mb-5" tag="h6">
-        <Secondary>Review Deadline: TODO</Secondary>
+        <Secondary>{"Review Deadline: " + categories[data.category_id - 1].deadline }</Secondary>
     </Heading>
 
     <Biddings>
         {#each papers as p}
-            {#if p.category.id === biddingElements.category.id}
+            {#if p.category === bidding[data.bidding_id - 1].category}
                 <Bidding
                         title={p.title}
                         href="/categories/{p.category.id}/{p.id}"
@@ -58,11 +58,11 @@
         <Pagination icon on:next={next} on:previous={previous} {pages}>
             <svelte:fragment slot="prev">
                 <span class="sr-only">Previous</span>
-                <ChevronLeft class="w-5 h-5" />
+                <ChevronLeft class="w-5 h-5"/>
             </svelte:fragment>
             <svelte:fragment slot="next">
                 <span class="sr-only">Next</span>
-                <ChevronRight class="w-5 h-5" />
+                <ChevronRight class="w-5 h-5"/>
             </svelte:fragment>
         </Pagination>
     </div>
