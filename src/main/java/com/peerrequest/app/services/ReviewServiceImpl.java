@@ -91,12 +91,19 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Message saveMessage(Message.Dto newEntity) {
+    public Message createMessage(Message.Dto newEntity) {
         return messageRepo.save(Message.fromDto(newEntity));
     }
 
+
+
     @Override
-    public List<Message> listMessage(Long cursor, int maxCount, Message.Dto filter) {
+    public Optional<Message> getMessage(Long cursor) {
+        return messageRepo.findById(cursor);
+    }
+
+    @Override
+    public List<Message> listMessages(Long cursor, int maxCount, Message.Dto filter) {
         return messageRepo.list(cursor, Pageable.ofSize(maxCount),
             filter == null ? null : (filter.reviewId().isPresent() ? filter.reviewId().get() : null));
     }
