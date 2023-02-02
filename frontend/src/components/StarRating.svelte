@@ -6,6 +6,7 @@
 
     function setRating(index) {
         rating = index + 1;
+
         console.log("rating", rating);
     }
 
@@ -24,8 +25,12 @@
 
 <div class="star-rating">
     {#each selectionArray as star, index}
-        <Button class="!p-1 mx-1 bg-white hover:bg-white">
-            <svg aria-hidden="true" class="w-8 h-8 text-gray-200 hover:text-yellow-200" fill="currentColor"
+        <Button class="!p-1 mx-1 bg-white hover:bg-white border-transparent focus:border-transparent focus:ring-0">
+            <svg aria-hidden="true" class={`w-8 h-8 ${
+    index < rating || (index < hover && hover !== null)
+      ? "text-yellow-200"
+      : "text-gray-200"
+  } hover:text-yellow-200`} fill="currentColor"
                  viewBox="0 0 20 20"
                  xmlns="http://www.w3.org/2000/svg"
                  on:click={() => setRating(index)}
