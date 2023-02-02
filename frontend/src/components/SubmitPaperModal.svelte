@@ -50,12 +50,12 @@
         </div>
         <Footer class="absolute bottom-0 left-0 z-20 w-full">
             <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center w-full ">
-                <Button outline on:click={() => addPaper()}> Add Additional Paper</Button>
+                <Button class="rounded-none h-10 text-sm" outline on:click={() => addPaper()}> Add Additional Paper</Button>
                 {#if (papers.length !== 0)}
-                    <Button class="!p-2" outline color="red"
+                    <Button class="!p-2 rounded-none h-10 text-sm" outline color="red"
                             on:click={() => papers = papers.filter(e => e !== papers[papers.length -1])}>Remove Last Paper</Button>
                 {/if}
-                <Button class="w-full" type="submit" color="primary" size="xs" on:click={() => finishSubmission()}>Finish Submission</Button>
+                <Button class="w-full rounded-none h-10 text" type="submit" color="primary" size="sm" on:click={() => finishSubmission()}>Finish Submission</Button>
             </div>
         </Footer>
     </form>
