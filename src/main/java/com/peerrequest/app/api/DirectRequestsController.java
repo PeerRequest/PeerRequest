@@ -2,7 +2,9 @@ package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.DirectRequestProcess;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The RequestsController handles all directRequests interaction with the backend.
@@ -16,16 +18,18 @@ public class DirectRequestsController extends ServiceBasedController {
     /**
      * Gets a directRequestProcess.
      *
-     * @param categoryId category of the entry
      * @param entryId entry of the directRequestProcess
      *
      * @return directRequestProcess of entry
      */
     @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess getDirectRequestProcess(@PathVariable() final long categoryId,
-                                                        @PathVariable final long entryId) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
+    public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable final long entryId) {
+        var option = this.directRequestProcessService.get(entryId);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+
+        return option.get().toDto();
     }
 
     /**
