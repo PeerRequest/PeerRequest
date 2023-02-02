@@ -1,6 +1,5 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Message;
 import com.peerrequest.app.data.Review;
@@ -153,13 +152,7 @@ public class ReviewsController extends ServiceBasedController {
     Optional<Message.Dto> deleteMessage(@AuthenticationPrincipal OAuth2User user,
                                         @PathVariable Long messageId) {
         var message = this.reviewService.getMessage(messageId);
-        if (message.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "message does not exist");
-        }
-        if (!message.get().getCreatorId().equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "you may not have the permission to delete this message");
-        }
+        checkAuthMessage(message, user);
         var option = this.reviewService.deleteMessage(messageId);
         return option.map(Message::toDto);
     }
@@ -209,9 +202,8 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var option = this.reviewService.updateMessage(dto.id().get(), dto);
-        if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "message does not exist");
-        }
+        checkAuthMessage(option, user);
+
         return option.get().toDto();
     }
 
@@ -246,6 +238,16 @@ public class ReviewsController extends ServiceBasedController {
             && !entry.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "you may not have the permission to access this review");
+        }
+    }
+
+    private void checkAuthMessage(Optional<Message> message , OAuth2User user) {
+        if (message.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "message does not exist");
+        }
+        if (!message.get().getCreatorId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "you may not have the permission to delete this message");
         }
     }
 }
