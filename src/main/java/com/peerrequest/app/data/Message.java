@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import org.hibernate.Hibernate;
  * Represents a Message.
  */
 @Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "message")
 public class Message {
@@ -27,7 +29,7 @@ public class Message {
     @Column(name = "review_id", nullable = false)
     @Getter
     @Setter
-    private long reviewId;
+    private Long reviewId;
 
     @Column(name = "creator_id", nullable = false, length = 40)
     @Getter

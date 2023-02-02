@@ -17,7 +17,7 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
      * @param cursor     if not null the last id of the previous page
      * @param pageable   describes the pages
      * @param entryId    if not null is user to filter by an entry
-     * @param reviewerId if not null is used to filter by a reviewer
+     * @param reviewerId if not null and entryId is null, is used to filter by a reviewer
      * @return a list of all matching entries
      */
     default List<Review> list(Long cursor, Pageable pageable, Long entryId, String reviewerId) {
