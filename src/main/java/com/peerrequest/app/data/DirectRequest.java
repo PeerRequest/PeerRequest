@@ -15,8 +15,8 @@ import org.hibernate.Hibernate;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "request")
-public class Request {
+@Table(name = "direct_request")
+public class DirectRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
@@ -33,21 +33,21 @@ public class Request {
     @Getter
     private String reviewerId;
 
-    @Column(name = "entry_id", nullable = false)
+    @Column(name = "direct_request_process_id", nullable = false)
     @Getter
-    private Long entryId;
+    private Long directRequestProcessId;
 
-    protected Request() {
+    protected DirectRequest() {
     }
 
-    public static Request fromDto(Dto dto) {
+    public static DirectRequest fromDto(Dto dto) {
         return fromDto(dto, dto.reviewerId().get());
     }
 
-    public static Request fromDto(Dto dto, String researcherId) {
+    public static DirectRequest fromDto(Dto dto, String researcherId) {
         // TODO: implement
 
-        return Request.builder()
+        return DirectRequest.builder()
                 .id(dto.id().orElse(null))
                 .build();
     }
@@ -60,7 +60,7 @@ public class Request {
     public Dto toDto() {
         // TODO: implement
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), getState(),
-                Optional.of(getReviewerId()));
+                Optional.of(getReviewerId()), Optional.of(getDirectRequestProcessId()));
     }
 
     @Override
@@ -71,8 +71,8 @@ public class Request {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
             return false;
         }
-        Request request = (Request) o;
-        return id != null && Objects.equals(id, request.id);
+        DirectRequest directRequest = (DirectRequest) o;
+        return id != null && Objects.equals(id, directRequest.id);
     }
 
     @Override
@@ -86,15 +86,15 @@ public class Request {
      */
     public enum RequestState {
         /**
-         * Request state when a user accepted a request.
+         * DirectRequest state when a user accepted a request.
          */
         ACCEPTED,
         /**
-         * Request state when a user declined a request.
+         * DirectRequest state when a user declined a request.
          */
         DECLINED,
         /**
-         * Request state when a user neither accepted nor declined a request.
+         * DirectRequest state when a user neither accepted nor declined a request.
          */
         PENDING
     }
@@ -102,6 +102,8 @@ public class Request {
     public record Dto(
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("state") RequestState state,
-            @JsonProperty("reviewer_id") Optional<String> reviewerId) implements Serializable {
+            @JsonProperty("reviewer_id") Optional<String> reviewerId,
+            @JsonProperty("direct_request_process_id") Optional<Long> directRequestProcessId
+            ) implements Serializable {
     }
 }
