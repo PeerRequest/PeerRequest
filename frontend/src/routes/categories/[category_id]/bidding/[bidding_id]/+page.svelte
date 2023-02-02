@@ -7,6 +7,7 @@
     import Papers from "../../../../../components/Papers.svelte";
 
 
+
     const pages = mock_data.pagination;
 
     const bidding = mock_data.bidding;
