@@ -52,6 +52,8 @@ public class DirectRequestProcess {
     public static DirectRequestProcess fromDto(DirectRequestProcess.Dto dto, Long entryId) {
         return DirectRequestProcess.builder()
                 .id(dto.id().orElse(null))
+                .entryId(entryId)
+                .openSlots(dto.openSlots())
                 .build();
     }
 
