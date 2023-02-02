@@ -6,6 +6,7 @@
     import Biddings from "../../../../../components/Biddings.svelte";
     import Bidding from "../../../../../components/Bidding.svelte";
 
+
     const pages = mock_data.pagination;
 
     // my stuff start
