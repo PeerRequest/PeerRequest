@@ -1,6 +1,8 @@
 package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.DirectRequestProcess;
+import com.peerrequest.app.data.repos.DirectRequestProcessRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,6 +10,11 @@ import java.util.Optional;
 
 @Service
 public class DirectRequestProcessServiceImpl implements DirectRequestProcessService {
+
+    @Autowired
+    private DirectRequestProcessRepository repo;
+
+
     @Override
     public DirectRequestProcess create(DirectRequestProcess.Dto newEntity) {
         // TODO: implement
@@ -22,8 +29,7 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public Optional<DirectRequestProcess> get(Long cursor) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        return repo.getByEntryId(cursor);
     }
 
     @Override
