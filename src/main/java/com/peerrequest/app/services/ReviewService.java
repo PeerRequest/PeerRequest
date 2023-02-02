@@ -15,9 +15,8 @@ public interface ReviewService
      * Adds a Message represented by a DTO to the message board of a Review.
      *
      * @param newEntity DTO of a Message
-
      */
-    Message saveMessage(Message.Dto newEntity);
+    Message createMessage(Message.Dto newEntity);
 
     /**
      * Returns a list of max maxCount messages after a cursor filtered by an given filter.
@@ -27,7 +26,15 @@ public interface ReviewService
      * @param filter   filter, may be null
      * @return the filtered list
      */
-    List<Message> listMessage(Long cursor, int maxCount, Message.Dto filter);
+    List<Message> listMessages(Long cursor, int maxCount, Message.Dto filter);
+
+    /**
+     * Returns a message.
+     *
+     * @param cursor id of the message
+     * @return message
+     */
+    Optional<Message> getMessage(Long cursor);
 
     /**
      * Updates a Message.
@@ -42,6 +49,7 @@ public interface ReviewService
      * Deletes a message with the given id.
      *
      * @param cursor id of a Message
+     * @return deleted message
      */
     Optional<Message> deleteMessage(Long cursor);
 
