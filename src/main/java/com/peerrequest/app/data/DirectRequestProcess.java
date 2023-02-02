@@ -28,7 +28,7 @@ public class DirectRequestProcess {
     @Column(name = "open_slots", nullable = false)
     @Getter
     @Setter
-    private int openSlots;
+    private Integer openSlots;
 
     protected DirectRequestProcess() {
     }
@@ -53,7 +53,7 @@ public class DirectRequestProcess {
         return DirectRequestProcess.builder()
                 .id(dto.id().orElse(null))
                 .entryId(entryId)
-                .openSlots(dto.openSlots())
+                .openSlots(dto.openSlots().get())
                 .build();
     }
 
@@ -64,7 +64,7 @@ public class DirectRequestProcess {
      */
     public DirectRequestProcess.Dto toDto() {
         return new DirectRequestProcess.Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
-                getEntryId() == null ? Optional.empty() : Optional.of(getEntryId()), getOpenSlots());
+                getEntryId() == null ? Optional.empty() : Optional.of(getEntryId()), Optional.of(getOpenSlots()));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DirectRequestProcess {
     public record Dto(
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("entry_id") Optional<Long> entryId,
-            @JsonProperty("open_slots") int openSlots
+            @JsonProperty("open_slots") Optional<Integer> openSlots
         ) implements Serializable {
     }
 }
