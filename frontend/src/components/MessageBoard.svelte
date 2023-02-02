@@ -13,7 +13,7 @@
     let order = true, comment
 
     const handleOrder = (data) => {
-        if(!order) return sortedComments = data.sort((a, b) => new Date(a.date) - new Date(b.date))
+        if(order) return sortedComments = data.sort((a, b) => new Date(a.date) - new Date(b.date))
         return sortedComments = data.sort((a, b) => new Date(b.date) - new Date(a.date))
     };
 
