@@ -3,8 +3,11 @@ package com.peerrequest.app.api;
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.DirectRequestProcess;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 
 /**
  * The RequestsController handles all directRequests interaction with the backend.
@@ -12,8 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class DirectRequestsController extends ServiceBasedController {
-
-    // DirectRequestProcess
 
     /**
      * Gets a directRequestProcess.
@@ -35,18 +36,30 @@ public class DirectRequestsController extends ServiceBasedController {
     /**
      * Creates a directRequestProcess.
      *
-     * @param categoryId category of the entry
      * @param entryId entry of the directRequestProcess
-     * @param directRequestProcess directRequestProcess to add
+     * @param dto containing the open slots
      *
      * @return the added directRequestProcess
      */
-    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess putDirectRequestProcess(@PathVariable final long categoryId,
-                                                        @PathVariable final long entryId,
-                                                        @RequestBody final DirectRequestProcess directRequestProcess) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
+    @PostMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
+    public DirectRequestProcess createDirectRequestProcess(@PathVariable Long entryId,
+                                                        @RequestBody DirectRequestProcess.Dto dto,
+                                                        @AuthenticationPrincipal OAuth2User user) {
+        if (dto.openSlots().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "open slots is required");
+        }
+
+        String researcherId = this.entryService.get(entryId).get().getResearcherId();
+
+        if (!user.getAttribute("sub").toString().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the user that created the entry may create a request process");
+        }
+
+        // TODO: check if there is an existent Bidding process with the entry
+
+        // TODO: continue developing here
+        return this.directRequestProcessService.create(dto);
     }
 
     /**
