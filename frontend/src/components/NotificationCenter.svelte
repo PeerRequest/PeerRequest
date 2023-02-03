@@ -64,19 +64,17 @@
     <!-- popup itself -->
     <div
             class="absolute z-50 top-[60px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
-            shadow-md overflow-y-auto max-h-[235px] w-[512px] text-center modal"
+            shadow-md overflow-y-auto max-h-[235px] w-[512px] text-left modal"
     >
         <ul class="space-y-3">
             {#each notifications as n}
-                <li class="p-3 border rounded relative outline outline-gray-100" transition:fade>
-                    <p class="font-bold">{n.subject}</p>
-                    <p class="w-fit h-fit">{n.message}</p>
-                    <div class="mt-2 flex justify-end gap-x-4">
-                        <Button class="px-2 rounded-lg h-4 text-sm rounded-sm" outline color="blue" on:click={() => acceptButton(n)}>
-                            Accept
-                        </Button>
-
-                        <div class="flex flex-wrap items-center gap-2">
+                <li class="p-3 border rounded relative outline outline-gray-100 flex gap-x-4 grid-rows-1" transition:fade>
+                    <div>
+                        <p class="font-bold">{n.subject}</p>
+                        <p class="w-fit h-fit">{n.message}</p>
+                    </div>
+                    <div class="mt-2 flex justify-end gap-x-4 w-full h-fit">
+                        <div class="flex flex-wrap items-center gap-2 grid gap-y-3">
                             <Button pill class="!p-2" outline color="red"
                                     on:click={() => declineButton(n)}>
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
@@ -94,9 +92,10 @@
                                     </g>
                                 </svg>
                             </Button>
-                            <Button pill class="!p-2" outline>
+                            <Button pill class="!p-2" outline
+                                    on:click={() => acceptButton(n)}>
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                     width="32px" height="32px" viewBox="0 0 64 64" enable-background="new 0 0 64 64"
+                                     width="32px" height="32px" viewBox="0 0 27 27" enable-background="new 0 0 64 64"
                                      xml:space="preserve"
                                      fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10">
                                     <polyline points="20 6 9 17 4 12"></polyline>
