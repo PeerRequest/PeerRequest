@@ -17,8 +17,7 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public DirectRequestProcess create(DirectRequestProcess.Dto newEntity) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        return repo.save(DirectRequestProcess.fromDto(newEntity));
     }
 
     @Override
