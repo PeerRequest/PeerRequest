@@ -3,8 +3,6 @@
     import StarRating from "./StarRating.svelte";
 
     export let href;
-    export let title;
-    export let id;
     export let paper;
     export let rating = null;
     export let category = null;
