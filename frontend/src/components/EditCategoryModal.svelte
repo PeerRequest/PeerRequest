@@ -6,8 +6,6 @@
         Heading
 
     } from "flowbite-svelte" ;
-    import SubmitPaper from "./SubmitPaper.svelte";
-    import PdfUploader from "./PdfUploader.svelte";
 
     export let show = false;
     export let conference;
