@@ -55,11 +55,9 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Only the user that created the entry may create a request process");
         }
-
         // TODO: check if there is an existent Bidding process with the entry
-
-        // TODO: continue developing here
-        return this.directRequestProcessService.create(dto);
+        var directRequestProcessDto = DirectRequestProcess.fromDto(dto, entryId);
+        return this.directRequestProcessService.create(directRequestProcessDto.toDto());
     }
 
     /**
