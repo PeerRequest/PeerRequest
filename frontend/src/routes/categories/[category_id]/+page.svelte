@@ -62,7 +62,7 @@
             {#if p.category === mocks[data.category_id - 1]}
                 <Paper
                         href="/categories/{p.category.id}/{p.id}"
-                        title={p.title}
+                        paper={p}
                         slots={p.slots}
                         category={p.category}
                 />

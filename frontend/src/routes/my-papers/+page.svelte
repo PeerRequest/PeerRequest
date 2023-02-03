@@ -27,8 +27,7 @@
         {#each papers.filter((p) => p.researcher === user.name) as p}
             <Paper
                     href="/categories/{p.category.id}/{p.id}"
-                    id={p.id}
-                    title={p.title}
+                    paper={p}
                     category={p.category}
             />
         {/each}
