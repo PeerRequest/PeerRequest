@@ -10,6 +10,7 @@
     const mocks_papers = mock_data.papers;
     const mocks_categories = mock_data.categories;
     const mocks_reviews = mock_data.reviews;
+    const users = mock_data.users;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -39,11 +40,12 @@
         </div>
 
         <div class="lg:w-[50%] md:w-[100%]  mt-7">
-            <Reviews>
+            <Reviews show_reviewer="true">
                 {#each mocks_reviews.filter((r) => r.paper === mocks_papers[data.paper_id - 1]) as r}
                     <Review
                             href="/categories/{r.paper.category.id}/{r.paper.id}/{r.id}"
                             id={r.id}
+                            reviewer={users.find(user => user.id === r.reviewer_id).name}
                     />
                 {/each}
             </Reviews>
