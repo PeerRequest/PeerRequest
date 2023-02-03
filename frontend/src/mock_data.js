@@ -152,7 +152,32 @@ const reviews = [
     {
         id: 1,
         reviewer: "Kaori Chihiro",
+        reviewer_id: 24,
         paper: papers[1]
+    },
+    {
+        id: 2,
+        reviewer: "Felicity Baird",
+        reviewer_id: 15,
+        paper: papers[2]
+    },
+    {
+        id: 3,
+        reviewer: "Keiran Aguilar",
+        reviewer_id: 20,
+        paper: papers[2]
+    },
+    {
+        id: 4,
+        reviewer: "Stephen Orr",
+        reviewer_id: 17,
+        paper: papers[5]
+    },
+    {
+        id: 5,
+        reviewer: "Felicity Baird",
+        reviewer_id: 15,
+        paper: papers[5]
     }
 ]
 
