@@ -42,13 +42,13 @@
                      on:click={hide}/>
     </svelte:fragment>
     <form class="min-h-[20vh]">
-        <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center">
+        <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center overflow-y-auto max-h-[51vh]">
             {#each papers as p}
                 <SubmitPaper category_type={conference_type}/>
                 <hr class="my-8 h-px bg-gray-200 border-0 dark:bg-gray-700">
             {/each}
         </div>
-        <Footer class="absolute bottom-0 left-0 z-20 w-full">
+        <Footer class="bottom-0 left-0 z-20 w-full">
             <div class="grid grid-cols-1 col-span-full gap-y-6 flex justify-center w-full ">
                 <Button class="rounded-none h-10 text-sm" outline on:click={() => addPaper()}> Add Additional Paper</Button>
                 {#if (papers.length !== 0)}
