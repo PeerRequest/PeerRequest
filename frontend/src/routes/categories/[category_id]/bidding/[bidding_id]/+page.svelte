@@ -59,7 +59,7 @@
             </Button>
 
             <Button disabled={!biddingOngoing}
-                    href="../assignment"
+                    href={!biddingOngoing ? "" : "../assignment"}
                     outline>
                 Get results
             </Button>
