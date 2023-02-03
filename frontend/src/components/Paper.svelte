@@ -10,7 +10,6 @@
 
 </script>
 
-
 <TableBodyRow>
     <TableBodyCell>
         <BreadcrumbItem href="/categories/{paper.category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
@@ -37,6 +36,5 @@
             <StarRating rating={rating}/>
         </TableBodyCell>
     {/if}
-
 
 </TableBodyRow>

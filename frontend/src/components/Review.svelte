@@ -11,6 +11,13 @@
 
 
 <TableBodyRow>
+
+    {#if paper !== null}
+        <TableBodyCell>
+            <BreadcrumbItem href="/categories/{paper.category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
+        </TableBodyCell>
+    {/if}
+
     <TableBodyCell>
         <BreadcrumbItem href={href}>Review #{id}</BreadcrumbItem>
     </TableBodyCell>
@@ -18,12 +25,6 @@
     {#if reviewer !== null}
         <TableBodyCell>
             <BreadcrumbItem>{reviewer}</BreadcrumbItem>
-        </TableBodyCell>
-    {/if}
-
-    {#if paper !== null}
-        <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
         </TableBodyCell>
     {/if}
 

@@ -8,14 +8,15 @@
 
 <Table noborder={false} shadow={true}>
     <TableHead>
+
+        {#if show_paper}
+            <TableHeadCell>Research Paper</TableHeadCell>
+        {/if}
+
         <TableHeadCell>Reviews</TableHeadCell>
 
         {#if show_reviewer}
             <TableHeadCell>Reviewer</TableHeadCell>
-        {/if}
-
-        {#if show_paper}
-            <TableHeadCell>Research Paper</TableHeadCell>
         {/if}
 
         {#if show_category}
