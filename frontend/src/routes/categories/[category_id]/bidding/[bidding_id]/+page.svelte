@@ -3,8 +3,8 @@
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
-    import Biddings from "../../../../../components/Biddings.svelte";
-    import Bidding from "../../../../../components/Bidding.svelte";
+    import Paper from "../../../../../components/Paper.svelte";
+    import Papers from "../../../../../components/Papers.svelte";
 
 
     const pages = mock_data.pagination;
@@ -12,6 +12,8 @@
     const bidding = mock_data.bidding;
     const categories = mock_data.categories;
     const papers = mock_data.papers;
+
+    let rating=0;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -38,21 +40,22 @@
         <BreadcrumbItem>Bidding</BreadcrumbItem>
 
     </ResponsiveBreadCrumb>
-    <Heading class="mb-4" tag="h2">{"Bidding for " + categories[data.category_id - 1].name}</Heading>
+    <Heading tag="h2">{"Bidding for " + categories[data.category_id - 1].name}</Heading>
     <Heading class="mb-5" tag="h6">
         <Secondary>{"Review Deadline: " + categories[data.category_id - 1].deadline }</Secondary>
     </Heading>
 
-    <Biddings>
+    <Papers show_rating=true>
         {#each papers as p}
             {#if p.category === bidding[data.bidding_id - 1].category}
-                <Bidding
-                        title={p.title}
+                <Paper
                         href="/categories/{p.category.id}/{p.id}"
+                        paper={p}
+                        rating={rating}
                 />
             {/if}
         {/each}
-    </Biddings>
+    </Papers>
 
     <div class="mx-auto m-8">
         <Pagination icon on:next={next} on:previous={previous} {pages}>

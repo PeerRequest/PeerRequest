@@ -1,7 +1,7 @@
 <script>
     import {Button} from "flowbite-svelte";
 
-    let rating = 0;
+    export let rating;
     let hover = 0;
 
     function setRating(index) {
