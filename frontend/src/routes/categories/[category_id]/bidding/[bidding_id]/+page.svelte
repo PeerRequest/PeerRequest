@@ -14,7 +14,7 @@
     const papers = mock_data.papers;
 
     let rating = 0;
-    let biddingOngoing = true;
+    let biddingOngoing = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -59,7 +59,7 @@
             </Button>
 
             <Button disabled={!biddingOngoing}
-                    href="./{bidding[data.bidding_id - 1].id}/assignment"
+                    href="../assignment"
                     outline>
                 Get results
             </Button>
