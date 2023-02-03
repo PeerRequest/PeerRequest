@@ -75,9 +75,34 @@
                         <Button class="px-2 rounded-lg h-4 text-sm rounded-sm" outline color="blue" on:click={() => acceptButton(n)}>
                             Accept
                         </Button>
-                        <Button class="px-2 rounded-lg h-4 text-sm rounded-sm" outline color="red" on:click={() => declineButton(n)}>
-                            Decline
-                        </Button>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <Button pill class="!p-2" outline color="red"
+                                    on:click={() => declineButton(n)}>
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                     width="32px" height="32px" viewBox="0 0 64 64" enable-background="new 0 0 64 64"
+                                     xml:space="preserve">
+                                    <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
+                                              y1="17.153" x2="45.045"
+                                              y2="43.056" />
+                                    </g>
+                                    <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
+                                              y1="43.153" x2="44.947"
+                                              y2="17.056" />
+                                    </g>
+                                </svg>
+                            </Button>
+                            <Button pill class="!p-2" outline>
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                     width="32px" height="32px" viewBox="0 0 64 64" enable-background="new 0 0 64 64"
+                                     xml:space="preserve"
+                                     fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </Button>
+                        </div>
                     </div>
                 </li>
             {/each}
