@@ -17,13 +17,9 @@
     } from "flowbite-svelte";
     import mock_data from "../mock_data.js";
 
-    // my stuff start
-    export let bidding = mock_data.bidding[0];
+    export let category;
+    let bidding = mock_data.bidding[0];
 
-    let bidding_href = "/categories/2/bidding/1";
-    let direct_href = "/categories/2";
-    let href = bidding_href;
-    // my stuff end
 
     export let show = false;
     export let hide = () => {
@@ -65,13 +61,11 @@
         </div>
         <ButtonGroup>
             <Button color={strategy === "bidding" ? "primary" : "alternative"}
-                    on:click={() => strategy = "bidding"}
-                    on:click={() => href = bidding_href}>
+                    on:click={() => strategy = "bidding"}>
                 Bidding
             </Button>
             <Button color={strategy === "direct" ? "primary" : "alternative"}
-                    on:click={() => strategy = "direct"}
-                    on:click={() => href = direct_href}>
+                    on:click={() => strategy = "direct"}>
                 Direct
                 Assignment
             </Button>
@@ -172,7 +166,8 @@
     </div>
 
     <svelte:fragment slot="footer">
-        <Button color="primary" href={href}
+        <Button color="primary"
+                href={category.id + (strategy === "direct" ? "/assignment/" : "/bidding/") + bidding.id}
                 on:click={() => result(strategy === "direct", strategy === "direct" ?
             Object.fromEntries(Object.entries(paper_matches).filter(([key, value]) =>
             reviewers.some(r => value && key.startsWith(r.id.toString())))) : {})}>{strategy === "direct" ?
