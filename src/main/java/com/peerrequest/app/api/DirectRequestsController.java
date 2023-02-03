@@ -42,7 +42,7 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return the added directRequestProcess
      */
     @PostMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess createDirectRequestProcess(@PathVariable Long entryId,
+    public DirectRequestProcess.Dto createDirectRequestProcess(@PathVariable Long entryId,
                                                         @RequestBody DirectRequestProcess.Dto dto,
                                                         @AuthenticationPrincipal OAuth2User user) {
         if (dto.openSlots().isEmpty()) {
@@ -57,24 +57,38 @@ public class DirectRequestsController extends ServiceBasedController {
         }
         // TODO: check if there is an existent Bidding process with the entry
         var directRequestProcessDto = DirectRequestProcess.fromDto(dto, entryId);
-        return this.directRequestProcessService.create(directRequestProcessDto.toDto());
+        return this.directRequestProcessService.create(directRequestProcessDto.toDto()).toDto();
     }
 
     /**
      * Patches a directRequestProcess.
      *
-     * @param categoryId category of the entry
      * @param entryId entry of the directRequestProcess
-     * @param updater updater containing the amount of openSlots (int)
+     * @param dto updater containing the amount of openSlots (int)
      *
      * @return updated directRequestProcess
      */
-    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess patchDirectRequestProcess(@PathVariable final long categoryId,
-                                                          @PathVariable final long entryId,
-                                                          @RequestBody final DirectRequest.Dto updater) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
+    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
+    public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable final long entryId,
+                                                          @RequestBody final DirectRequestProcess.Dto dto,
+                                                          @AuthenticationPrincipal OAuth2User user) {
+        String researcherId = this.entryService.get(entryId).get().getResearcherId();
+
+        if (!user.getAttribute("sub").toString().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the user that created the entry may create a request process");
+        }
+
+        if (dto.openSlots().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "open slots must be given");
+        }
+
+        var option = this.directRequestProcessService.update(entryId, dto);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+
+        return option.get().toDto();
     }
 
     // DirectRequest
