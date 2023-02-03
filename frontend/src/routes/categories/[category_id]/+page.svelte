@@ -9,7 +9,7 @@
     import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
 
     const pages = mock_data.pagination;
-    const bidding = mock_data.bidding[0];
+    const bidding = mock_data.bidding;
     const mocks = mock_data.categories;
     const papers = mock_data.papers;
 
@@ -86,7 +86,7 @@
 
 
 <ExternAssignReviewerModal
-        bidding=bidding
+        category={mocks[data.category_id - 1]}
         hide={() => show_assign_modal = false} papers={papers} result={(is_direct_assignment, matches) => {
                              console.log(is_direct_assignment, matches);
                              show_assign_modal = false;
