@@ -70,13 +70,12 @@
             {#each notifications as n}
                 <li class="p-3 border rounded relative outline outline-gray-100" transition:fade>
                     <p class="font-bold">{n.subject}</p>
-                    <p>{n.message}</p>
-                    <div class="mt-1">
-
-                        <Button class="px-2 rounded-lg text-sm rounded-sm" outline color="blue" on:click={() => acceptButton(n)}>
+                    <p class="w-fit h-fit">{n.message}</p>
+                    <div class="mt-2 flex justify-end gap-x-4">
+                        <Button class="px-2 rounded-lg h-4 text-sm rounded-sm" outline color="blue" on:click={() => acceptButton(n)}>
                             Accept
                         </Button>
-                        <Button class="px-2 rounded-lg text-sm rounded-sm" outline color="red" on:click={() => declineButton(n)}>
+                        <Button class="px-2 rounded-lg h-4 text-sm rounded-sm" outline color="red" on:click={() => declineButton(n)}>
                             Decline
                         </Button>
                     </div>
