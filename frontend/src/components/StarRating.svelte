@@ -1,13 +1,9 @@
 <script>
-    import {Button} from "flowbite-svelte";
-
     export let rating;
     let hover = 0;
 
     function setRating(index) {
         rating = index + 1;
-
-        console.log("rating", rating);
     }
 
     function setHover(index) {
@@ -15,7 +11,7 @@
     }
 
     let numberOfStars = 5;
-    export let selectionArray = Array(numberOfStars);
+    let selectionArray = Array(numberOfStars);
 
     let d = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 " +
         "1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175" +
@@ -25,12 +21,12 @@
 
 <div class="star-rating">
     {#each selectionArray as star, index}
-        <Button class="!p-1 mx-1 bg-white hover:bg-white border-transparent focus:border-transparent focus:ring-0">
+        <button class="!p-1 mx-1 ">
             <svg aria-hidden="true" class={`w-8 h-8 ${
     index < rating || (index < hover && hover !== null)
-      ? "text-yellow-200"
+      ? "text-yellow-300"
       : "text-gray-200"
-  } hover:text-yellow-200`} fill="currentColor"
+  } hover:text-yellow-300`} fill="currentColor"
                  viewBox="0 0 20 20"
                  xmlns="http://www.w3.org/2000/svg"
                  on:click={() => setRating(index)}
@@ -38,6 +34,6 @@
                  on:mouseleave={() => setHover(rating)}>
                 <path fill-rule="evenodd" d={d} clip-rule="evenodd"></path>
             </svg>
-        </Button>
+        </button>
     {/each}
 </div>
