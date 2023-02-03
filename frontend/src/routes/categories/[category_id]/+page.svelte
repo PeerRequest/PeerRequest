@@ -58,7 +58,7 @@
     </div>
 
     <div class="w-full flex justify-between">
-        <div class="justify-start">
+        <div class="justify-start gap-x-4 flex">
             {#if mocks[data.category_id - 1].type === "Internal" ||
             mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category()}
                 <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
