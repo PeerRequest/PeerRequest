@@ -33,8 +33,20 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public Optional<DirectRequestProcess> update(Long cursor, DirectRequestProcess.Dto newProps) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        var optional = repo.findById(cursor);
+        if (optional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var directRequestProcess = optional.get();
+
+        if (newProps.openSlots().isEmpty()) {
+            return Optional.empty();
+        }
+
+        directRequestProcess.setOpenSlots(newProps.openSlots().get());
+
+        return Optional.of(repo.save(directRequestProcess));
     }
 
     @Override
