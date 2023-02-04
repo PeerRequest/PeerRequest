@@ -1,7 +1,7 @@
 <script>
     import {Table, TableBody, TableHead, TableHeadCell} from "flowbite-svelte";
 
-    export let category_type;
+    export let category_type = "External";
     export let show_category = false;
     export let show_slots = false;
     export let show_rating = false;
