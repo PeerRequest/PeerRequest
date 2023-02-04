@@ -24,7 +24,7 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return directRequestProcess of entry
      */
     @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
-    public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable("entry_id") final long entryId) {
+    public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable("entry_id") final Long entryId) {
         var option = this.directRequestProcessService.get(entryId);
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
@@ -73,7 +73,7 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return updated directRequestProcess
      */
     @PutMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
-    public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable("entry_id") final long entryId,
+    public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable("entry_id") final Long entryId,
                                                           @RequestBody final DirectRequestProcess.Dto dto,
                                                           @AuthenticationPrincipal OAuth2User user) {
         if (this.entryService.get(entryId).isEmpty()) {
@@ -114,13 +114,75 @@ public class DirectRequestsController extends ServiceBasedController {
      */
     @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
             produces = "application/json")
-    public DirectRequest.Dto getDirectRequest(@PathVariable("request_id") final long requestId) {
-            var option = this.directRequestService.get(requestId);
-            if (option.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
-            }
+    public DirectRequest.Dto getDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                              @PathVariable("request_id") final Long requestId,
+                                              @AuthenticationPrincipal OAuth2User user) {
+        if (this.entryService.get(entryId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
 
-            return option.get().toDto();
+        var option = this.directRequestService.get(requestId);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+
+        String researcherId = this.entryService.get(entryId).get().getResearcherId();
+        String reviewerId = option.get().getReviewerId();
+        if (!user.getAttribute("sub").toString().equals(researcherId)
+                || user.getAttribute("sub").toString().equals(reviewerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the researcher or reviewer may get the request");
+        }
+        return option.get().toDto();
+    }
+
+    /**
+     * Creates a new directRequest.
+     *
+     * @param entryId entry of the directRequestProcess
+     * @param dto request to add
+     *
+     * @return the added request
+     */
+    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
+            produces = "application/json")
+    public DirectRequest.Dto createDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                                 @RequestBody final DirectRequest.Dto dto,
+                                                 @AuthenticationPrincipal OAuth2User user) {
+        if (this.entryService.get(entryId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        String researcherId = this.entryService.get(entryId).get().getResearcherId();
+
+        if (!user.getAttribute("sub").toString().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the user that created the entry may create a request");
+        }
+
+        var directRequestProcess = this.directRequestProcessService.get(entryId);
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+
+        if (dto.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not not be set");
+        }
+
+        if (dto.directRequestProcessId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not not be set");
+        }
+
+        if (dto.state().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state must not not be set");
+        }
+
+        if (dto.reviewerId().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer must be set");
+        }
+
+        var directRequest = DirectRequest.fromDto(dto, dto.reviewerId().get(), DirectRequest.RequestState.PENDING);
+        return this.directRequestService.create(directRequest.toDto()).toDto();
     }
 
     /**
@@ -143,23 +205,6 @@ public class DirectRequestsController extends ServiceBasedController {
         throw new RuntimeException("Not implemented");
     }
 
-    /**
-     * Creates a new directRequest.
-     *
-     * @param categoryId category of the entry
-     * @param entryId entry of the directRequestProcess
-     * @param request request to add
-     *
-     * @return the added request
-     */
-    @PutMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
-            produces = "application/json")
-    public DirectRequest putDirectRequest(@PathVariable final long categoryId,
-                                          @PathVariable final long entryId,
-                                          @RequestBody final DirectRequest request) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
-    }
 
 
     /**
