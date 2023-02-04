@@ -44,11 +44,12 @@ public class DirectRequest {
         return fromDto(dto, dto.reviewerId().get());
     }
 
-    public static DirectRequest fromDto(Dto dto, String researcherId) {
-        // TODO: implement
-
+    public static DirectRequest fromDto(Dto dto, String reviewerId) {
         return DirectRequest.builder()
                 .id(dto.id().orElse(null))
+                .state(dto.state())
+                .reviewerId(reviewerId)
+                .directRequestProcessId(dto.directRequestProcessId().get())
                 .build();
     }
 
@@ -58,9 +59,10 @@ public class DirectRequest {
      * @return DTO
      */
     public Dto toDto() {
-        // TODO: implement
-        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), getState(),
-                Optional.of(getReviewerId()), Optional.of(getDirectRequestProcessId()));
+        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
+                getState(),
+                Optional.of(getReviewerId()),
+                Optional.of(getDirectRequestProcessId()));
     }
 
     @Override
