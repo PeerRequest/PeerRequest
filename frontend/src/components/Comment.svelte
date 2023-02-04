@@ -43,7 +43,8 @@
 <main>
     <div class="rounded-lg outline outline-blue-500 mx-4 my-4 w-[90%]">
         <h1 class="font-bold flex mx-2">{data.user}</h1>
-        <h2 class="text-sm mb-2.5 font-normal text-gray-700 mx-2">{calculateDate(data.date)}</h2>
-        <p class="mx-2 my-2">{data.content}</p>
+        <h2 class="text-xs mx-2 my-2">{calculateDate(data.date)}</h2>
+        <p class="my-2.5 font-normal text-gray-700 mx-2">{data.content}</p>
+        <br>
     </div>
 </main>
