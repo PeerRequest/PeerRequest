@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Check;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Entity
 @Table(name = "direct_request_process")
+@Check(constraints = "open_slots >= 0")
 public class DirectRequestProcess {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
