@@ -7,6 +7,7 @@
         Dropdown,
         DropdownItem
     } from "flowbite-svelte";
+    import {afterUpdate} from "svelte";
 
     let sortedComments = mock_data.comments
     let amount = sortedComments.length
@@ -15,6 +16,23 @@
     const handleOrder = (data) => {
         if(order) return sortedComments = data.sort((a, b) => new Date(a.date) - new Date(b.date))
         return sortedComments = data.sort((a, b) => new Date(b.date) - new Date(a.date))
+    };
+
+    afterUpdate(() => {
+        console.log("afterUpdate");
+        if (order) {
+            scrollToBottom(document.getElementById("CommentSection"))
+        } else {
+            scrollToTop(document.getElementById("CommentSection"))
+        }
+    });
+
+    const scrollToBottom = async (node) => {
+        node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+    };
+
+    const scrollToTop = async (node) => {
+        node.scroll({ top: 0, behavior: 'smooth' });
     };
 
     const submitComment = (e) => {
@@ -45,7 +63,7 @@
             <DropdownItem on:click={()=>order = !order} on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
         </Dropdown>
 
-        <div class="max-h-64 h-64 overflow-y-auto w-full">
+        <div id="CommentSection" class="max-h-64 h-64 overflow-y-auto w-full">
 
             {#each sortedComments as data}
                 <Comment data={data}/>
