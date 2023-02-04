@@ -115,10 +115,10 @@
                            }}
                            show={show_assign_modal}/>
 
-<SubmitPaperModal conference_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
+<SubmitPaperModal category_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
                   show="{show_submit_modal}"/>
 
-<EditCategoryModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
+<EditCategoryModal category="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
                   show="{show_edit_modal}"/>
 
 <ConfirmDeletionModal to_delete="{mocks[data.category_id - 1]}" hide="{() => show_confirm_deletion_modal = false}"
