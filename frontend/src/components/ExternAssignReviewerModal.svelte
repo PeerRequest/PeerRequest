@@ -17,7 +17,6 @@
     } from "flowbite-svelte";
     import mock_data from "../mock_data.js";
 
-
     let bidding = mock_data.bidding[0];
 
 
@@ -167,7 +166,7 @@
 
     <svelte:fragment slot="footer">
         <Button color="primary"
-                href={bidding.category.id + (strategy === "direct" ? "/assignment/" : "/bidding/") + bidding.id}
+                href={bidding.category.id + (strategy === "direct" ? "/assignment/" : "/bidding/"+ bidding.id) }
                 on:click={() => result(strategy === "direct", strategy === "direct" ?
             Object.fromEntries(Object.entries(paper_matches).filter(([key, value]) =>
             reviewers.some(r => value && key.startsWith(r.id.toString())))) : {})}>{strategy === "direct" ?
