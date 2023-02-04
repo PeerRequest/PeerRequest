@@ -64,13 +64,15 @@
                 <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
                     Edit Conference
                 </Button>
-                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline on:click={() => show_confirm_deletion_modal = true}>
+                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        on:click={() => show_confirm_deletion_modal = true}>
                     Delete Conference
                 </Button>
             {/if}
         </div>
 
-        <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper</Button>
+        <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper
+        </Button>
     </div>
 
 
@@ -83,8 +85,7 @@
             {#if p.category === mocks[data.category_id - 1]}
                 <Paper
                         href="/categories/{p.category.id}/{p.id}"
-                        id={p.id}
-                        title={p.title}
+                        paper={p}
                         slots={p.slots}
                         category={p.category}
                 />
@@ -119,7 +120,7 @@
                   show="{show_submit_modal}"/>
 
 <EditCategoryModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
-                  show="{show_edit_modal}"/>
+                   show="{show_edit_modal}"/>
 
-<ConfirmDeletionModal to_delete="{mocks[data.category_id - 1]}" hide="{() => show_confirm_deletion_modal = false}"
-                      show="{show_confirm_deletion_modal}"/>
+<ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                      to_delete="{mocks[data.category_id - 1]}"/>
