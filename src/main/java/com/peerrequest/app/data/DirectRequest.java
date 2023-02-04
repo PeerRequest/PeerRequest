@@ -15,7 +15,10 @@ import org.hibernate.Hibernate;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "direct_request")
+@Table(name = "direct_request", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_direct-request_reviewer-id_process-id",
+                columnNames = {"reviewer_id", "direct_request_process_id"})
+})
 public class DirectRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -41,13 +44,13 @@ public class DirectRequest {
     }
 
     public static DirectRequest fromDto(Dto dto) {
-        return fromDto(dto, dto.reviewerId().get());
+        return fromDto(dto, dto.reviewerId().get(), dto.state().get());
     }
 
-    public static DirectRequest fromDto(Dto dto, String reviewerId) {
+    public static DirectRequest fromDto(Dto dto, String reviewerId, RequestState state) {
         return DirectRequest.builder()
                 .id(dto.id().orElse(null))
-                .state(dto.state())
+                .state(state)
                 .reviewerId(reviewerId)
                 .directRequestProcessId(dto.directRequestProcessId().get())
                 .build();
@@ -60,7 +63,7 @@ public class DirectRequest {
      */
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
-                getState(),
+                Optional.of(getState()),
                 Optional.of(getReviewerId()),
                 Optional.of(getDirectRequestProcessId()));
     }
@@ -103,7 +106,7 @@ public class DirectRequest {
 
     public record Dto(
             @JsonProperty("id") Optional<Long> id,
-            @JsonProperty("state") RequestState state,
+            @JsonProperty("state") Optional<RequestState> state,
             @JsonProperty("reviewer_id") Optional<String> reviewerId,
             @JsonProperty("direct_request_process_id") Optional<Long> directRequestProcessId
             ) implements Serializable {
