@@ -53,31 +53,47 @@
             </Heading>
         </div>
 
-        <div class="mr-5">
-            <Button on:click={handleClick}>
-                {biddingOngoing ? "Start bidding" : "Stop bidding"}
-            </Button>
+        {#if categories[data.category_id - 1].is_my_category()}
+            <div class="mr-5">
+                <Button on:click={handleClick}>
+                    {biddingOngoing ? "Start bidding" : "Stop bidding"}
+                </Button>
 
-            <Button disabled={!biddingOngoing}
-                    href={!biddingOngoing ? "" : "../assignment"}
-                    outline>
-                Get results
-            </Button>
-        </div>
+                <Button disabled={!biddingOngoing}
+                        href={!biddingOngoing ? "" : "../assignment"}
+                        outline>
+                    Get results
+                </Button>
+            </div>
+        {/if}
 
     </div>
 
-    <Papers show_rating=true>
-        {#each papers as p}
-            {#if p.category === bidding[data.bidding_id - 1].category}
-                <Paper
-                        href="/categories/{p.category.id}/{p.id}"
-                        paper={p}
-                        rating={rating}
-                />
-            {/if}
-        {/each}
-    </Papers>
+    {#if categories[data.category_id - 1].is_my_category()}
+        <Papers>
+            {#each papers as p}
+                {#if p.category === bidding[data.bidding_id - 1].category}
+                    <Paper
+                            href="/categories/{p.category.id}/{p.id}"
+                            paper={p}
+                    />
+                {/if}
+            {/each}
+        </Papers>
+    {:else}
+        <Papers show_rating=true>
+            {#each papers as p}
+                {#if p.category === bidding[data.bidding_id - 1].category}
+                    <Paper
+                            href="/categories/{p.category.id}/{p.id}"
+                            paper={p}
+                            rating={rating}
+                    />
+                {/if}
+            {/each}
+        </Papers>
+
+    {/if}
 
     <div class="mx-auto m-8">
         <Pagination icon on:next={next} on:previous={previous} {pages}>
