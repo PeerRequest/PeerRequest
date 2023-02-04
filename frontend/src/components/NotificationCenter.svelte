@@ -39,7 +39,7 @@
 
 <!-- notification bell -->
 <div class="mb-2">
-    <Button class="relative p-1 modal" pill color="alternative" on:click={() => (show = !show)}>
+    <Button class="relative p-1 modal border-none rounded-full" pill color="alternative" on:click={() => (show = !show)}>
         <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -55,12 +55,10 @@
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
-        <span class="inline-block absolute top-0 bg-blue-500 text-white right-0 rounded-full text-xs min-w-[18px] min-h-[18px] text-center">{notifications.length}</span>
+        <span class="inline-block absolute top-1 bg-blue-500 text-white right-3 rounded-full text-xs min-w-[18px] min-h-[18px] text-center">{notifications.length}</span>
     </Button>
 </div>
 {#if show}
-    <!-- clicking anywhere on the page will close the popup -->
-
     <!-- popup itself -->
     <div
             class="absolute z-50 top-[80px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
