@@ -30,7 +30,9 @@
     <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">PeerRequest</span>
   </NavBrand>
   <div class="flex items-center lg:order-2">
-    <NotificationCenter/>
+    <div class="mx-2">
+      <NotificationCenter/>
+    </div>
     <Button class="!p-1 lg:!pr-2" color="primary" id="avatar_with_name" pill>
       <Avatar class="lg:mr-2" src="/img/avatar-4.jpg" />
       <span class="hidden md:inline">Kaori Chihiro</span>

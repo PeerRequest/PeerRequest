@@ -38,7 +38,7 @@
 </script>
 
 <!-- notification bell -->
-<div>
+<div class="mb-2">
     <Button class="relative p-1 modal" pill color="alternative" on:click={() => (show = !show)}>
         <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@
 
     <!-- popup itself -->
     <div
-            class="absolute z-50 top-[60px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
+            class="absolute z-50 top-[80px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
             shadow-md overflow-y-auto max-h-[235px] w-[512px] text-left modal"
     >
         <ul class="space-y-3">
@@ -75,23 +75,7 @@
                     </div>
                     <div class="mt-2 flex justify-end gap-x-4 w-full h-fit">
                         <div class="flex flex-wrap items-center gap-2 grid gap-y-3">
-                            <Button pill class="!p-2" outline color="red"
-                                    on:click={() => declineButton(n)}>
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                     width="32px" height="32px" viewBox="0 0 64 64" enable-background="new 0 0 64 64"
-                                     xml:space="preserve">
-                                    <g>
-                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
-                                              y1="17.153" x2="45.045"
-                                              y2="43.056" />
-                                    </g>
-                                    <g>
-                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
-                                              y1="43.153" x2="44.947"
-                                              y2="17.056" />
-                                    </g>
-                                </svg>
-                            </Button>
+
                             <Button pill class="!p-2" outline
                                     on:click={() => acceptButton(n)}>
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
@@ -101,6 +85,23 @@
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </Button>
+                            <Button pill class="!p-2" outline color="red"
+                                             on:click={() => declineButton(n)}>
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                 width="32px" height="32px" viewBox="0 0 64 64" enable-background="new 0 0 64 64"
+                                 xml:space="preserve">
+                                    <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
+                                              y1="17.153" x2="45.045"
+                                              y2="43.056" />
+                                    </g>
+                                <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
+                                              y1="43.153" x2="44.947"
+                                              y2="17.056" />
+                                    </g>
+                                </svg>
+                        </Button>
                         </div>
                     </div>
                 </li>
