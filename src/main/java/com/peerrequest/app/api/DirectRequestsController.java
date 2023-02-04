@@ -23,8 +23,8 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return directRequestProcess of entry
      */
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable final long entryId) {
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable("entry_id") final long entryId) {
         var option = this.directRequestProcessService.get(entryId);
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
@@ -41,10 +41,14 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return the added directRequestProcess
      */
-    @PostMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess.Dto createDirectRequestProcess(@PathVariable Long entryId,
+    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    public DirectRequestProcess.Dto createDirectRequestProcess(@PathVariable("entry_id") Long entryId,
                                                         @RequestBody DirectRequestProcess.Dto dto,
                                                         @AuthenticationPrincipal OAuth2User user) {
+        if (this.entryService.get(entryId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
         if (dto.openSlots().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "open slots is required");
         }
@@ -68,10 +72,14 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return updated directRequestProcess
      */
-    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process", produces = "application/json")
-    public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable final long entryId,
+    @PutMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable("entry_id") final long entryId,
                                                           @RequestBody final DirectRequestProcess.Dto dto,
                                                           @AuthenticationPrincipal OAuth2User user) {
+        if (this.entryService.get(entryId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
         String researcherId = this.entryService.get(entryId).get().getResearcherId();
 
         if (!user.getAttribute("sub").toString().equals(researcherId)) {
@@ -81,6 +89,10 @@ public class DirectRequestsController extends ServiceBasedController {
 
         if (dto.openSlots().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "open slots must be given");
+        }
+
+        if (dto.openSlots().get() < 0) {
+            throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "open slots value must be greater than 0");
         }
 
         var option = this.directRequestProcessService.update(entryId, dto);
@@ -96,19 +108,19 @@ public class DirectRequestsController extends ServiceBasedController {
     /**
      * Gets a directRequests.
      *
-     * @param categoryId category of the entry
-     * @param entryId entry of the directRequestProcess
      * @param requestId request to get
      *
      * @return directRequest with requestId
      */
-    @GetMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
             produces = "application/json")
-    public DirectRequest getDirectRequest(@PathVariable final long categoryId,
-                                          @PathVariable final long entryId,
-                                          @PathVariable final long requestId) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
+    public DirectRequest.Dto getDirectRequest(@PathVariable("request_id") final long requestId) {
+            var option = this.directRequestService.get(requestId);
+            if (option.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+            }
+
+            return option.get().toDto();
     }
 
     /**
@@ -121,7 +133,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return the updated request
      */
-    @PatchMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests/{requestId}",
+    @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
             produces = "application/json")
     public DirectRequest patchDirectRequest(@PathVariable final long categoryId,
                                             @PathVariable final long entryId,
@@ -140,7 +152,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return the added request
      */
-    @PutMapping(value = "/categories/{categoryId}/entries/{entryId}/process/requests",
+    @PutMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
             produces = "application/json")
     public DirectRequest putDirectRequest(@PathVariable final long categoryId,
                                           @PathVariable final long entryId,
@@ -159,7 +171,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return directRequest with state=ACCEPTED
      */
-    @PostMapping(value = "/categories/{categoryId}/entries/{entryId}/process/claim")
+    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process/claim")
     public DirectRequest claimOpenSlot(@PathVariable final long categoryId,
                                        @PathVariable final long entryId,
                                        @RequestBody final String userId) {
