@@ -15,6 +15,7 @@
 
     let rating = 0;
     let biddingOngoing = false;
+    let ratingsSubmitted = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -65,6 +66,15 @@
                     Get results
                 </Button>
             </div>
+            {:else}
+            <div class="mr-5">
+                <Button disabled={ratingsSubmitted}
+                        on:click={() => ratingsSubmitted=true}>
+                    {!ratingsSubmitted ? "Submit ratings" : "Ratings submitted"}
+                </Button>
+
+            </div>
+
         {/if}
 
     </div>

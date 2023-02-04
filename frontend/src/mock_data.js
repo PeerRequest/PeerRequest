@@ -23,7 +23,7 @@ const categories = [
         name: "International Paper Conference",
         deadline: "Tue, 29. Nov 2022",
         open: false,
-        is_my_category: () => true
+        is_my_category: () => false
     },
     {
         id: 3,
