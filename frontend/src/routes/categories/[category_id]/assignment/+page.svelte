@@ -12,7 +12,6 @@
     const users = mock_data.users;
 
     export let ongoing = true;
-    let savedOnce = false;
 
     /** @type {import("./$types").PageData} */
 
@@ -35,20 +34,12 @@
             <Heading class="mb-8" tag="h2">{"Assignment for " + categories[data.category_id - 1].name}</Heading>
         </div>
 
-        <div>
-            {#if (savedOnce && (ongoing === false))}
-                <Button on:click={() => {ongoing = true}}>
-                    Change Assignment
-                </Button>
-            {/if}
-
-            <Button disabled={!ongoing}
-                    on:click={() => {ongoing = false; savedOnce = true}}
-                    outline
-            >
-                {ongoing ? "Save Assignment" : "Assignment finished"}
-            </Button>
-        </div>
+        <Button disabled={!ongoing}
+                on:click={() => ongoing = false}
+                outline
+        >
+            {ongoing ? "Save Assignment" : "Assignment finished"}
+        </Button>
 
 
     </div>
