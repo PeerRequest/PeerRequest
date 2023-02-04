@@ -68,22 +68,21 @@
     <form class="grid gap-y-6">
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name </Heading>
-            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text bind:value={new_category_name}
-                   onkeypress="this.style.width = ((this.value.length + 8) * 8) + 'px';" required>
+            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text bind:value={new_category_name} required>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Year </Heading>
             <input class="w-full rounded-lg" id= conference_year type= number bind:value={new_category_year} required>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Deadline </Heading>
-            <input class="w-full rounded-lg" id= conference_deadline type= date bind:value={new_category_deadline} required>
+            <Heading size="md" tag="h4"> Deadline (optional)</Heading>
+            <input class="w-full rounded-lg" id= conference_deadline type= date bind:value={new_category_deadline}>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Conference Type </Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio group={new_category_type} value="Internal" checked={true}> Internal </Radio>
-                <Radio group={new_category_type} value="External"> External </Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="Internal" checked={true}> Internal </Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="External"> External </Radio>
             </div>
         </div>
         <Button type="submit" color="primary" size="xs" on:click={() => finishCreation()}>

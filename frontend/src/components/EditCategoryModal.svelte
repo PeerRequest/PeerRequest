@@ -28,8 +28,8 @@
     <form class="grid gap-y-6">
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name </Heading>
-            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text value={conference.name} size="{conference.name.length}"
-                   onkeypress="this.style.width = ((this.value.length + 8) * 8) + 'px';" required>
+            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text value={conference.name}
+                   size="{conference.name.length}" required>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Year </Heading>
