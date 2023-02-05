@@ -57,13 +57,13 @@
     <header class="flex">
         <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
     </header>
-    <div class="absolute w-[90%] h-[50%]">
+    <div class="absolute w-[90vw] h-[35vh]">
         <Button class="w-44 h-8"><Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron></Button>
         <Dropdown>
             <DropdownItem on:click={()=>order = !order} on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
         </Dropdown>
 
-        <div id="CommentSection" class="max-h-[70%] h-full overflow-y-auto w-[100%] my-4">
+        <div id="CommentSection" class="max-h-[70vh] h-full overflow-y-auto w-[90vw] my-4">
 
             {#each sortedComments as data}
                 <Comment data={data}/>
