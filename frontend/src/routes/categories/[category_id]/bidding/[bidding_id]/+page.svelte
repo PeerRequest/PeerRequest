@@ -65,13 +65,19 @@
 
     </div>
 
-    {#if categories[data.category_id - 1].is_my_category()}
-        <div class="-mt-2 mb-5">
-            <Button disabled={!biddingOngoing} outline>
+
+    <div class="-mt-2 mb-5">
+        {#if categories[data.category_id - 1].is_my_category()}
+            <Button size="xs" disabled={!biddingOngoing} outline>
                 Edit Deadline
             </Button>
-        </div>
-    {/if}
+
+        {:else}
+            <Button color="red" size="xs" outline>
+                Decline Bidding
+            </Button>
+        {/if}
+    </div>
 
 
     {#if categories[data.category_id - 1].is_my_category()}
