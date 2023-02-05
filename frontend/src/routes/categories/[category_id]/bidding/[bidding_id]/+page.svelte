@@ -15,7 +15,7 @@
     const papers = mock_data.papers;
 
     let rating = 0;
-    let biddingOngoing = false;
+    let biddingOngoing = true;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -28,9 +28,6 @@
         alert("Next btn clicked. Make a call to your server to fetch data.");
     };
 
-    function handleClick() {
-        biddingOngoing = !biddingOngoing;
-    }
 </script>
 
 <svelte:head>
@@ -38,7 +35,7 @@
 </svelte:head>
 
 <Container>
-    <div class="flex max-md:flex-wrap justify-between items-center mb-4">
+    <div class="flex max-md:flex-wrap justify-between items-center">
         <div>
             <ResponsiveBreadCrumb>
                 <BreadcrumbItem home href="/">Home</BreadcrumbItem>
@@ -56,19 +53,24 @@
 
         {#if categories[data.category_id - 1].is_my_category()}
             <div class="mr-5">
-                <Button on:click={handleClick}>
-                    {biddingOngoing ? "Start bidding" : "Stop bidding"}
+                <Button on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}} disabled={!biddingOngoing}>
+                    Stop Bidding
                 </Button>
 
-                <Button disabled={!biddingOngoing}
-                        href={!biddingOngoing ? "" : "../assignment"}
-                        outline>
-                    Get results
+                <Button disabled={!biddingOngoing}>
+                    Refresh Bidding
                 </Button>
             </div>
         {/if}
 
     </div>
+
+    <div class="-mt-2 mb-5">
+        <Button  disabled={!biddingOngoing} outline>
+            Edit Deadline
+        </Button>
+    </div>
+
 
     {#if categories[data.category_id - 1].is_my_category()}
         <Papers>
