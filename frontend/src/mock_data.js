@@ -40,8 +40,8 @@ const categories = [
         type: "External",
         name: "KIT Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
-        is_my_category: () => true
+        open: true,
+        is_my_category: () => false
     },
     {
         id: 5,
@@ -58,7 +58,7 @@ const categories = [
         type: "External",
         name: "German Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => false
     }
 ];
@@ -67,11 +67,8 @@ const bidding = [
     {id: 1,
     category: categories[1]
     },
-    {id: 4,
-    category: categories[4]
-    },
-    {id: 6,
-    category: categories[6]
+    {id: 2,
+    category: categories[3]
     }
 ]
 
