@@ -81,7 +81,6 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         String researcherId = this.entryService.get(entryId).get().getResearcherId();
-
         if (!user.getAttribute("sub").toString().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Only the user that created the entry may create a request process");
@@ -102,8 +101,6 @@ public class DirectRequestsController extends ServiceBasedController {
 
         return option.get().toDto();
     }
-
-    // DirectRequest
 
     /**
      * Gets a directRequests.
@@ -197,7 +194,7 @@ public class DirectRequestsController extends ServiceBasedController {
      */
     @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
             produces = "application/json")
-    public DirectRequest patchDirectRequest(@PathVariable final long categoryId,
+    public DirectRequest.Dto patchDirectRequest(@PathVariable final long categoryId,
                                             @PathVariable final long entryId,
                                             @PathVariable final long requestId,
                                             @RequestBody final DirectRequest.Dto updater) {
@@ -205,23 +202,42 @@ public class DirectRequestsController extends ServiceBasedController {
         throw new RuntimeException("Not implemented");
     }
 
-
-
     /**
      * Claims an open slot.
      *
-     * @param categoryId category of the entry
      * @param entryId entry of the directRequestProcess
-     * @param userId user who claims open slot
+     * @param user user who claims open slot
      *
      * @return directRequest with state=ACCEPTED
      */
     @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process/claim")
-    public DirectRequest claimOpenSlot(@PathVariable final long categoryId,
-                                       @PathVariable final long entryId,
-                                       @RequestBody final String userId) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
-    }
+    public DirectRequest.Dto claimOpenSlot(@PathVariable("entry_id") final long entryId,
+                                       @AuthenticationPrincipal OAuth2User user) {
+        if (this.entryService.get(entryId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
 
+        var directRequestProcess = this.directRequestProcessService.get(entryId);
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+
+        String researcherId = this.entryService.get(entryId).get().getResearcherId();
+        if (user.getAttribute("sub").toString().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "researcher of the entry can not be the reviewer");
+        }
+
+        if (directRequestProcess.get().toDto().openSlots().get() <= 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "no empty slots available");
+        }
+
+        DirectRequestProcess updatedDirectRequestProcess = new DirectRequestProcess(directRequestProcess.get().getId(),
+                directRequestProcess.get().getEntryId(), directRequestProcess.get().getOpenSlots() - 1);
+        directRequestProcessService.update(directRequestProcess.get().getId(), updatedDirectRequestProcess.toDto());
+
+        var reviewerId = user.getAttribute("sub").toString();
+        DirectRequest directRequestObject = new DirectRequest(null, DirectRequest.RequestState.ACCEPTED,
+                reviewerId, directRequestProcess.get().getId());
+        return this.directRequestService.create(directRequestObject.toDto()).toDto();
+    }
 }
