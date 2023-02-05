@@ -24,7 +24,7 @@ public class DirectRequestProcess {
     @Column(name = "id", nullable = false)
     @Getter
     private Long id;
-    @Column(name = "entry_id", nullable = false)
+    @Column(name = "entry_id", nullable = false, updatable = false)
     @Getter
     private Long entryId;
     @Column(name = "open_slots", nullable = false)
