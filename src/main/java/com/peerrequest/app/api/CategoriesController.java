@@ -56,7 +56,7 @@ public class CategoriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
         if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
-            && option.get().getResearcherId() != user.getAttribute("sub")) {
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may delete an external category");
         }
 
@@ -94,7 +94,7 @@ public class CategoriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
         if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
-            && option.get().getResearcherId() != user.getAttribute("sub")) {
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter an external category");
         }
 
