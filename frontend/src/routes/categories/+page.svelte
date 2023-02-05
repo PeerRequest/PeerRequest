@@ -28,7 +28,7 @@
         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
     </ResponsiveBreadCrumb>
     <Heading class="mb-4" tag="h2">Conferences</Heading>
-    <Button size="lg" color="primary" class="mb-4"
+    <Button size="lg" class="mx-auto h-8 mb-4" outline
             on:click={() => show_create_category_modal = true}>Create new Conference
     </Button>
     <Categories>
