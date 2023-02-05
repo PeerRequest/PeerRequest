@@ -185,8 +185,6 @@ public class DirectRequestsController extends ServiceBasedController {
     /**
      * Patches a directRequest.
      *
-     * @param categoryId category of the entry
-     * @param entryId entry of the DirectRequestProcess
      * @param requestId DirectRequest to patch
      * @param updater updater containing a DirectRequest.State
      *
@@ -194,12 +192,39 @@ public class DirectRequestsController extends ServiceBasedController {
      */
     @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
             produces = "application/json")
-    public DirectRequest.Dto patchDirectRequest(@PathVariable final long categoryId,
-                                            @PathVariable final long entryId,
-                                            @PathVariable final long requestId,
-                                            @RequestBody final DirectRequest.Dto updater) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented");
+    public DirectRequest.Dto patchDirectRequest(@PathVariable("request_id") final Long requestId,
+                                                @RequestBody final DirectRequest.Dto updater,
+                                                @AuthenticationPrincipal OAuth2User user) {
+        var request = this.directRequestService.get(requestId);
+        if (request.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request does not exist");
+        }
+
+        String reviewerId = request.get().getReviewerId();
+        if (!user.getAttribute("sub").toString().equals(reviewerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the reviewer may change the state");
+        }
+
+        if (updater.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
+        }
+
+        if (updater.directRequestProcessId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not be set");
+        }
+
+        if (updater.reviewerId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must not be set");
+        }
+
+        if (updater.state().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state must be set");
+        }
+
+        DirectRequest updatedDirectRequest = new DirectRequest(request.get().getId(),
+                updater.state().get(), reviewerId, request.get().getDirectRequestProcessId());
+
+        return directRequestService.update(request.get().getId(), updatedDirectRequest.toDto()).get().toDto();
     }
 
     /**
@@ -211,7 +236,7 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return directRequest with state=ACCEPTED
      */
     @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process/claim")
-    public DirectRequest.Dto claimOpenSlot(@PathVariable("entry_id") final long entryId,
+    public DirectRequest.Dto claimOpenSlot(@PathVariable("entry_id") final Long entryId,
                                        @AuthenticationPrincipal OAuth2User user) {
         if (this.entryService.get(entryId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
