@@ -57,19 +57,33 @@
         </div>
 
 
-        {#if mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category() }
-            <Button size="lg"
-                    color="primary"
-                    class="mx-auto lg:m-0"
-                    on:click={mocks[data.category_id - 1].open ? (() => show_assign_modal = true) : ("")}
-                    href={(mocks[data.category_id - 1].open) ?
+        {#if mocks[data.category_id - 1].type === "External"}
+            {#if mocks[data.category_id - 1].is_my_category()}
+                <Button size="lg"
+                        color="primary"
+                        class="mx-auto lg:m-0"
+
+                        on:click={mocks[data.category_id - 1].open ? (() => show_assign_modal = true) : ("")}
+                        href={(mocks[data.category_id - 1].open) ?
                     ((bidding() !== undefined) ?
                     `/categories/${mocks[data.category_id - 1].id}/bidding/${bidding().id}` : "") :
                     `/categories/${mocks[data.category_id - 1].id}/assignment`}
-            >
-                {(mocks[data.category_id - 1].open) ? ((bidding() !== undefined) ?
-                    "Go to Bidding" : "Assign Reviewers") : "View Assignment"}
-            </Button>
+                >
+                    {(mocks[data.category_id - 1].open) ? ((bidding() !== undefined) ?
+                        "Go to Bidding" : "Assign Reviewers") : "View Assignment"}
+                </Button>
+            {:else}
+                {#if (mocks[data.category_id - 1].open) && (bidding() !== undefined)}
+                    <Button size="lg"
+                            color="primary"
+                            class="mx-auto lg:m-0"
+                            href="/categories/{mocks[data.category_id - 1].id}/bidding/{bidding().id}"
+                    >
+                        Go to Bidding
+                    </Button>
+
+                {/if}
+            {/if}
         {/if}
     </div>
 

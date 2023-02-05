@@ -50,7 +50,10 @@
 
         {#if categories[data.category_id - 1].is_my_category()}
             <div class="mr-5">
-                <Button on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}} disabled={!biddingOngoing}>
+                <Button on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}}
+                        disabled={!biddingOngoing}
+                        href="/categories/{categories[data.category_id - 1].id}/assignment"
+                >
                     Stop Bidding
                 </Button>
 
@@ -62,11 +65,13 @@
 
     </div>
 
-    <div class="-mt-2 mb-5">
-        <Button  disabled={!biddingOngoing} outline>
-            Edit Deadline
-        </Button>
-    </div>
+    {#if categories[data.category_id - 1].is_my_category()}
+        <div class="-mt-2 mb-5">
+            <Button disabled={!biddingOngoing} outline>
+                Edit Deadline
+            </Button>
+        </div>
+    {/if}
 
 
     {#if categories[data.category_id - 1].is_my_category()}
