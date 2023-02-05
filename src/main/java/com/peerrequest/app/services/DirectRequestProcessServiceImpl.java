@@ -54,8 +54,8 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
             return Optional.empty();
         }
 
-        var category = optional.get();
-        repo.delete(category);
-        return Optional.of(category);
+        var directRequestProcess = optional.get();
+        repo.delete(directRequestProcess);
+        return Optional.of(directRequestProcess);
     }
 }
