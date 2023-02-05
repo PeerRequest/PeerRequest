@@ -13,6 +13,7 @@
     const pages = mock_data.pagination;
     const mocks = mock_data.categories;
     const papers = mock_data.papers;
+    const biddings = mock_data.bidding;
 
     const previous = () => {
         alert("Previous btn clicked. Make a call to your server to fetch data.");
@@ -28,6 +29,17 @@
     let show_submit_modal = false;
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
+
+    export let biddingOngoing = false;
+
+    function biddingExists() {
+        return biddings.some(bidding => bidding.category.id === mocks[data.category_id - 1].id);
+    }
+
+    function bidding() {
+        return biddings.find(bidding => bidding.category.id === mocks[data.category_id - 1].id);
+    }
+
 </script>
 
 <svelte:head>
@@ -50,9 +62,19 @@
             </Heading>
         </div>
 
+
         {#if mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category() }
-            <Button size="lg" color="primary" class="mx-auto lg:m-0"
-                    on:click={() => show_assign_modal = true}>Assign Reviewers
+            <Button size="lg"
+                    color="primary"
+                    class="mx-auto lg:m-0"
+                    on:click={mocks[data.category_id - 1].open ? (() => show_assign_modal = true) : ("")}
+                    href={(mocks[data.category_id - 1].open) ?
+                    ((bidding() !== undefined) ?
+                    `/categories/${mocks[data.category_id - 1].id}/bidding/${bidding().id}` : "") :
+                    `/categories/${mocks[data.category_id - 1].id}/assignment`}
+            >
+                {(mocks[data.category_id - 1].open) ? ((bidding() !== undefined) ?
+                    "Go to Bidding" : "Assign Reviewers") : "View Assignment"}
             </Button>
         {/if}
     </div>
