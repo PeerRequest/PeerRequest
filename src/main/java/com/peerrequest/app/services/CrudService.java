@@ -1,6 +1,7 @@
 package com.peerrequest.app.services;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describes the basic functionality of a CRUD service.
@@ -12,19 +13,18 @@ import java.util.List;
  * D - Delete
  * </p>
  *
- * @param <T> Data Type
- * @param <S> Data Selector
- * @param <F> Data Filter
- * @param <U> Data Updater
+ * @param <T>> Data Type
+ * @param <I>  ID of data type
+ * @param <D>  DTO of data type
  */
-public interface CrudService<T, S, F, U> {
-    S create(T newEntity);
+public interface CrudService<T, I, D> {
+    T create(D newEntity);
 
-    List<T> list(S cursor, int maxCount, F filter);
+    List<T> list(I cursor, int maxCount, D filter);
 
-    T get(S cursor);
+    Optional<T> get(I cursor);
 
-    T update(S cursor, U updater);
+    Optional<T> update(I cursor, D newProps);
 
-    T delete(S cursor);
+    Optional<T> delete(I cursor);
 }
