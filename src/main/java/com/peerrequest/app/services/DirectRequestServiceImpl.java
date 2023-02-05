@@ -3,6 +3,7 @@ package com.peerrequest.app.services;
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.repos.DirectRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +17,13 @@ public class DirectRequestServiceImpl implements DirectRequestService {
 
     @Override
     public DirectRequest create(DirectRequest.Dto newEntity) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        return repo.save(DirectRequest.fromDto(newEntity));
     }
 
     @Override
     public List<DirectRequest> list(Long cursor, int maxCount, DirectRequest.Dto filter) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        return repo.list(cursor, Pageable.ofSize(maxCount),
+                filter.directRequestProcessId().orElse(null), filter.reviewerId().orElse(null));
     }
 
     @Override
@@ -33,13 +33,27 @@ public class DirectRequestServiceImpl implements DirectRequestService {
 
     @Override
     public Optional<DirectRequest> update(Long cursor, DirectRequest.Dto newProps) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        var optional = repo.findById(cursor);
+        if (optional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var request = optional.get();
+        if (newProps.state().isPresent()) {
+            request.setState(newProps.state().get());
+        }
+        return Optional.of(repo.save(request));
     }
 
     @Override
     public Optional<DirectRequest> delete(Long cursor) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        var optional = repo.findById(cursor);
+        if (optional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var request = optional.get();
+        repo.delete(request);
+        return Optional.of(request);
     }
 }
