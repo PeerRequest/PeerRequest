@@ -30,12 +30,6 @@
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
 
-    export let biddingOngoing = false;
-
-    function biddingExists() {
-        return biddings.some(bidding => bidding.category.id === mocks[data.category_id - 1].id);
-    }
-
     function bidding() {
         return biddings.find(bidding => bidding.category.id === mocks[data.category_id - 1].id);
     }

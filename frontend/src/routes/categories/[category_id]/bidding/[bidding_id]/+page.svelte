@@ -6,9 +6,7 @@
     import Paper from "../../../../../components/Paper.svelte";
     import Papers from "../../../../../components/Papers.svelte";
 
-
     const pages = mock_data.pagination;
-
     const bidding = mock_data.bidding;
     const categories = mock_data.categories;
     const papers = mock_data.papers;
