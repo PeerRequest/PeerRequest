@@ -22,7 +22,7 @@ const categories = [
         year: 2022,
         name: "International Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => true
     },
     {
@@ -31,7 +31,7 @@ const categories = [
         type: "Internal",
         name: "KIT Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => true
     },
     {
