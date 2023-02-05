@@ -8,6 +8,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.Optional;
+
 
 /**
  * The RequestsController handles all directRequests interaction with the backend.
@@ -15,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class DirectRequestsController extends ServiceBasedController {
+
+    private final int maxPageSize = 100;
 
     /**
      * Gets a directRequestProcess.
@@ -120,7 +125,7 @@ public class DirectRequestsController extends ServiceBasedController {
 
         var option = this.directRequestService.get(requestId);
         if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request does not exist");
         }
 
         String researcherId = this.entryService.get(entryId).get().getResearcherId();
@@ -134,18 +139,16 @@ public class DirectRequestsController extends ServiceBasedController {
     }
 
     /**
-     * Creates a new directRequest.
+     * Gets the list of all requests of an entry.
      *
-     * @param entryId entry of the directRequestProcess
-     * @param dto request to add
-     *
-     * @return the added request
+     * @return directRequest with requestId
      */
-    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
             produces = "application/json")
-    public DirectRequest.Dto createDirectRequest(@PathVariable("entry_id") final Long entryId,
-                                                 @RequestBody final DirectRequest.Dto dto,
-                                                 @AuthenticationPrincipal OAuth2User user) {
+    public List<DirectRequest.Dto> listDirectRequestsByEntry(@RequestParam Optional<Integer> limit,
+                                                             @RequestParam Optional<Long> after,
+                                                             @PathVariable("entry_id") final Long entryId,
+                                                             @AuthenticationPrincipal OAuth2User user) {
         if (this.entryService.get(entryId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
@@ -154,32 +157,25 @@ public class DirectRequestsController extends ServiceBasedController {
 
         if (!user.getAttribute("sub").toString().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Only the user that created the entry may create a request");
+                    "Only the user that created the entry may get all requests of the entry");
         }
 
-        var directRequestProcess = this.directRequestProcessService.get(entryId);
-        if (directRequestProcess.isEmpty()) {
+        if (limit.isPresent()) {
+            if (limit.get() < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
+            }
+            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+        }
+
+        var option = this.directRequestProcessService.get(entryId);
+        if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
         }
 
-        if (dto.id().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not not be set");
-        }
+        DirectRequest filterDirectRequest = new DirectRequest(null, null, null, option.get().getId());
 
-        if (dto.directRequestProcessId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not not be set");
-        }
-
-        if (dto.state().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state must not not be set");
-        }
-
-        if (dto.reviewerId().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer must be set");
-        }
-
-        var directRequest = DirectRequest.fromDto(dto, dto.reviewerId().get(), DirectRequest.RequestState.PENDING);
-        return this.directRequestService.create(directRequest.toDto()).toDto();
+        return this.directRequestService.list(after.orElse(null), limit.orElse(maxPageSize),
+                        filterDirectRequest.toDto()).stream().map(DirectRequest::toDto).toList();
     }
 
     /**
