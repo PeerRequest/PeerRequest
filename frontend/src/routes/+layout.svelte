@@ -30,7 +30,7 @@
     <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">PeerRequest</span>
   </NavBrand>
   <div class="flex items-center lg:order-2">
-    <div class="relative top-1">
+    <div class="relative top-1 mx-2">
       <NotificationCenter/>
     </div>
     <Button class="!p-1 lg:!pr-2" color="primary" id="avatar_with_name" pill>

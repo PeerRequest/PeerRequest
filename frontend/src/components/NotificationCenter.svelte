@@ -61,8 +61,8 @@
 {#if show}
     <!-- popup itself -->
     <div
-            class="absolute z-50 top-[80px] right-[170px] p-3 mt-1 text-gray-600 bg-white rounded
-            shadow-md overflow-y-auto max-h-[235px] w-[512px] text-left modal"
+            class="absolute z-50 top-[8vh] right-0 p-3 mt-1 text-gray-600 bg-white rounded
+            shadow-md overflow-y-auto max-h-[35vh] w-[40vw] text-left modal"
     >
         <ul class="space-y-3">
             {#each notifications as n}
