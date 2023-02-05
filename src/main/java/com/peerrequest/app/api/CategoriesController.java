@@ -50,9 +50,17 @@ public class CategoriesController extends ServiceBasedController {
     }
 
     @DeleteMapping("/categories/{id}")
-    Optional<Category.Dto> deleteCategory(@PathVariable Long id) {
-        var option = this.categoryService.delete(id);
-        return option.map(Category::toDto);
+    Optional<Category.Dto> deleteCategory(@PathVariable Long id, @AuthenticationPrincipal OAuth2User user) {
+        var option = this.categoryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+        if (option.get().getResearcherId() != user.getAttribute("sub")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter delete category");
+        }
+
+        var deleted = this.categoryService.delete(id);
+        return deleted.map(Category::toDto);
     }
 
     @PostMapping("/categories")
@@ -85,7 +93,7 @@ public class CategoriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
         if (option.get().getResearcherId() != user.getAttribute("sub")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter a cetegory");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter a category");
         }
 
         var patched = this.categoryService.update(dto.id().get(), dto);
