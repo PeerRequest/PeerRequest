@@ -14,7 +14,6 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
     @Autowired
     private DirectRequestProcessRepository repo;
 
-
     @Override
     public DirectRequestProcess create(DirectRequestProcess.Dto newEntity) {
         return repo.save(DirectRequestProcess.fromDto(newEntity));
@@ -22,8 +21,7 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public List<DirectRequestProcess> list(Long cursor, int maxCount, DirectRequestProcess.Dto filter) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        throw new RuntimeException("Operation not supported");
     }
 
     @Override
@@ -51,7 +49,13 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public Optional<DirectRequestProcess> delete(Long cursor) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented yet");
+        var optional = repo.findById(cursor);
+        if (optional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var category = optional.get();
+        repo.delete(category);
+        return Optional.of(category);
     }
 }
