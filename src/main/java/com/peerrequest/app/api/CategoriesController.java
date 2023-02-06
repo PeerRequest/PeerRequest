@@ -55,8 +55,9 @@ public class CategoriesController extends ServiceBasedController {
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
-        if (option.get().getResearcherId() != user.getAttribute("sub")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter delete category");
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may delete an external category");
         }
 
         var deleted = this.categoryService.delete(id);
@@ -92,8 +93,9 @@ public class CategoriesController extends ServiceBasedController {
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
-        if (option.get().getResearcherId() != user.getAttribute("sub")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter a category");
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter an external category");
         }
 
         var patched = this.categoryService.update(dto.id().get(), dto);
