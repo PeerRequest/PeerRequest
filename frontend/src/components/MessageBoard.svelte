@@ -53,26 +53,24 @@
 </script>
 
 
-<main>
+<main class="flex grid grid-cols-1 justify-center">
     <header class="flex">
         <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
     </header>
-    <div class="absolute w-[90vw] h-[35vh]">
-        <Button class="w-44 h-8"><Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron></Button>
-        <Dropdown>
-            <DropdownItem on:click={()=>order = !order} on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
-        </Dropdown>
+    <Button class="w-44 h-8"><Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron></Button>
+    <Dropdown>
+        <DropdownItem on:click={()=>order = !order} on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
+    </Dropdown>
 
-        <div id="CommentSection" class="max-h-[70vh] h-full overflow-y-auto max-w-[90vw] w-full my-4 mx-auto">
+    <div id="CommentSection" class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 ">
 
-            {#each sortedComments as data}
-                <Comment data={data}/>
-            {/each}
+        {#each sortedComments as data}
+            <Comment data={data}/>
+        {/each}
 
-        </div>
-        <form on:submit={submitComment}>
-            <input class="w-full rounded-lg" type="text" id="input-text" placeholder="Enter comment" bind:value={comment}>
-        </form>
     </div>
+    <form on:submit={submitComment}>
+        <input class="w-full rounded-lg" type="text" id="input-text" placeholder="Enter comment" bind:value={comment}>
+    </form>
 </main>
 
