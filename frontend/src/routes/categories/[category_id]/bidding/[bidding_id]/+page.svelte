@@ -55,14 +55,16 @@
 
         {#if categories[data.category_id - 1].is_my_category()}
             <div class="mr-5">
-                <Button on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}}
+                <Button color="primary"
+                        on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}}
                         disabled={!biddingOngoing}
                         href="/categories/{categories[data.category_id - 1].id}/assignment"
                 >
                     Stop Bidding
                 </Button>
 
-                <Button disabled={!biddingOngoing}>
+                <Button color="primary"
+                        disabled={!biddingOngoing}>
                     Refresh Bidding
                 </Button>
             </div>
