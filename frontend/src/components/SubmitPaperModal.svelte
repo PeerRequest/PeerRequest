@@ -8,7 +8,7 @@
     import PdfUploader from "./PdfUploader.svelte";
 
     export let show = false;
-    export let conference_type = "Internal";
+    export let category_type = "Internal";
     export let hide = () => {
         /* NOP */
     };

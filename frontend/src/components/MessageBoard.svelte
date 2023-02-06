@@ -63,7 +63,7 @@
             <DropdownItem on:click={()=>order = !order} on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
         </Dropdown>
 
-        <div id="CommentSection" class="max-h-[70vh] h-full overflow-y-auto w-[90vw] my-4">
+        <div id="CommentSection" class="max-h-[70vh] h-full overflow-y-auto max-w-[90vw] w-full my-4 mx-auto">
 
             {#each sortedComments as data}
                 <Comment data={data}/>
