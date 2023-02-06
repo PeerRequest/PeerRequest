@@ -2,9 +2,9 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.repos.CategoryRepository;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,8 @@ class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> list(Long cursor, int maxCount, Category.Dto filter) {
-        return repo.list(cursor, Pageable.ofSize(maxCount), filter == null ? null : filter.name());
+    public Page<Category> list(int page, int maxCount, Category.Dto filter) {
+        return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
     }
 
     @Override

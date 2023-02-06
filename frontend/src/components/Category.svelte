@@ -2,7 +2,7 @@
     import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
 
-    export let category;
+    export let category = null;
     export let loading = false;
 
     function map_type(type) {
