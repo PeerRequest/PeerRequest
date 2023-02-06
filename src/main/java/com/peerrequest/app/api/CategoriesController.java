@@ -50,9 +50,17 @@ public class CategoriesController extends ServiceBasedController {
     }
 
     @DeleteMapping("/categories/{id}")
-    Optional<Category.Dto> deleteCategory(@PathVariable Long id) {
-        var option = this.categoryService.delete(id);
-        return option.map(Category::toDto);
+    Optional<Category.Dto> deleteCategory(@PathVariable Long id, @AuthenticationPrincipal OAuth2User user) {
+        var option = this.categoryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+        if (option.get().getResearcherId() != user.getAttribute("sub")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter delete category");
+        }
+
+        var deleted = this.categoryService.delete(id);
+        return deleted.map(Category::toDto);
     }
 
     @PostMapping("/categories")
@@ -69,9 +77,9 @@ public class CategoriesController extends ServiceBasedController {
         var category = Category.fromDto(dto, user.getAttribute("sub"));
         return this.categoryService.create(category.toDto()).toDto();
     }
-    
+
     @PatchMapping("/categories")
-    Category.Dto patchCategories(@RequestBody Category.Dto dto) {
+    Category.Dto patchCategories(@RequestBody Category.Dto dto, @AuthenticationPrincipal OAuth2User user) {
         if (dto.id().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
@@ -80,11 +88,19 @@ public class CategoriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the researcher_id");
         }
 
-        var option = this.categoryService.update(dto.id().get(), dto);
+        var option = this.categoryService.get(dto.id().get());
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
+        if (option.get().getResearcherId() != user.getAttribute("sub")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter a category");
+        }
 
-        return option.get().toDto();
+        var patched = this.categoryService.update(dto.id().get(), dto);
+        if (patched.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        return patched.get().toDto();
     }
 }
