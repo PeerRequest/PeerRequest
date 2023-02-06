@@ -7,7 +7,7 @@
     import Container from "../../../components/Container.svelte";
     import ExternAssignReviewerModal from "../../../components/ExternAssignReviewerModal.svelte";
     import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
-    import EditCategoryModal from "../../../components/EditCategoryModal.svelte";
+    import EditModal from "../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../components/ConfirmDeletionModal.svelte";
 
     const pages = mock_data.pagination;
@@ -149,7 +149,7 @@
 <SubmitPaperModal conference_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
                   show="{show_submit_modal}"/>
 
-<EditCategoryModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
+<EditModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
 
 <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
