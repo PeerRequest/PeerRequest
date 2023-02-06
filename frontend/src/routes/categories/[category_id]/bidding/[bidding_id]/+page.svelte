@@ -5,6 +5,8 @@
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import Paper from "../../../../../components/Paper.svelte";
     import Papers from "../../../../../components/Papers.svelte";
+    import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
+    import EditModal from "../../../../../components/EditModal.svelte";
 
     const pages = mock_data.pagination;
     const bidding = mock_data.bidding;
@@ -25,6 +27,9 @@
         alert("Next btn clicked. Make a call to your server to fetch data.");
     };
 
+    let show_edit_modal = false;
+    let show_confirm_deletion_modal = false;
+
 </script>
 
 <svelte:head>
@@ -44,7 +49,7 @@
             </ResponsiveBreadCrumb>
             <Heading tag="h2">{"Bidding for " + categories[data.category_id - 1].name}</Heading>
             <Heading class="mb-5" tag="h6">
-                <Secondary>{"Review Deadline: " + categories[data.category_id - 1].deadline }</Secondary>
+                <Secondary>{"Review Deadline: " + bidding[data.bidding_id - 1].deadline }</Secondary>
             </Heading>
         </div>
 
@@ -68,8 +73,19 @@
 
     <div class="-mt-2 mb-5">
         {#if categories[data.category_id - 1].is_my_category()}
-            <Button size="xs" disabled={!biddingOngoing} outline>
+            <Button size="xs"
+                    disabled={!biddingOngoing}
+                    outline
+                    on:click={() => show_edit_modal=true}
+            >
                 Edit Deadline
+            </Button>
+
+            <Button size="xs"
+                    color="red"
+                    outline
+                    on:click={() => show_confirm_deletion_modal=true}>
+                Delete Bidding
             </Button>
 
         {:else}
@@ -119,3 +135,13 @@
         </Pagination>
     </div>
 </Container>
+
+<EditModal bidding={bidding[data.bidding_id -1]}
+                   hide={() => show_edit_modal = false}
+                   show={show_edit_modal}
+/>
+
+<ConfirmDeletionModal hide={() => show_confirm_deletion_modal = false}
+                      show={show_confirm_deletion_modal}
+                      to_delete={categories[data.category_id - 1]}
+/>
