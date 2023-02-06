@@ -1,12 +1,9 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.model.Category;
-import com.peerrequest.app.model.Document;
-import com.peerrequest.app.model.Entry;
-import com.peerrequest.app.model.Review;
-import com.peerrequest.app.model.User;
-import java.time.ZonedDateTime;
+import com.peerrequest.app.data.Category;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +12,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 
 /**
@@ -24,80 +23,86 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @ApiControllerPrefix
-public class CategoriesController {
-    private Category mockUpCategory;
+public class CategoriesController extends ServiceBasedController {
+    private final int maxPageSize = 100;
 
-    public CategoriesController() {
-        mockCategory();
+    @GetMapping("/categories")
+    List<Category.Dto> listCategories(@RequestParam Optional<Integer> limit, @RequestParam Optional<Long> after) {
+        if (limit.isPresent()) {
+            if (limit.get() < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
+            }
+            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+        }
+
+        return this.categoryService.list(after.orElse(null), limit.orElse(maxPageSize), null).stream()
+            .map(Category::toDto).toList();
     }
 
-    @GetMapping(value = "/categories", produces = "application/json")
-    public List<Category> getCategories(@AuthenticationPrincipal OAuth2User oauth2User) {
-        return List.of(mockUpCategory);
+    @GetMapping("/categories/{id}")
+    Category.Dto getCategory(@PathVariable Long id) {
+        var option = this.categoryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        return option.get().toDto();
     }
 
-    @GetMapping(value = "/categories/{categoryId}", produces = "application/json")
-    public Category getCategory(@PathVariable final int categoryId) {
-        return mockUpCategory;
+    @DeleteMapping("/categories/{id}")
+    Optional<Category.Dto> deleteCategory(@PathVariable Long id, @AuthenticationPrincipal OAuth2User user) {
+        var option = this.categoryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may delete an external category");
+        }
+
+        var deleted = this.categoryService.delete(id);
+        return deleted.map(Category::toDto);
     }
 
-    @PostMapping(value = "/categories", produces = "application/json")
-    public Category createCategory(@RequestBody final Category category) {
-        this.mockUpCategory = category;
-        return mockUpCategory;
+    @PostMapping("/categories")
+    Category.Dto createCategories(@RequestBody Category.Dto dto,
+                                  @AuthenticationPrincipal OAuth2User user) {
+        if (dto.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not not be set");
+        }
+
+        if (dto.researcherId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "researcher_id must not not be set");
+        }
+
+        var category = Category.fromDto(dto, user.getAttribute("sub"));
+        return this.categoryService.create(category.toDto()).toDto();
     }
 
-    @PatchMapping(value = "/categories/{categoryId}", consumes = "application/json", produces = "application/json")
-    public Category patchCategory(@RequestBody final Category category) {
-        return mockUpCategory;
-    }
+    @PatchMapping("/categories")
+    Category.Dto patchCategories(@RequestBody Category.Dto dto, @AuthenticationPrincipal OAuth2User user) {
+        if (dto.id().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
+        }
 
-    @DeleteMapping(value = "categories/{categoryId}/", consumes = "application/json")
-    public void deleteCategory(@PathVariable final int categoryId) {
-    }
+        if (dto.researcherId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the researcher_id");
+        }
 
-    // returns mock category
-    private Category mockCategory() {
-        Category.CategorySelector categoryId = new Category.CategorySelector(12);
-        this.mockUpCategory = new Category(categoryId,
-            new User.UserSelector("140314"),
-            "Best International Conference",
-            Category.CategoryLabel.INTERNAL,
-            2020, ZonedDateTime.now(),
-            0,
-            5,
-            1);
-        return mockUpCategory;
-    }
+        var option = this.categoryService.get(dto.id().get());
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter an external category");
+        }
 
-    //returns mock user
-    private User mockUser() {
-        User.UserSelector userId = new User.UserSelector("007");
-        User user = new User(userId, "James", "Bond", "mockdata@user.com");
-        return user;
-    }
+        var patched = this.categoryService.update(dto.id().get(), dto);
+        if (patched.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
 
-    // returns mock entries
-    private Entry mockEntryOne() {
-        Entry.EntrySelector entryId = new Entry.EntrySelector(42);
-        Document.DocumentSelector documentId = new Document.DocumentSelector("356");
-        Entry entry = new Entry(entryId, mockCategory().getId(), mockUser().id(), documentId,
-            "great Paper #01", "Karol Bender");
-        return entry;
-    }
-
-    private Entry mockEntryTwo() {
-        Entry.EntrySelector entryId = new Entry.EntrySelector(420);
-        Document.DocumentSelector documentId = new Document.DocumentSelector("3560");
-        Entry entry = new Entry(entryId, mockCategory().getId(), mockUser().id(), documentId,
-            "great Paper #02", "Karol Bender");
-        return entry;
-    }
-
-    // returns mock review
-    private Review mockReview() {
-        Review.ReviewSelector reviewId = new Review.ReviewSelector(mockEntryOne().getId(), 700);
-        Review review = new Review(reviewId, mockUser().id(), mockEntryOne().getId());
-        return review;
+        return patched.get().toDto();
     }
 }
