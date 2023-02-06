@@ -63,7 +63,7 @@
                         color="primary"
                         class="mx-auto lg:m-0"
 
-                        on:click={mocks[data.category_id - 1].open ? (() => show_assign_modal = true) : ("")}
+                        on:click={(mocks[data.category_id - 1].open && (bidding === undefined)) ? (() => show_assign_modal = true) : ("")}
                         href={(mocks[data.category_id - 1].open) ?
                     ((bidding() !== undefined) ?
                     `/categories/${mocks[data.category_id - 1].id}/bidding/${bidding().id}` : "") :
