@@ -8,10 +8,7 @@
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
 
-
-
     const pages = mock_data.pagination;
-
     const bidding = mock_data.bidding;
     const categories = mock_data.categories;
     const papers = mock_data.papers;
