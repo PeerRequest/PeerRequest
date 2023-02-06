@@ -1,6 +1,6 @@
 <script>
-
     import { BreadcrumbItem, Button, ChevronLeft, ChevronRight, Heading, Pagination } from "flowbite-svelte";
+
     import mock_data from "../../mock_data.js";
     import Container from "../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
