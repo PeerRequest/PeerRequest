@@ -64,11 +64,15 @@ const categories = [
 ];
 
 const bidding = [
-    {id: 1,
-    category: categories[1]
+    {
+        id: 1,
+        deadline: "Tue, 07. Feb 2023",
+        category: categories[1]
     },
-    {id: 2,
-    category: categories[3]
+    {
+        id: 2,
+        deadline: "Tue, 14. Feb 2023",
+        category: categories[3]
     }
 ]
 
