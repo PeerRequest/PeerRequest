@@ -29,7 +29,7 @@ public class ReviewsController extends ServiceBasedController {
         checkAuthResearcher(this.entryService.get(entryId), user);
 
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() < 1) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
