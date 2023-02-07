@@ -268,7 +268,7 @@ public class ReviewsController extends ServiceBasedController {
         }
     }
 
-    private void checkAuthMessage(Optional<Message> message , OAuth2User user) {
+    private void checkAuthMessage(Optional<Message> message, OAuth2User user) {
         if (message.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "message does not exist");
         }
