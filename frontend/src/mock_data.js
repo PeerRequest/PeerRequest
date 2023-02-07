@@ -22,7 +22,7 @@ const categories = [
         year: 2022,
         name: "International Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => true
     },
     {
@@ -31,7 +31,7 @@ const categories = [
         type: "Internal",
         name: "KIT Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => true
     },
     {
@@ -40,8 +40,8 @@ const categories = [
         type: "External",
         name: "KIT Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
-        is_my_category: () => true
+        open: true,
+        is_my_category: () => false
     },
     {
         id: 5,
@@ -58,10 +58,23 @@ const categories = [
         type: "External",
         name: "German Paper Conference",
         deadline: "Tue, 29. Nov 2022",
-        open: false,
+        open: true,
         is_my_category: () => false
     }
 ];
+
+const bidding = [
+    {
+        id: 1,
+        deadline: "Tue, 07. Feb 2023",
+        category: categories[1]
+    },
+    {
+        id: 2,
+        deadline: "Tue, 14. Feb 2023",
+        category: categories[3]
+    }
+]
 
 const papers = [
     {
@@ -98,7 +111,14 @@ const papers = [
         researcher: "Tommy Partridge",
         category: categories[4],
         slots: 0
-    }
+    },
+    {
+        id: 6,
+        title: "Great Paper #006",
+        researcher: "Ravi Pearce",
+        category: categories[1],
+        slots: 2
+    },
 ];
 
 const users = [
@@ -138,6 +158,7 @@ const reviews = [
 export default {
     pagination,
     categories,
+    bidding,
     papers,
     users,
     reviews
