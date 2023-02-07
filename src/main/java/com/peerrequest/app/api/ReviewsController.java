@@ -126,6 +126,16 @@ public class ReviewsController extends ServiceBasedController {
         throw new RuntimeException("Not implemented yet");
     }
 
+    @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
+    void deleteReviewDocument(@AuthenticationPrincipal OAuth2User user,
+                              @PathVariable Long reviewId) {
+        var review = this.reviewService.get(reviewId);
+        checkAuthReviewer(review, user);
+
+        //todo: Implement after DocumentService is finished
+        throw  new RuntimeException("Not implemented yet");
+    }
+
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/messages")
     List<Message.Dto> listMessages(@AuthenticationPrincipal OAuth2User user,
                                    @RequestParam Optional<Integer> limit,
