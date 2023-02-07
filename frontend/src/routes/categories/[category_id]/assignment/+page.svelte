@@ -16,6 +16,11 @@
     /** @type {import("./$types").PageData} */
 
     export let data;
+
+    function saveAssignment() {
+        ongoing = false;
+
+    }
 </script>
 
 
@@ -35,7 +40,7 @@
         </div>
 
         <Button disabled={!ongoing}
-                on:click={() => ongoing = false}
+                on:click={() => saveAssignment()}
                 outline
         >
             {ongoing ? "Save Assignment" : "Assignment finished"}
@@ -66,6 +71,7 @@
         <Reviews
                 show_paper=true
                 show_reviewer=true
+                show_review=true
         >
             {#each papers.filter((p) => p.category === categories[data.category_id - 1]) as p}
                 {#each reviews.filter((r) => r.paper === p) as r}

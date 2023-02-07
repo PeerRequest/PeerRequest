@@ -32,9 +32,11 @@
         </TableBodyCell>
     {/if}
 
-    <TableBodyCell>
-        <BreadcrumbItem href={href}>Review #{id}</BreadcrumbItem>
-    </TableBodyCell>
+    {#if assignmentOngoing === false}
+        <TableBodyCell>
+            <BreadcrumbItem href={href}>Review #{id}</BreadcrumbItem>
+        </TableBodyCell>
+    {/if}
 
     {#if (reviewer !== null) && (assignmentOngoing === false)}
         <TableBodyCell>
