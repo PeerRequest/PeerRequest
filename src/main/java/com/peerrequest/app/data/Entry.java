@@ -36,6 +36,11 @@ public class Entry {
     @Setter
     private String name;
 
+    @Column(name = "authors")
+    @Getter
+    @Setter
+    private String authors;
+
     @Column(name = "researcher_id", nullable = false, length = 40)
     @Getter
     private String researcherId;
@@ -68,6 +73,7 @@ public class Entry {
                 .id(dto.id().orElse(null))
                 .name(dto.name())
                 .researcherId(researcherId)
+                .authors(dto.authors().orElse(null))
                 .documentId(String.valueOf(dto.documentId()))
                 .categoryId(categoryId)
                 .build();
@@ -79,8 +85,14 @@ public class Entry {
      * @return DTO
      */
     public Dto toDto() {
-        return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
-                getName(), getDocumentId(), Optional.ofNullable(getCategoryId()));
+        return new Dto(
+                getId() == null ? Optional.empty() : Optional.of(getId()),
+                Optional.of(getResearcherId()),
+                getName(),
+                getAuthors() == null ? Optional.empty() : Optional.of(getAuthors()),
+                Optional.of(getDocumentId()),
+                Optional.ofNullable(getCategoryId())
+                );
     }
 
     @Override
@@ -107,7 +119,8 @@ public class Entry {
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("researcher_id") Optional<String> researcherId,
             @JsonProperty("name") String name,
-            @JsonProperty("document_id") String documentId,
+            @JsonProperty ("authors") Optional<String> authors,
+            @JsonProperty("document_id") Optional<String> documentId,
             @JsonProperty("category_id") Optional<Long> categoryId)
             implements Serializable {
     }
