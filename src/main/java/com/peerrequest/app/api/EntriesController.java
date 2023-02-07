@@ -4,6 +4,8 @@ import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Entry;
 import java.util.List;
 import java.util.Optional;
+
+import com.peerrequest.app.data.Paged;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -21,8 +23,8 @@ public class EntriesController extends ServiceBasedController {
     private final int maxPageSize = 100;
 
     @GetMapping("/categories/{category_id}/entries")
-    List<Entry.Dto> listEntries(@RequestParam Optional<Integer> limit,
-                                @RequestParam Optional<Long> after,
+    Paged<List<Entry.Dto>> listEntries(@RequestParam("limit") Optional<Integer> limit,
+                                @RequestParam("page") Optional<Integer> page,
                                 @PathVariable("category_id") Long categoryId) {
         if (limit.isPresent()) {
             if (limit.get() <= 0) {
@@ -34,8 +36,15 @@ public class EntriesController extends ServiceBasedController {
         Entry.Dto filterEntry = new Entry.Dto(
                 null, null, null, null, null, Optional.of(categoryId));
 
-        return this.entryService.list(after.orElse(null), limit.orElse(maxPageSize), filterEntry)
-                .stream().map(Entry::toDto).toList();
+        var entryPage = this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+                filterEntry);
+        return new Paged<>(
+                entryPage.getSize(),
+                entryPage.getNumber() + 1,
+                entryPage.getTotalPages(),
+                this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterEntry)
+                        .stream()
+                        .map(Entry::toDto).toList());
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}")
