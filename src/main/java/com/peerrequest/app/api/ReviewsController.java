@@ -2,6 +2,7 @@ package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Message;
+import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
 import java.util.List;
 import java.util.Optional;
@@ -22,14 +23,14 @@ public class ReviewsController extends ServiceBasedController {
     private final int maxPageSize = 100;
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews")
-    List<Review.Dto> listReviews(@AuthenticationPrincipal OAuth2User user,
+    Paged<List<Review.Dto>> listReviews(@AuthenticationPrincipal OAuth2User user,
                                  @RequestParam Optional<Integer> limit,
-                                 @RequestParam Optional<Long> after,
+                                 @RequestParam Optional<Integer> page,
                                  @PathVariable Long entryId) {
         checkAuthResearcher(this.entryService.get(entryId), user);
 
         if (limit.isPresent()) {
-            if (limit.get() < 1) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
@@ -38,8 +39,16 @@ public class ReviewsController extends ServiceBasedController {
         Review.Dto filterReview = new Review.Dto(null, null, Optional.of(entryId),
             null, null, null, null, null, null, null, null, null);
 
-        return this.reviewService.list(after.orElse(null), limit.orElse(maxPageSize), filterReview)
-            .stream().map(Review::toDto).toList();
+        var reviewPage = this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+            filterReview);
+
+        return new Paged<>(
+            reviewPage.getSize(),
+            reviewPage.getNumber() + 1,
+            reviewPage.getTotalPages(),
+            this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterReview)
+                    .stream()
+                    .map(Review::toDto).toList());
     }
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}")
