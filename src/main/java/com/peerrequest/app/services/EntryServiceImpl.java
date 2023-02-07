@@ -2,13 +2,16 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.repos.EntryRepository;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Implementation of EntryService.
+ */
 @Service
 public class EntryServiceImpl implements EntryService {
 
@@ -21,9 +24,12 @@ public class EntryServiceImpl implements EntryService {
     }
 
     @Override
-    public List<Entry> list(Long cursor, int maxCount, Entry.Dto filter) {
-        return repo.list(cursor, Pageable.ofSize(maxCount),
-                null, filter.categoryId().get());
+    public Page<Entry> list(int page, int maxCount, Entry.Dto filter) {
+        if (filter.categoryId().isPresent()) {
+            return repo.findByCategoryId(filter.categoryId().get(), PageRequest.of(page, maxCount));
+        } else {
+            return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
+        }
     }
 
     @Override
