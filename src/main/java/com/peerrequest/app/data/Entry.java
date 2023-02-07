@@ -80,7 +80,7 @@ public class Entry {
      */
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
-                getName(), getDocumentId(), Optional.ofNullable(getCategoryId()));
+                getName(), Optional.of(getDocumentId()), Optional.ofNullable(getCategoryId()));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class Entry {
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("researcher_id") Optional<String> researcherId,
             @JsonProperty("name") String name,
-            @JsonProperty("document_id") String documentId,
+            @JsonProperty("document_id") Optional<String> documentId,
             @JsonProperty("category_id") Optional<Long> categoryId)
             implements Serializable {
     }

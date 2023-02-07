@@ -1,5 +1,6 @@
 package com.peerrequest.app.api;
 
+import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Entry;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,10 @@ public class EntriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the researcher_id");
         }
 
+        if (dto.documentId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the document_id");
+        }
+
         var patchEntry = this.entryService.get(dto.id().get());
 
         if (patchEntry.isEmpty()) {
@@ -94,5 +99,22 @@ public class EntriesController extends ServiceBasedController {
         var option = this.entryService.update(dto.id().get(), dto);
 
         return option.get().toDto();
+    }
+
+    @DeleteMapping("/categories/{category_id}/entries/{entry_id}")
+    Optional<Entry.Dto> deleteEntry(@PathVariable("entry_id") Long entryId, @AuthenticationPrincipal OAuth2User user) {
+        var option = this.entryService.get(entryId);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        var researcherId = user.getAttribute("sub").toString();
+        if (!option.get().getResearcherId().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the user that created the entry may delete it");
+        }
+
+        var deleted = this.entryService.delete(entryId);
+        return deleted.map(Entry::toDto);
     }
 }
