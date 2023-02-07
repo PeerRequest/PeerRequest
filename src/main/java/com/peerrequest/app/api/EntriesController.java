@@ -25,7 +25,7 @@ public class EntriesController extends ServiceBasedController {
                                 @RequestParam Optional<Long> after,
                                 @PathVariable("category_id") Long categoryId) {
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
