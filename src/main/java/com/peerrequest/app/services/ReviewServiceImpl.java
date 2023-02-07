@@ -7,6 +7,8 @@ import com.peerrequest.app.data.repos.ReviewRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +30,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> list(Long cursor, int maxCount, Review.Dto filter) {
-        return repo.list(cursor, Pageable.ofSize(maxCount),
-            filter == null ? null : (filter.entryId().isPresent() ? filter.entryId().get() : null),
-            filter == null ? null : (filter.reviewerId().isPresent() ? filter.reviewerId().get() : null));
+    public Page<Review> list(int page, int maxCount, Review.Dto filter) {
+        if (filter.entryId().isPresent()) {
+            return repo.findByEntryId(filter.entryId().get(), PageRequest.of(page, maxCount));
+        }
+        return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
+
     }
 
     @Override
