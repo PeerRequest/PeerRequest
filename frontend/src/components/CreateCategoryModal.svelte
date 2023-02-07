@@ -7,9 +7,9 @@
         Radio
 
     } from "flowbite-svelte" ;
-    import mock_data from "../mock_data.js";
 
-
+    export let error = null;
+    let categories = null;
     export let show = false;
     export let hide = () => {
         /* NOP */
@@ -18,7 +18,7 @@
         /* NOP */
     }
 
-    let existing_categories = mock_data.categories;
+    export let existing_categories;
     let categories_without_id;
     let already_exists = false;
 
@@ -43,7 +43,7 @@
         }
     }
 
-    function compare(category){
+    function compare(category) {
         categories_without_id = {
             year: category.year,
             type: category.type,
@@ -55,9 +55,35 @@
         }
     }
 
+    function createCategory() {
+        let category = {
+            year: new_category_year,
+            type: new_category_type,
+            name: new_category_name,
+            deadline: new_category_deadline
+        }
+        return fetch("/api/categories", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(category)
+        })
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    categories = [...categories, resp.content];
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg" permanent={true}>
+<Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
             Create new Conference
@@ -67,25 +93,27 @@
     </svelte:fragment>
     <form class="grid gap-y-6">
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Name </Heading>
-            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text bind:value={new_category_name} required>
+            <Heading size="md" tag="h4"> Name</Heading>
+            <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
+                   type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Year </Heading>
-            <input class="w-full rounded-lg" id= conference_year type= number bind:value={new_category_year} required>
+            <Heading size="md" tag="h4"> Year</Heading>
+            <input bind:value={new_category_year} class="w-full rounded-lg" id=conference_year required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Deadline (optional)</Heading>
-            <input class="w-full rounded-lg" id= conference_deadline type= date bind:value={new_category_deadline}>
+            <input bind:value={new_category_deadline} class="w-full rounded-lg" id=conference_deadline type=date>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Conference Type </Heading>
+            <Heading size="md" tag="h4"> Conference Type</Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio bind:group={new_category_type} name="category_type" value="Internal" checked={true}> Internal </Radio>
-                <Radio bind:group={new_category_type} name="category_type" value="External"> External </Radio>
+                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal"> Internal
+                </Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="External"> External</Radio>
             </div>
         </div>
-        <Button type="submit" color="primary" size="xs" on:click={() => finishCreation()}>
+        <Button color="primary" on:click={() => {finishCreation(); createCategory()}} size="xs" type="submit">
             Save
         </Button>
     </form>
