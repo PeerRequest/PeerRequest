@@ -2,13 +2,15 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.repos.EntryRepository;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Implementation of EntryService.
+ */
 @Service
 public class EntryServiceImpl implements EntryService {
 
