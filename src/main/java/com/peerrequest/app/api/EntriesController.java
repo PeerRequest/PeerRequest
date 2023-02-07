@@ -32,7 +32,7 @@ public class EntriesController extends ServiceBasedController {
         }
 
         Entry.Dto filterEntry = new Entry.Dto(
-                null, null, null, null, Optional.of(categoryId), null);
+                null, null, null, null, null, Optional.of(categoryId));
 
         return this.entryService.list(after.orElse(null), limit.orElse(maxPageSize), filterEntry)
                 .stream().map(Entry::toDto).toList();

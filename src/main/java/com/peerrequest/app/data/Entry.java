@@ -89,9 +89,10 @@ public class Entry {
                 getId() == null ? Optional.empty() : Optional.of(getId()),
                 Optional.of(getResearcherId()),
                 getName(),
+                Optional.of(getAuthors()),
                 Optional.of(getDocumentId()),
-                Optional.ofNullable(getCategoryId()),
-                Optional.of(getAuthors()));
+                Optional.ofNullable(getCategoryId())
+                );
     }
 
     @Override
@@ -118,9 +119,9 @@ public class Entry {
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("researcher_id") Optional<String> researcherId,
             @JsonProperty("name") String name,
+            @JsonProperty ("authors") Optional<String> authors,
             @JsonProperty("document_id") Optional<String> documentId,
-            @JsonProperty("category_id") Optional<Long> categoryId,
-            @JsonProperty ("authors") Optional<String> authors)
+            @JsonProperty("category_id") Optional<Long> categoryId)
             implements Serializable {
     }
 }
