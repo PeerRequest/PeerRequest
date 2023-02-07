@@ -44,16 +44,16 @@ class CategoryServiceImpl implements CategoryService {
             category.setYear(newProps.year());
         }
         if (newProps.deadline() != null) {
-            category.setName(newProps.name());
+            category.setDeadline(newProps.deadline());
         }
         if (newProps.label() != null) {
-            category.setName(newProps.name());
+            category.setLabel(newProps.label());
         }
         if (newProps.maxScore() != null) {
-            category.setName(newProps.name());
+            category.setMaxScore(newProps.maxScore());
         }
         if (newProps.minScore() != null) {
-            category.setName(newProps.name());
+            category.setMinScore(newProps.minScore());
         }
 
         return Optional.of(repo.save(category));

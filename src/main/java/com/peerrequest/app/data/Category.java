@@ -62,10 +62,14 @@ public class Category {
     @Getter
     @Setter
     private float minScore;
-    @Column(name = "nax_score", nullable = false)
+    @Column(name = "max_score", nullable = false)
     @Getter
     @Setter
     private float maxScore;
+    @Column(name = "score_step_size", nullable = false)
+    @Getter
+    @Setter
+    private float scoreStepSize;
 
     protected Category() {
     }
@@ -96,6 +100,7 @@ public class Category {
             .deadline(dto.deadline())
             .minScore(dto.minScore())
             .maxScore(dto.maxScore())
+            .scoreStepSize(dto.scoreStepSize())
             .build();
     }
 
@@ -106,7 +111,7 @@ public class Category {
      */
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
-            getName(), getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore());
+            getName(), getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore(), getScoreStepSize());
     }
 
     @Override
@@ -153,7 +158,8 @@ public class Category {
         @JsonProperty("label") Category.CategoryLabel label,
         @JsonProperty("deadline") ZonedDateTime deadline,
         @JsonProperty("min_score") Float minScore,
-        @JsonProperty("max_score") Float maxScore)
+        @JsonProperty("max_score") Float maxScore,
+        @JsonProperty("score_step_size") Float scoreStepSize)
         implements Serializable {
     }
 }
