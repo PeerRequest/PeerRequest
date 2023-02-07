@@ -65,15 +65,6 @@
 <svelte:head>
     <title>Conferences / Journals | PeerRequest</title>
 </svelte:head>
-HI!!!!!
-
-<Button class="mb-4 xs"
-        color="primary"
-        outline
-        on:click={() => (show_create_category_modal = true)}
-        size="lg">
-    Create new Conference
-</Button>
 
 {#if error !== null}
     <Error error={error}/>
