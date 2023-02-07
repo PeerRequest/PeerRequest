@@ -40,7 +40,7 @@
         <a href={current_user.account_management_url} target="_blank">
             <DropdownItem slot="footer">Account Management</DropdownItem>
         </a>
-        <a href="/logout">
+        <a href="/logout/">
             <DropdownItem slot="footer">Sign out</DropdownItem>
         </a>
     </Dropdown>
