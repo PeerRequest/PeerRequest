@@ -6,16 +6,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller to allow users to logout.
  */
 @Controller
 public class LogoutController {
-    public static final String LOGOUT_URL = "/logout";
+    public static final String LOGOUT_URL = "/logout/";
 
-    @GetMapping(LOGOUT_URL)
+    @RequestMapping(LOGOUT_URL)
     String logout(HttpServletRequest request, HttpServletResponse response) {
         var redirect = "forward:/";
 
@@ -30,8 +30,11 @@ public class LogoutController {
         if (session != null) {
             session.invalidate();
         }
-        for (Cookie cookie : request.getCookies()) {
-            cookie.setMaxAge(0);
+        var cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setMaxAge(0);
+            }
         }
 
         return redirect;
