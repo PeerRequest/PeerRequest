@@ -89,7 +89,7 @@ public class Entry {
                 getId() == null ? Optional.empty() : Optional.of(getId()),
                 Optional.of(getResearcherId()),
                 getName(),
-                Optional.of(getAuthors()),
+                getAuthors() == null ? Optional.empty() : Optional.of(getAuthors()),
                 Optional.of(getDocumentId()),
                 Optional.ofNullable(getCategoryId())
                 );
