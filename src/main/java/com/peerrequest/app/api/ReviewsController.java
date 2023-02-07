@@ -101,7 +101,7 @@ public class ReviewsController extends ServiceBasedController {
         return option.get().toDto();
     }
 
-    //post for review is missing on purpose, happens in a context of a request
+    //post for review is missing on purpose, happens in a context of a request; delete is also not part of our design
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
     void getReviewDocument(@AuthenticationPrincipal OAuth2User user,
@@ -177,15 +177,23 @@ public class ReviewsController extends ServiceBasedController {
         checkAuthReviewerOrResearcher(review, entry, user);
 
         if (dto.id().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
         }
 
         if (dto.reviewId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "review_id must not not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "review_id must not be set");
         }
 
         if (dto.creatorId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "creator_id must not not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "creator_id must not be set");
+        }
+
+        if (dto.timestamp() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "timestamp must be set");
+        }
+
+        if (dto.content() == null || dto.content().equals("")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "content must be set and not empty");
         }
 
         var message = Message.fromDto(dto, reviewId, user.getAttribute("sub"));
