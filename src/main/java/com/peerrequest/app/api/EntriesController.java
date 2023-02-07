@@ -23,7 +23,7 @@ public class EntriesController extends ServiceBasedController {
     @GetMapping("/categories/{category_id}/entries")
     List<Entry.Dto> listEntries(@RequestParam Optional<Integer> limit,
                                 @RequestParam Optional<Long> after,
-                                @PathVariable Long category_id) {
+                                @PathVariable("category_id") Long categoryId) {
         if (limit.isPresent()) {
             if (limit.get() < 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
@@ -32,7 +32,7 @@ public class EntriesController extends ServiceBasedController {
         }
 
         Entry.Dto filterEntry = new Entry.Dto(
-                null, null, null, null, Optional.of(category_id));
+                null, null, null, null, Optional.of(categoryId));
 
         return this.entryService.list(after.orElse(null), limit.orElse(maxPageSize), filterEntry)
                 .stream().map(Entry::toDto).toList();
@@ -56,18 +56,27 @@ public class EntriesController extends ServiceBasedController {
 
     @PostMapping("/categories/{category_id}/entries")
     Entry.Dto createEntries(@RequestBody Entry.Dto dto,
-                            @AuthenticationPrincipal OAuth2User user, @PathVariable Long category_id) {
+                            @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
+        var category = this.categoryService.get(categoryId);
+        if (category.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        if (category.get().getLabel() == Category.CategoryLabel.EXTERNAL
+                && !category.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "only the owner may add an entry to external category");
+        }
+
         if (dto.name() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
-
-        // TODO: Only allow entry creation if category exists AND user is authorized
 
         if (dto.documentId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id is required");
         }
 
-        var entry = Entry.fromDto(dto, user.getAttribute("sub"), category_id);
+        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId);
         return this.entryService.create(entry.toDto()).toDto();
     }
 
