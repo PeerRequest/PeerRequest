@@ -1,7 +1,6 @@
 package com.peerrequest.app.data.repos;
 
 import com.peerrequest.app.data.Entry;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
