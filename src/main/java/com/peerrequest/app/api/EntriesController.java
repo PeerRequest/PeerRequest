@@ -1,7 +1,7 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.Category;
-import com.peerrequest.app.data.DocumentDTO;
+import com.peerrequest.app.data.Document;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Paged;
 import java.util.List;
@@ -12,16 +12,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -71,7 +71,7 @@ public class EntriesController extends ServiceBasedController {
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}/paper")
     ResponseEntity<byte[]> getPaper(@PathVariable(name = "entry_id") Long id,
-                            @AuthenticationPrincipal OAuth2User user) {
+                                    @AuthenticationPrincipal OAuth2User user) {
         var option = this.entryService.get(id);
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
@@ -80,7 +80,7 @@ public class EntriesController extends ServiceBasedController {
         // TODO: Allow request if user is reviewing the paper
         if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "only the reviewer and the researcher may view the paper");
+                "only the reviewer and the researcher may view the paper");
         }
 
         var document = this.documentService.get(option.get().getDocumentId());
@@ -123,7 +123,7 @@ public class EntriesController extends ServiceBasedController {
 
         try {
             byte[] fileBytes = file.getBytes();
-            DocumentDTO stored = new DocumentDTO(null, fileBytes, fileName);
+            Document stored = new Document(null, fileBytes, fileName);
 
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
@@ -157,7 +157,7 @@ public class EntriesController extends ServiceBasedController {
 
         if (!patchEntry.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Only the user that created the entry may patch it");
+                "Only the user that created the entry may patch it");
         }
 
         var option = this.entryService.update(dto.id().get(), dto);
@@ -175,7 +175,7 @@ public class EntriesController extends ServiceBasedController {
         var researcherId = user.getAttribute("sub").toString();
         if (!option.get().getResearcherId().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Only the user that created the entry may delete it");
+                "Only the user that created the entry may delete it");
         }
 
         var deleted = this.entryService.delete(entryId);

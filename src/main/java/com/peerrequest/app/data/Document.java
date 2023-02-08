@@ -1,7 +1,12 @@
 package com.peerrequest.app.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 @Entity
 @Table(name = "document")
-public class DocumentDTO {
+public class Document {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -33,7 +38,8 @@ public class DocumentDTO {
     @Getter
     private String name;
 
-    protected DocumentDTO() {}
+    protected Document() {
+    }
 
     /**
      * Build a DocumentDTO from a DTO.
@@ -41,12 +47,9 @@ public class DocumentDTO {
      * @param dto DTO
      * @return DocumentDTO represented by the DTO
      */
-    public static DocumentDTO fromDto(Dto dto) {
-        return DocumentDTO.builder()
-                .id(dto.id().orElse(null))
-                .file(dto.file().get())
-                .name(dto.fileName().get())
-                .build();
+    public static Document fromDto(Dto dto) {
+        return Document.builder().id(dto.id().orElse(null)).file(dto.file().get()).name(dto.fileName().get())
+            .build();
     }
 
     /**
@@ -54,10 +57,10 @@ public class DocumentDTO {
      *
      * @return DTO
      */
-    public DocumentDTO.Dto toDto() {
+    public Document.Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
-                getFile() == null ? Optional.empty() : Optional.of(getFile()),
-                getName() == null ? Optional.empty() : Optional.of(getName()));
+            getFile() == null ? Optional.empty() : Optional.of(getFile()),
+            getName() == null ? Optional.empty() : Optional.of(getName()));
     }
 
     @Override
@@ -68,21 +71,19 @@ public class DocumentDTO {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
             return false;
         }
-        DocumentDTO document = (DocumentDTO) o;
+        Document document = (Document) o;
         return id != null && Objects.equals(id, document.id);
     }
+
     @Override
     public int hashCode() {
         return this.id.hashCode();
     }
 
     /**
-     * A DTO for the {@link com.peerrequest.app.data.DocumentDTO} entity.
+     * A DTO for the {@link Document} entity.
      */
-    public record Dto(
-            @JsonProperty("id") Optional<String> id,
-            @JsonProperty("file") Optional<byte[]> file,
-            @JsonProperty("file_name") Optional<String> fileName)
-            implements Serializable {
+    public record Dto(@JsonProperty("id") Optional<String> id, @JsonProperty("file") Optional<byte[]> file,
+                      @JsonProperty("file_name") Optional<String> fileName) implements Serializable {
     }
 }
