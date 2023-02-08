@@ -43,10 +43,7 @@ public class CategoriesController extends ServiceBasedController {
             categoryPage.getSize(),
             categoryPage.getNumber() + 1,
             categoryPage.getTotalPages(),
-            this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null)
-                .stream()
-                .map(Category::toDto)
-                .toList());
+            categoryPage.stream().map(Category::toDto).toList());
     }
 
     @GetMapping("/categories/{id}")
