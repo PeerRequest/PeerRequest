@@ -4,7 +4,6 @@ import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.DocumentDTO;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Paged;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
