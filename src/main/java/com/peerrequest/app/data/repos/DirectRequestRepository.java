@@ -1,11 +1,11 @@
 package com.peerrequest.app.data.repos;
 
 import com.peerrequest.app.data.DirectRequest;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 
 
 public interface DirectRequestRepository extends CrudRepository<DirectRequest, Long> {
