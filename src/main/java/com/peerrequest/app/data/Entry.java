@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-// TODO: Add authors data
 /**
  * Represents an Entry.
  */
@@ -59,7 +58,7 @@ public class Entry {
      * @return entry represented by the DTO
      */
     public static Entry fromDto(Dto dto) {
-        return fromDto(dto, dto.researcherId().get(), dto.categoryId().get());
+        return fromDto(dto, dto.researcherId().get(), dto.categoryId().get(), dto.documentId().get());
     }
 
     /**
@@ -68,13 +67,13 @@ public class Entry {
      * @param dto DTO
      * @return Entry represented by the DTO
      */
-    public static Entry fromDto(Dto dto, String researcherId, Long categoryId) {
+    public static Entry fromDto(Dto dto, String researcherId, Long categoryId, String documentId) {
         return Entry.builder()
                 .id(dto.id().orElse(null))
                 .name(dto.name())
                 .researcherId(researcherId)
                 .authors(dto.authors().orElse(null))
-                .documentId(String.valueOf(dto.documentId()))
+                .documentId(documentId)
                 .categoryId(categoryId)
                 .build();
     }

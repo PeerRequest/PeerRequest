@@ -1,7 +1,10 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.Category;
+import com.peerrequest.app.data.DocumentDTO;
 import com.peerrequest.app.data.Entry;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -64,7 +68,7 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @PostMapping("/categories/{category_id}/entries")
-    Entry.Dto createEntries(@RequestBody Entry.Dto dto,
+    Entry.Dto createEntries(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
                             @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
         var category = this.categoryService.get(categoryId);
         if (category.isEmpty()) {
@@ -81,11 +85,25 @@ public class EntriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
 
-        if (dto.documentId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id is required");
+        if (dto.documentId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id must not be set");
         }
 
-        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId);
+        String fileName = file.getOriginalFilename();
+        String documentId;
+
+        try {
+            byte[] fileBytes = file.getBytes();
+            System.out.println(Arrays.toString(fileBytes));
+            DocumentDTO stored = new DocumentDTO(null, fileBytes, fileName);
+
+            var document = this.documentService.create(stored.toDto());
+            documentId = document.getId();
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong");
+        }
+
+        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId, documentId);
         return this.entryService.create(entry.toDto()).toDto();
     }
 
