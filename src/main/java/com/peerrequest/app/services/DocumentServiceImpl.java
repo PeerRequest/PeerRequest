@@ -1,41 +1,43 @@
 package com.peerrequest.app.services;
 
-import com.peerrequest.app.data.DocumentDTO;
-import com.peerrequest.app.data.repos.DocumentDTORepository;
+import com.peerrequest.app.data.Document;
+import com.peerrequest.app.data.repos.DocumentRepository;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+/**
+ * Default implementation of a DocumentService.
+ */
 @Service
 public class DocumentServiceImpl implements DocumentService {
-
     @Autowired
-    private DocumentDTORepository repo;
+    private DocumentRepository repo;
 
     @Override
-    public DocumentDTO create(DocumentDTO.Dto newEntity) {
-        return repo.save(DocumentDTO.fromDto(newEntity));
+    public Document create(Document.Dto newEntity) {
+        return repo.save(Document.fromDto(newEntity));
     }
 
     @Override
-    public Page<DocumentDTO> list(int page, int maxCount, DocumentDTO.Dto filter) {
+    public Page<Document> list(int page, int maxCount, Document.Dto filter) {
         throw new RuntimeException("Operation not supported");
     }
 
     @Override
-    public Optional<DocumentDTO> get(String cursor) {
+    public Optional<Document> get(String cursor) {
         return repo.findById(cursor);
     }
 
     @Override
-    public Optional<DocumentDTO> update(String cursor, DocumentDTO.Dto newProps) {
+    public Optional<Document> update(String cursor, Document.Dto newProps) {
         throw new RuntimeException("Operation not supported");
     }
 
     @Override
-    public Optional<DocumentDTO> delete(String cursor) {
+    public Optional<Document> delete(String cursor) {
         var optional = repo.findById(cursor);
         if (optional.isEmpty()) {
             return Optional.empty();
@@ -44,5 +46,17 @@ public class DocumentServiceImpl implements DocumentService {
         var document = optional.get();
         repo.delete(document);
         return Optional.of(document);
+    }
+
+    @Override
+    public Optional<List<Byte>> data(String id) {
+        // TODO: implement
+        throw new RuntimeException("not implemented yet");
+    }
+
+    @Override
+    public void store(String id, List<Byte> data) throws Exception {
+        // TODO: implement
+        throw new RuntimeException("not implemented yet");
     }
 }
