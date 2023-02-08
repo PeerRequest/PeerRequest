@@ -7,12 +7,13 @@
     import Container from "../../../components/Container.svelte";
     import ExternAssignReviewerModal from "../../../components/ExternAssignReviewerModal.svelte";
     import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
-    import EditCategoryModal from "../../../components/EditCategoryModal.svelte";
+    import EditModal from "../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../components/ConfirmDeletionModal.svelte";
 
     const pages = mock_data.pagination;
     const mocks = mock_data.categories;
     const papers = mock_data.papers;
+    const biddings = mock_data.bidding;
 
     const previous = () => {
         alert("Previous btn clicked. Make a call to your server to fetch data.");
@@ -28,6 +29,11 @@
     let show_submit_modal = false;
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
+
+    function bidding() {
+        return biddings.find(bidding => bidding.category.id === mocks[data.category_id - 1].id);
+    }
+
 </script>
 
 <svelte:head>
@@ -50,10 +56,34 @@
             </Heading>
         </div>
 
-        {#if mocks[data.category_id - 1].type === "External" && mocks[data.category_id - 1].is_my_category() }
-            <Button size="lg" color="primary" class="mx-auto lg:m-0"
-                    on:click={() => show_assign_modal = true}>Assign Reviewers
-            </Button>
+
+        {#if mocks[data.category_id - 1].type === "External"}
+            {#if mocks[data.category_id - 1].is_my_category()}
+                <Button size="lg"
+                        color="primary"
+                        class="mx-auto lg:m-0"
+
+                        on:click={(mocks[data.category_id - 1].open && (bidding === undefined)) ? (() => show_assign_modal = true) : ("")}
+                        href={(mocks[data.category_id - 1].open) ?
+                    ((bidding() !== undefined) ?
+                    `/categories/${mocks[data.category_id - 1].id}/bidding/${bidding().id}` : "") :
+                    `/categories/${mocks[data.category_id - 1].id}/assignment`}
+                >
+                    {(mocks[data.category_id - 1].open) ? ((bidding() !== undefined) ?
+                        "Go to Bidding" : "Assign Reviewers") : "View Assignment"}
+                </Button>
+            {:else}
+                {#if (mocks[data.category_id - 1].open) && (bidding() !== undefined)}
+                    <Button size="lg"
+                            color="primary"
+                            class="mx-auto lg:m-0"
+                            href="/categories/{mocks[data.category_id - 1].id}/bidding/{bidding().id}"
+                    >
+                        Go to Bidding
+                    </Button>
+
+                {/if}
+            {/if}
         {/if}
     </div>
 
@@ -64,13 +94,15 @@
                 <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
                     Edit Conference
                 </Button>
-                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline on:click={() => show_confirm_deletion_modal = true}>
+                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        on:click={() => show_confirm_deletion_modal = true}>
                     Delete Conference
                 </Button>
             {/if}
         </div>
 
-        <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper</Button>
+        <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper
+        </Button>
     </div>
 
 
@@ -83,8 +115,7 @@
             {#if p.category === mocks[data.category_id - 1]}
                 <Paper
                         href="/categories/{p.category.id}/{p.id}"
-                        id={p.id}
-                        title={p.title}
+                        paper={p}
                         slots={p.slots}
                         category={p.category}
                 />
@@ -115,11 +146,11 @@
                            }}
                            show={show_assign_modal}/>
 
-<SubmitPaperModal conference_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
+<SubmitPaperModal category_type="{mocks[data.category_id - 1].type}" hide="{() => show_submit_modal = false}"
                   show="{show_submit_modal}"/>
 
-<EditCategoryModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
-                  show="{show_edit_modal}"/>
+<EditModal conference="{mocks[data.category_id - 1]}" hide="{() => show_edit_modal = false}"
+                   show="{show_edit_modal}"/>
 
-<ConfirmDeletionModal to_delete="{mocks[data.category_id - 1]}" hide="{() => show_confirm_deletion_modal = false}"
-                      show="{show_confirm_deletion_modal}"/>
+<ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                      to_delete="{mocks[data.category_id - 1]}"/>

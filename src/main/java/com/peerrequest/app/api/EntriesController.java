@@ -1,6 +1,8 @@
 package com.peerrequest.app.api;
 
+import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Entry;
+import com.peerrequest.app.data.Paged;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -20,21 +22,28 @@ public class EntriesController extends ServiceBasedController {
     private final int maxPageSize = 100;
 
     @GetMapping("/categories/{category_id}/entries")
-    List<Entry.Dto> listEntries(@RequestParam Optional<Integer> limit,
-                                @RequestParam Optional<Long> after,
-                                @PathVariable Long category_id) {
+    Paged<List<Entry.Dto>> listEntries(@RequestParam("limit") Optional<Integer> limit,
+                                @RequestParam("page") Optional<Integer> page,
+                                @PathVariable("category_id") Long categoryId) {
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
         }
 
         Entry.Dto filterEntry = new Entry.Dto(
-                null, null, null, null, Optional.of(category_id));
+                null, null, null, null, null, Optional.of(categoryId));
 
-        return this.entryService.list(after.orElse(null), limit.orElse(maxPageSize), filterEntry)
-                .stream().map(Entry::toDto).toList();
+        var entryPage = this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+                filterEntry);
+        return new Paged<>(
+                entryPage.getSize(),
+                entryPage.getNumber() + 1,
+                entryPage.getTotalPages(),
+                this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterEntry)
+                        .stream()
+                        .map(Entry::toDto).toList());
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}")
@@ -55,18 +64,27 @@ public class EntriesController extends ServiceBasedController {
 
     @PostMapping("/categories/{category_id}/entries")
     Entry.Dto createEntries(@RequestBody Entry.Dto dto,
-                            @AuthenticationPrincipal OAuth2User user, @PathVariable Long category_id) {
+                            @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
+        var category = this.categoryService.get(categoryId);
+        if (category.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+
+        if (category.get().getLabel() == Category.CategoryLabel.EXTERNAL
+                && !category.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "only the owner may add an entry to external category");
+        }
+
         if (dto.name() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
-
-        // TODO: Only allow entry creation if category exists AND user is authorized
 
         if (dto.documentId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id is required");
         }
 
-        var entry = Entry.fromDto(dto, user.getAttribute("sub"), category_id);
+        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId);
         return this.entryService.create(entry.toDto()).toDto();
     }
 
@@ -78,6 +96,10 @@ public class EntriesController extends ServiceBasedController {
 
         if (dto.researcherId().isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the researcher_id");
+        }
+
+        if (dto.documentId().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "you may not change the document_id");
         }
 
         var patchEntry = this.entryService.get(dto.id().get());
@@ -94,5 +116,22 @@ public class EntriesController extends ServiceBasedController {
         var option = this.entryService.update(dto.id().get(), dto);
 
         return option.get().toDto();
+    }
+
+    @DeleteMapping("/categories/{category_id}/entries/{entry_id}")
+    Optional<Entry.Dto> deleteEntry(@PathVariable("entry_id") Long entryId, @AuthenticationPrincipal OAuth2User user) {
+        var option = this.entryService.get(entryId);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        var researcherId = user.getAttribute("sub").toString();
+        if (!option.get().getResearcherId().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the user that created the entry may delete it");
+        }
+
+        var deleted = this.entryService.delete(entryId);
+        return deleted.map(Entry::toDto);
     }
 }

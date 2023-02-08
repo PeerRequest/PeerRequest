@@ -1,7 +1,7 @@
 package com.peerrequest.app.services;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 
 /**
  * Describes the basic functionality of a CRUD service.
@@ -20,7 +20,7 @@ import java.util.Optional;
 public interface CrudService<T, I, D> {
     T create(D newEntity);
 
-    List<T> list(I cursor, int maxCount, D filter);
+    Page<T> list(int page, int maxCount, D filter);
 
     Optional<T> get(I cursor);
 
