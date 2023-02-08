@@ -3,13 +3,14 @@ package com.peerrequest.app.api;
 import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.DocumentDTO;
 import com.peerrequest.app.data.Entry;
-
+import com.peerrequest.app.data.Paged;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import com.peerrequest.app.data.Paged;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -62,9 +63,30 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}/paper")
-    void getPaper(@PathVariable(name = "entry_id") Long id) {
-        // TODO: Implement after DocumentService is finished
-        throw new RuntimeException("Not implemented yet");
+    ResponseEntity<byte[]> getPaper(@PathVariable(name = "entry_id") Long id,
+                            @AuthenticationPrincipal OAuth2User user) {
+        var option = this.entryService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        // TODO: Allow request if user is reviewing the paper
+        if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "only the reviewer and the researcher may view the paper");
+        }
+
+        var document = this.documentService.get(option.get().getDocumentId());
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.parseMediaType("application/pdf"));
+        String filename = document.get().getName();
+
+        headers.add("Content-Disposition", "inline; filename=" + filename);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        return new ResponseEntity<>(document.get().getFile(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/categories/{category_id}/entries")
