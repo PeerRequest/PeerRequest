@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
+
 public interface DirectRequestRepository extends CrudRepository<DirectRequest, Long> {
     /**
      * Defines the list operation.
@@ -19,17 +20,17 @@ public interface DirectRequestRepository extends CrudRepository<DirectRequest, L
 
         if (userId != null) {
             if (cursor == null) {
-                return listByUser(pageable, userId);
+                return listByUser(userId, pageable);
             } else {
-                return listByUser(cursor, pageable, userId);
+                return listByUser(cursor, userId, pageable);
             }
         }
 
         if (directRequestProcessId != null) {
             if (cursor == null) {
-                return listByEntry(pageable, directRequestProcessId);
+                return listByEntry(directRequestProcessId, pageable);
             } else {
-                return listByEntry(cursor, pageable, directRequestProcessId);
+                return listByEntry(cursor, directRequestProcessId, pageable);
             }
         }
 
@@ -40,17 +41,17 @@ public interface DirectRequestRepository extends CrudRepository<DirectRequest, L
         }
     }
 
-    @Query("select e from DirectRequest e where e.reviewerId = ?2 order by e.id DESC")
-    List<DirectRequest> listByUser(Pageable pageable, String userId);
+    @Query("select e from DirectRequest e where e.reviewerId = ?1 order by e.id DESC")
+    List<DirectRequest> listByUser(String userId, Pageable pageable);
 
-    @Query("select e from DirectRequest e where e.id < ?1 and e.reviewerId = ?3 order by e.id DESC")
-    List<DirectRequest> listByUser(Long cursor, Pageable pageable, String userId);
+    @Query("select e from DirectRequest e where e.id < ?1 and e.reviewerId = ?2 order by e.id DESC")
+    List<DirectRequest> listByUser(Long cursor, String userId, Pageable pageable);
 
-    @Query("select e from DirectRequest e where e.directRequestProcessId = ?2 order by e.id DESC")
-    List<DirectRequest> listByEntry(Pageable pageable, Long directRequestProcessId);
+    @Query("select e from DirectRequest e where e.directRequestProcessId = ?1 order by e.id DESC")
+    List<DirectRequest> listByEntry(Long directRequestProcessId, Pageable pageable);
 
-    @Query("select e from DirectRequest e where e.id < ?1 and e.directRequestProcessId = ?3 order by e.id DESC")
-    List<DirectRequest> listByEntry(Long cursor, Pageable pageable, Long directRequestProcessId);
+    @Query("select e from DirectRequest e where e.id < ?1 and e.directRequestProcessId = ?2 order by e.id DESC")
+    List<DirectRequest> listByEntry(Long cursor, Long directRequestProcessId, Pageable pageable);
 
     @Query("select e from DirectRequest e order by e.id DESC")
     List<DirectRequest> list(Pageable pageable);
