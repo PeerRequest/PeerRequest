@@ -116,7 +116,6 @@ public class EntriesController extends ServiceBasedController {
 
         try {
             byte[] fileBytes = file.getBytes();
-            System.out.println(Arrays.toString(fileBytes));
             DocumentDTO stored = new DocumentDTO(null, fileBytes, fileName);
 
             var document = this.documentService.create(stored.toDto());
