@@ -128,7 +128,7 @@
                         {category.name}
                     </Heading>
                     <Heading tag="h6">
-                        <Secondary>Review Deadline: {map_deadline(category.deadline)}</Secondary>
+                        <Secondary>Review Deadline: {category.deadline}</Secondary>
                     </Heading>
                 </div>
 
@@ -226,7 +226,7 @@
         <SubmitPaperModal category_path ={path} conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
                           show="{show_submit_modal}"/>
 
-        <EditModal conference={path} hide="{() => show_edit_modal = false}"
+        <EditModal conference={category} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
