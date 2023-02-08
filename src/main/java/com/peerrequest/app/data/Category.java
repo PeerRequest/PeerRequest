@@ -53,7 +53,7 @@ public class Category {
     @Getter
     @Setter
     private CategoryLabel label;
-    @Column(name = "deadline", nullable = false)
+    @Column(name = "deadline")
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
     @Getter
     @Setter
