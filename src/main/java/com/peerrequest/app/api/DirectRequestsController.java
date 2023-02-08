@@ -28,7 +28,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return directRequestProcess of entry
      */
-    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process")
     public DirectRequestProcess.Dto getDirectRequestProcess(@PathVariable("entry_id") final Long entryId) {
         var option = this.directRequestProcessService.get(entryId);
         if (option.isEmpty()) {
@@ -46,7 +46,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return the added directRequestProcess
      */
-    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    @PostMapping(value = "/categories/{category_id}/entries/{entry_id}/process")
     public DirectRequestProcess.Dto createDirectRequestProcess(@PathVariable("entry_id") Long entryId,
                                                         @RequestBody DirectRequestProcess.Dto dto,
                                                         @AuthenticationPrincipal OAuth2User user) {
@@ -77,7 +77,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return updated directRequestProcess
      */
-    @PutMapping(value = "/categories/{category_id}/entries/{entry_id}/process", produces = "application/json")
+    @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process")
     public DirectRequestProcess.Dto patchDirectRequestProcess(@PathVariable("entry_id") final Long entryId,
                                                           @RequestBody final DirectRequestProcess.Dto dto,
                                                           @AuthenticationPrincipal OAuth2User user) {
@@ -114,8 +114,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return directRequest with requestId
      */
-    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
-            produces = "application/json")
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}")
     public DirectRequest.Dto getDirectRequest(@PathVariable("entry_id") final Long entryId,
                                               @PathVariable("request_id") final Long requestId,
                                               @AuthenticationPrincipal OAuth2User user) {
@@ -143,8 +142,7 @@ public class DirectRequestsController extends ServiceBasedController {
      *
      * @return directRequest with requestId
      */
-    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests",
-            produces = "application/json")
+    @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests")
     public List<DirectRequest.Dto> listDirectRequestsByEntry(@RequestParam Optional<Integer> limit,
                                                              @RequestParam Optional<Long> after,
                                                              @PathVariable("entry_id") final Long entryId,
@@ -181,17 +179,18 @@ public class DirectRequestsController extends ServiceBasedController {
     /**
      * Patches a directRequest.
      *
-     * @param requestId DirectRequest to patch
      * @param updater updater containing a DirectRequest.State
      *
      * @return the updated request
      */
-    @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}",
-            produces = "application/json")
-    public DirectRequest.Dto patchDirectRequest(@PathVariable("request_id") final Long requestId,
-                                                @RequestBody final DirectRequest.Dto updater,
+    @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests")
+    public DirectRequest.Dto patchDirectRequest(@RequestBody final DirectRequest.Dto updater,
                                                 @AuthenticationPrincipal OAuth2User user) {
-        var request = this.directRequestService.get(requestId);
+        if (updater.id().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be set");
+        }
+
+        var request = this.directRequestService.get(updater.id().get());
         if (request.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request does not exist");
         }
@@ -201,9 +200,6 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the reviewer may change the state");
         }
 
-        if (updater.id().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
-        }
 
         if (updater.directRequestProcessId().isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not be set");
