@@ -77,10 +77,11 @@
     let currentPage = 1;
     let lastPage = 1;
     let limit = 1;
+    let path = $page.url.pathname;
 
     function loadCategory() {
         category = null;
-        fetch("/api/categories/" + parseInt($page.url.toString().split("/").pop()))
+        fetch("/api/" + path)
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
@@ -222,14 +223,14 @@
                            }}
                                    show={show_assign_modal}/>
 
-        <SubmitPaperModal conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
+        <SubmitPaperModal category_path ={path} conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
                           show="{show_submit_modal}"/>
 
-        <EditModal conference="{category}" hide="{() => show_edit_modal = false}"
+        <EditModal conference={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                              to_delete="{category}"/>
+                              to_delete={path}/>
     {/if}
 {/if}
 
