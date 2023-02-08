@@ -8,6 +8,7 @@
 
     export let show = false;
     export let to_delete;
+    export let delete_name;
     export let hide = () => {
         /* NOP */
     };
@@ -16,7 +17,13 @@
     }
 
     function deleteObject() {
-        //TODO
+        fetch("/api" + to_delete, {
+            method: 'DELETE',
+        })
+            .then((response) => response.json())
+            .then((response_data) => (response_data))
+            .catch(err => console.log(err))
+        window.location.href = "/categories"
     }
 </script>
 
@@ -24,7 +31,7 @@
     <div class="text-2xl font-extrabold text-gray-900 text-center">
         Confirm Deletion of
         <br>
-        {to_delete.name}
+        {delete_name}
     </div>
     <CloseButton class="absolute top-0 right-2"
                  on:click={hide}/>
@@ -32,7 +39,7 @@
         Are you sure?
     </div>
     <div class="justify-center gap-x-16 w-full flex">
-        <Button class="mb-4 h-8" color="primary" on:click={deleteObject()} size="lg">Yes</Button>
+        <Button class="mb-4 h-8" color="primary" on:click={() => deleteObject()} size="lg">Yes</Button>
         <Button class="mb-4 h-8" color="red" on:click={hide()} size="lg">No</Button>
     </div>
 
