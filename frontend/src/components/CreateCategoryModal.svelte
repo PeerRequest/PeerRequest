@@ -1,12 +1,5 @@
 <script>
-    import {
-        Modal,
-        Button,
-        CloseButton,
-        Heading,
-        Radio
-
-    } from "flowbite-svelte" ;
+    import {Button, CloseButton, Heading, Modal, Radio} from "flowbite-svelte";
     import mock_data from "../mock_data.js";
 
 
@@ -43,7 +36,7 @@
         }
     }
 
-    function compare(category){
+    function compare(category) {
         categories_without_id = {
             year: category.year,
             type: category.type,
@@ -57,7 +50,7 @@
 
 </script>
 
-<Modal bind:open={show} on:hide={() => hide ? hide() : null} size="lg" permanent={true}>
+<Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
             Create new Conference
@@ -67,25 +60,27 @@
     </svelte:fragment>
     <form class="grid gap-y-6">
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Name </Heading>
-            <input class="min-w-[13.5rem] w-full rounded-lg" id= conference_name type= text bind:value={new_category_name} required>
+            <Heading size="md" tag="h4"> Name</Heading>
+            <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
+                   type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Year </Heading>
-            <input class="w-full rounded-lg" id= conference_year type= number bind:value={new_category_year} required>
+            <Heading size="md" tag="h4"> Year</Heading>
+            <input bind:value={new_category_year} class="w-full rounded-lg" id=conference_year required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Deadline (optional)</Heading>
-            <input class="w-full rounded-lg" id= conference_deadline type= date bind:value={new_category_deadline}>
+            <input bind:value={new_category_deadline} class="w-full rounded-lg" id=conference_deadline type=date>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Conference Type </Heading>
+            <Heading size="md" tag="h4"> Conference Type</Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio bind:group={new_category_type} name="category_type" value="Internal" checked={true}> Internal </Radio>
-                <Radio bind:group={new_category_type} name="category_type" value="External"> External </Radio>
+                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal"> Internal
+                </Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="External"> External</Radio>
             </div>
         </div>
-        <Button type="submit" color="primary" size="xs" on:click={() => finishCreation()}>
+        <Button color="primary" on:click={() => finishCreation()} size="xs" type="submit">
             Save
         </Button>
     </form>

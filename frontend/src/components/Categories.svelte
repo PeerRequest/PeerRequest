@@ -1,5 +1,5 @@
 <script>
-  import { Table, TableBody, TableHead, TableHeadCell } from "flowbite-svelte";
+  import {Table, TableBody, TableHead, TableHeadCell} from "flowbite-svelte";
 </script>
 
 <Table hoverable={true} shadow={true}>
@@ -12,7 +12,7 @@
       <span class="sr-only"> Edit </span>
     </TableHeadCell>
   </TableHead>
-  <TableBody class="divide-y">
-    <slot />
+  <TableBody>
+    <slot/>
   </TableBody>
 </Table>

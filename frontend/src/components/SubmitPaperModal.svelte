@@ -1,9 +1,5 @@
 <script>
-    import {
-        Modal,
-        Button,
-
-    } from "flowbite-svelte" ;
+    import {Button, Modal,} from "flowbite-svelte";
     import SubmitPaper from "./SubmitPaper.svelte";
     import PdfUploader from "./PdfUploader.svelte";
 
