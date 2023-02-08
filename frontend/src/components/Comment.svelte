@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
+    import {onMount} from 'svelte'
 
     export let data;
     let current = new Date()
@@ -39,25 +39,13 @@
     }
 </script>
 
-<style>
-    *{
-        margin: 0;
-    }
-    main {
-        margin-bottom: 35px;
-    }
-    h2{
-        font-size: 14px;
-        color: lightgray;
-        font-weight: 400;
-        margin-bottom: 10px;
-    }
-
-</style>
 
 <main>
-    <h1 class="font-bold flex">{data.user}</h1>
-    <h2>{calculateDate(data.date)}</h2>
-    <p>{data.content}</p>
-    <hr class="my-8 h-px bg-gray-200 border-0 dark:bg-gray-700">
+    <div class="rounded-lg outline outline-blue-500 mx-4 my-4 max-w-[90vw]">
+        <div class="h-1"/>
+        <h1 class="font-bold flex mx-2">{data.user}</h1>
+        <h2 class="text-xs mx-2 my-2">{calculateDate(data.date)}</h2>
+        <p class="my-2.5 font-normal text-gray-700 mx-2">{data.content}</p>
+        <div class="h-1"/>
+    </div>
 </main>

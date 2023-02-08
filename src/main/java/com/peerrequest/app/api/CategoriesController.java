@@ -1,6 +1,7 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.Category;
+import com.peerrequest.app.data.Paged;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -27,16 +28,22 @@ public class CategoriesController extends ServiceBasedController {
     private final int maxPageSize = 100;
 
     @GetMapping("/categories")
-    List<Category.Dto> listCategories(@RequestParam Optional<Integer> limit, @RequestParam Optional<Long> after) {
+    Paged<List<Category.Dto>> listCategories(@RequestParam Optional<Integer> limit,
+                                             @RequestParam Optional<Integer> page) {
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
         }
 
-        return this.categoryService.list(after.orElse(null), limit.orElse(maxPageSize), null).stream()
-            .map(Category::toDto).toList();
+        var categoryPage = this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null);
+
+        return new Paged<>(
+            categoryPage.getSize(),
+            categoryPage.getNumber() + 1,
+            categoryPage.getTotalPages(),
+            categoryPage.stream().map(Category::toDto).toList());
     }
 
     @GetMapping("/categories/{id}")
@@ -55,8 +62,9 @@ public class CategoriesController extends ServiceBasedController {
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
-        if (option.get().getResearcherId() != user.getAttribute("sub")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter delete category");
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may delete an external category");
         }
 
         var deleted = this.categoryService.delete(id);
@@ -92,8 +100,9 @@ public class CategoriesController extends ServiceBasedController {
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
-        if (option.get().getResearcherId() != user.getAttribute("sub")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter a category");
+        if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
+            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may alter an external category");
         }
 
         var patched = this.categoryService.update(dto.id().get(), dto);
