@@ -1,5 +1,5 @@
 <script>
-    import {BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {BreadcrumbItem, Button, Heading} from "flowbite-svelte";
     import Container from "../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
     import Category from "../../components/Category.svelte";
@@ -9,6 +9,7 @@
     import PaginationComponent from "../../components/PaginationComponent.svelte";
     import {page} from '$app/stores';
     import {goto} from "$app/navigation";
+    import CreateCategoryModal from "../../components/CreateCategoryModal.svelte";
 
     let categories = null;
     const loading_lines = 5;
@@ -35,6 +36,7 @@
     let currentPage = 1;
     let lastPage = 1;
     let limit = 1;
+    let show_create_category_modal = false;
 
     function loadCategories() {
         categories = null;
@@ -72,7 +74,9 @@
             <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
         </ResponsiveBreadCrumb>
         <Heading class="mb-4" tag="h2">Conferences</Heading>
-
+        <Button size="lg" color="primary" class="mb-4"
+                on:click={() => show_create_category_modal = true}>Create new Conference
+        </Button>
         <Categories>
             {#if categories === null}
                 {#each [...Array(loading_lines).keys()] as i}
@@ -94,3 +98,6 @@
     </Container>
 {/if}
 
+
+<CreateCategoryModal hide="{() => show_create_category_modal = false}"
+                     show="{show_create_category_modal}"/>

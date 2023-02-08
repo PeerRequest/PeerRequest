@@ -1,14 +1,10 @@
 <script>
-    import {
-        Modal,
-        Button,
-
-    } from "flowbite-svelte" ;
+    import {Button, Modal,} from "flowbite-svelte";
     import SubmitPaper from "./SubmitPaper.svelte";
     import PdfUploader from "./PdfUploader.svelte";
 
     export let show = false;
-    export let conference_type = "Internal";
+    export let category_type = "Internal";
     export let hide = () => {
         /* NOP */
     };
@@ -34,7 +30,7 @@
 </script>
 
 <Modal bind:open={show} on:hide={() => hide ? hide() : null} title="Submit New Paper" size="lg">
-    {#if (conference_type === "Internal")}
+    {#if (category_type === "Internal")}
         <form>
             <div class="grid gap-y-6">
                 {#each papers as p}
@@ -50,7 +46,7 @@
             </div>
         </form>
     {/if}
-    {#if (conference_type === "External")}
+    {#if (category_type === "External")}
         <PdfUploader/>
     {/if}
 </Modal>
