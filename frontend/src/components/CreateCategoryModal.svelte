@@ -5,8 +5,17 @@
         CloseButton,
         Heading,
         Radio
-
     } from "flowbite-svelte" ;
+    import {page} from "$app/stores";
+    import Cookies from "js-cookie";
+
+    let current_user = {
+        id: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        account_management_url: "",
+    };
 
     export let error = null;
     let categories = null;
@@ -22,10 +31,14 @@
     let categories_without_id;
     let already_exists = false;
 
+
     let new_category_year;
     let new_category_type;
     let new_category_name;
     let new_category_deadline;
+    let minScore;
+    let maxScore;
+    let scoreStepSize;
     let new_category = {
         year: new_category_year,
         type: new_category_type,
@@ -55,19 +68,25 @@
         }
     }
 
+
     function createCategory() {
-        let category = {
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}").id;
+        let data = {
             year: new_category_year,
-            type: new_category_type,
+            label: "INTERNAL",
             name: new_category_name,
-            deadline: new_category_deadline
-        }
+            deadline: new_category_deadline + "T00:00:00+01:00",
+            minScore: minScore,
+            maxScore: maxScore,
+            researcherId: current_user,
+            scoreStepSize: scoreStepSize
+        };
         return fetch("/api/categories", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(category)
+            body: JSON.stringify(data)
         })
             .then(resp => resp.json())
             .then(resp => {
@@ -108,12 +127,27 @@
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Conference Type</Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal"> Internal
+                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal">
+                    Internal
                 </Radio>
                 <Radio bind:group={new_category_type} name="category_type" value="External"> External</Radio>
             </div>
         </div>
-        <Button color="primary" on:click={() => {finishCreation(); createCategory()}} size="xs" type="submit">
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Minimum Score</Heading>
+            <input bind:value={minScore} class="w-full rounded-lg" required type=number>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Maximum Score</Heading>
+            <input bind:value={maxScore} class="w-full rounded-lg" required type=number>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Score Step Size</Heading>
+            <input bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+        </div>
+        <Button color="primary"
+                on:click={() => {finishCreation();createCategory();}}
+                size="xs" type="submit">
             Save
         </Button>
     </form>

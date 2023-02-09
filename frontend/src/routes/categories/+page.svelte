@@ -76,7 +76,7 @@
         </ResponsiveBreadCrumb>
         <Heading class="mb-4" tag="h2">Conferences</Heading>
         <Button class="mb-4"
-                color="primary"
+                outline
                 on:click={() => show_create_category_modal = true}
                 size="lg">
             Create new Conference
