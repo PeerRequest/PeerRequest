@@ -1,6 +1,5 @@
 <script>
     import {Button} from "flowbite-svelte";
-
     export let header = "Network Error";
     export let error;
 </script>

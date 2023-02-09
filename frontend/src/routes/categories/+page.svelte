@@ -4,12 +4,14 @@
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
     import Category from "../../components/Category.svelte";
     import Categories from "../../components/Categories.svelte";
+    import CreateCategoryModal from "../../components/CreateCategoryModal.svelte";
     import {onMount} from "svelte";
-    import Error from "../../components/Error.svelte";
-    import PaginationComponent from "../../components/PaginationComponent.svelte";
     import {page} from '$app/stores';
     import {goto} from "$app/navigation";
-    import CreateCategoryModal from "../../components/CreateCategoryModal.svelte";
+    import Error from "../../components/Error.svelte";
+    import PaginationComponent from "../../components/PaginationComponent.svelte";
+
+    let show_create_category_modal = false;
 
     let categories = null;
     const loading_lines = 5;
@@ -36,7 +38,6 @@
     let currentPage = 1;
     let lastPage = 1;
     let limit = 1;
-    let show_create_category_modal = false;
 
     function loadCategories() {
         categories = null;
@@ -59,6 +60,10 @@
     onMount(() => {
         loadCategories()
     });
+
+    $: if (!show_create_category_modal) {
+        loadCategories();
+    }
 </script>
 
 <svelte:head>
@@ -74,8 +79,11 @@
             <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
         </ResponsiveBreadCrumb>
         <Heading class="mb-4" tag="h2">Conferences</Heading>
-        <Button size="lg" color="primary" class="mb-4"
-                on:click={() => show_create_category_modal = true}>Create new Conference
+        <Button class="mb-4"
+                outline
+                on:click={() => {show_create_category_modal = true}}
+                size="xs">
+            Create new Conference
         </Button>
         <Categories>
             {#if categories === null}
@@ -89,6 +97,7 @@
             {/if}
         </Categories>
 
+
         <PaginationComponent
                 previous={previous}
                 next={next}
@@ -98,6 +107,6 @@
     </Container>
 {/if}
 
-
-<CreateCategoryModal hide="{() => show_create_category_modal = false}"
+<CreateCategoryModal existing_categories="{categories}"
+                     hide="{() => show_create_category_modal = false}"
                      show="{show_create_category_modal}"/>

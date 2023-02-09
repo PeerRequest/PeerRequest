@@ -1,13 +1,11 @@
 <script>
     import {ChevronLeft, ChevronRight, Pagination} from "flowbite-svelte";
-
     export let previous;
     export let next;
     export let currentPage;
     export let lastPage;
     export let click = () => {
     };
-
     const pages = (numberOfPages, currentPage, lastPage) => {
         return [...Array(2 * numberOfPages).keys()]
             .map(i => currentPage - numberOfPages + i)
