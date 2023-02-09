@@ -171,9 +171,8 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         DirectRequest filterDirectRequest = new DirectRequest(null, null, null, option.get().getId());
-
-        return this.directRequestService.list(after.orElse(null), limit.orElse(maxPageSize),
-                        filterDirectRequest.toDto()).stream().map(DirectRequest::toDto).toList();
+        // TODO: Implement list method
+        throw new RuntimeException("Not implemented yet");
     }
 
     /**
