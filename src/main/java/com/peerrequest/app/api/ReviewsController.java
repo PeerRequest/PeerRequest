@@ -164,8 +164,8 @@ public class ReviewsController extends ServiceBasedController {
         return this.reviewService.update(reviewId, updateReview.toDto()).get().toDto();
     }
 
-     @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-     ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user, @PathVariable Long reviewId) {
+    @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
+    ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user, @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
