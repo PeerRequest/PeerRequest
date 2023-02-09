@@ -53,11 +53,22 @@
             .catch(err => console.log(err))
     }
 
+    function loadEntryDocument() {
+        document = null;
+        fetch("/api" + path + "/paper")
+            .then(resp => resp.blob())
+            .then(resp => {
+                document = window.URL.createObjectURL(resp);
+            })
+            .catch(err => console.log(err))
+    }
+
 
 
     onMount(() => {
         loadEntry()
         loadCategory()
+        loadEntryDocument()
     });
 </script>
 
@@ -88,7 +99,7 @@
                 </BreadcrumbItem>
                 <BreadcrumbItem>{entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
-            <Heading class="mb-4 flex items-center" tag="h2">{path}
+            <Heading class="mb-4 flex items-center" tag="h2">{entry.name}
                 <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer" target="_blank">Download</a>
                 </Badge>
             </Heading>
