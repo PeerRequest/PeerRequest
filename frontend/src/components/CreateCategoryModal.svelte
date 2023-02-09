@@ -1,8 +1,22 @@
 <script>
-    import {Button, CloseButton, Heading, Modal, Radio} from "flowbite-svelte";
-    import mock_data from "../mock_data.js";
+    import {
+        Modal,
+        Button,
+        CloseButton,
+        Heading,
+        Radio
+    } from "flowbite-svelte" ;
 
+    let current_user = {
+        id: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        account_management_url: "",
+    };
 
+    export let error = null;
+    let categories = null;
     export let show = false;
     export let hide = () => {
         /* NOP */
@@ -11,14 +25,18 @@
         /* NOP */
     }
 
-    let existing_categories = mock_data.categories;
+    export let existing_categories;
     let categories_without_id;
     let already_exists = false;
+
 
     let new_category_year;
     let new_category_type;
     let new_category_name;
     let new_category_deadline;
+    let minScore;
+    let maxScore;
+    let scoreStepSize;
     let new_category = {
         year: new_category_year,
         type: new_category_type,
@@ -48,6 +66,30 @@
         }
     }
 
+
+    function createCategory() {
+        let data = {
+            year: new_category_year,
+            label: new_category_type,
+            name: new_category_name,
+            deadline: new_category_deadline + "T00:00:00+01:00",
+            min_score: minScore,
+            max_score: maxScore,
+            score_step_size: scoreStepSize
+        };
+        return fetch("/api/categories", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(resp => resp.json())
+            .then(resp => {
+            })
+            .catch(err => console.log(err));
+    }
+
 </script>
 
 <Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
@@ -75,12 +117,27 @@
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Conference Type</Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal"> Internal
+                <Radio bind:group={new_category_type} name="category_type" value="INTERNAL">
+                    Internal
                 </Radio>
-                <Radio bind:group={new_category_type} name="category_type" value="External"> External</Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="EXTERNAL"> External</Radio>
             </div>
         </div>
-        <Button color="primary" on:click={() => finishCreation()} size="xs" type="submit">
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Minimum Score</Heading>
+            <input bind:value={minScore} class="w-full rounded-lg" required type=number>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Maximum Score</Heading>
+            <input bind:value={maxScore} class="w-full rounded-lg" required type=number>
+        </div>
+        <div class="flex flex-row justify-between items-center">
+            <Heading size="md" tag="h4">Score Step Size</Heading>
+            <input bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+        </div>
+        <Button color="primary"
+                on:click={() => {finishCreation();createCategory();show=false;}}
+                size="xs" type="submit">
             Save
         </Button>
     </form>
