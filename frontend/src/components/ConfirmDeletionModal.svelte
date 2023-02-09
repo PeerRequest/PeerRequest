@@ -5,6 +5,7 @@
         Button
 
     } from "flowbite-svelte" ;
+    import {goto} from "$app/navigation";
 
     export let show = false;
     export let to_delete;
@@ -23,7 +24,7 @@
             .then((response) => response.json())
             .then((response_data) => (response_data))
             .catch(err => console.log(err))
-        window.location.href = "/categories"
+        goto("/categories")
     }
 </script>
 
