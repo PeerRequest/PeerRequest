@@ -1,6 +1,5 @@
 <script>
-    import {BreadcrumbItem, Button, ChevronLeft, ChevronRight, Heading, Pagination, Secondary} from "flowbite-svelte";
-    import mock_data from "../../../mock_data.js";
+    import {BreadcrumbItem, Button, Heading, Secondary} from "flowbite-svelte";
     import Papers from "../../../components/Papers.svelte";
     import Paper from "../../../components/Paper.svelte";
     import ResponsiveBreadCrumb from "../../../components/ResponsiveBreadCrumb.svelte";
@@ -16,9 +15,6 @@
     import Cookies from "js-cookie";
     import {goto} from "$app/navigation";
     import PaginationComponent from "../../../components/PaginationComponent.svelte";
-
-    const pages = mock_data.pagination;
-    const biddings = mock_data.bidding;
 
     function map_type(type) {
         switch (type) {
