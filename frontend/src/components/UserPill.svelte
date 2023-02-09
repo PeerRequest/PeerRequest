@@ -3,7 +3,8 @@
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
 
-    let current_user = {
+    export let current_user = {
+        id: "",
         first_name: "",
         last_name: "",
         email: "",
