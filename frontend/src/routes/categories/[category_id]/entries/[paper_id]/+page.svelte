@@ -1,5 +1,5 @@
 <script>
-    import {Badge, BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
@@ -9,9 +9,12 @@
     import Error from "../../../../../components/Error.svelte";
     import {page} from '$app/stores';
     import {onMount} from "svelte";
+    import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
 
 
     const mocks_reviews = mock_data.reviews;
+
+    let show_confirm_deletion_modal = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -64,7 +67,6 @@
     }
 
 
-
     onMount(() => {
         loadEntry()
         loadCategory()
@@ -104,6 +106,13 @@
                 </Badge>
             </Heading>
 
+            <div class="justify-start gap-x-4 flex">
+                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        on:click={() => show_confirm_deletion_modal = true}>
+                    Delete Paper
+                </Button>
+            </div>
+
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
                     <PaperView document={document}/>
@@ -122,5 +131,8 @@
             </div>
 
         </Container>
+
+        <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                              to_delete={path} delete_name="{entry.name}"/>
     {/if}
 {/if}
