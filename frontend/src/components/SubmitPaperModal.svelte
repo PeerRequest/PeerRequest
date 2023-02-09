@@ -3,6 +3,7 @@
     import SubmitPaper from "./SubmitPaper.svelte";
     import PdfUploader from "./PdfUploader.svelte";
 
+    export let category_path;
     export let show = false;
     export let category_type = "Internal";
     export let hide = () => {
