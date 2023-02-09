@@ -100,6 +100,10 @@
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     });
 
+    $: if (!show_edit_modal) {
+        loadCategory();
+    }
+
 </script>
 
 
@@ -128,7 +132,7 @@
                         {category.name}
                     </Heading>
                     <Heading tag="h6">
-                        <Secondary>Review Deadline: {category.deadline}</Secondary>
+                        <Secondary>Review Deadline: {map_deadline(category.deadline)}</Secondary>
                     </Heading>
                 </div>
 
