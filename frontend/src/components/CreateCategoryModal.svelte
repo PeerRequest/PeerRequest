@@ -6,8 +6,6 @@
         Heading,
         Radio
     } from "flowbite-svelte" ;
-    import {page} from "$app/stores";
-    import Cookies from "js-cookie";
 
     let current_user = {
         id: "",
@@ -87,7 +85,8 @@
             body: JSON.stringify(data)
         })
             .then(resp => resp.json())
-            .then(resp => {})
+            .then(resp => {
+            })
             .catch(err => console.log(err));
     }
 
