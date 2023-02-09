@@ -10,7 +10,6 @@
     export let show = false;
     export let conference = null;
     export let bidding = null;
-    export let urlpath = null;
     export let hide = () => {
         /* NOP */
     };
@@ -18,29 +17,30 @@
         /* NOP */
     }
 
-    let edited_category = {
-        id: "",
-        researcher_id: "",
-        name: "",
-        year: "",
-        label: "",
-        deadline: ""
-    };
+    let edited_category_year = conference.year;
+    let edited_category_name = conference.name;
+    let edited_category_deadline = conference.deadline;
+
     
     function finishSubmission() {
-        edited_category.id = conference.id;
-        edited_category.researcher_id = conference.researcher_id;
-        edited_category.name = document.getElementById("conference_name");
-        edited_category.year = document.getElementById("conference_year");
-        edited_category.label = conference.label
-        edited_category.deadline = document.getElementById("conference_deadline")
 
-        fetch('/api' + urlpath, {
+        let data = {
+            id: conference.id,
+            year: edited_category_year,
+            label: conference.label,
+            name: edited_category_name,
+            deadline: edited_category_deadline + "T00:00:00+01:00",
+            min_score: conference.min_score,
+            max_score: conference.max_score,
+            score_step_size: conference.score_step_size
+        };
+
+        fetch('/api/categories', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(edited_category),
+            body: JSON.stringify(data),
         })
             .then((response) => response.json())
             .then((response_data) => (response_data))
@@ -64,17 +64,17 @@
         <form class="grid gap-y-6">
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Name</Heading>
-                <input class="min-w-[27rem] w-full rounded-lg" id=conference_name type=text value={conference.name}
+                <input class="min-w-[27rem] w-full rounded-lg" bind:value={edited_category_name} type=text
                        required>
             </div>
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Year</Heading>
-                <input class="w-full rounded-lg" id=conference_year type=number value={conference.year} required>
+                <input class="w-full rounded-lg" bind:value={edited_category_year} type=number required>
             </div>
 
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Deadline</Heading>
-                <input class="w-full rounded-lg" id=conference_deadline type=datetime-local value={conference.deadline} required>
+                <input class="w-full rounded-lg" bind:value={edited_category_deadline} type=date required>
             </div>
             <Button type="submit" color="primary" size="xs" on:click={() => finishSubmission()}>
                 Save
