@@ -13,7 +13,7 @@
     }
   }
   function map_deadline(deadline) {
-    return new Date(Date.parse(deadline)).toLocaleString();
+    return new Date(Date.parse(deadline)).toLocaleDateString();
   }
 </script>
 
