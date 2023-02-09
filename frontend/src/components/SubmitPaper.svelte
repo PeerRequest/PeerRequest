@@ -16,8 +16,6 @@
     import mock_data from "../mock_data.js";
     import PdfUploader from "./PdfUploader.svelte";
 
-    const mocks = mock_data.categories;
-
     export let show = false;
     export let hide = () => {
         /* NOP */
