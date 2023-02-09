@@ -10,6 +10,7 @@
     export let show = false;
     export let to_delete;
     export let delete_name;
+    export let afterpath;
     export let hide = () => {
         /* NOP */
     };
@@ -24,7 +25,7 @@
             .then((response) => response.json())
             .then((response_data) => (response_data))
             .catch(err => console.log(err))
-        goto("/categories")
+        goto(afterpath)
     }
 </script>
 
