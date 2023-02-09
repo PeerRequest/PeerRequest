@@ -70,16 +70,14 @@
 
 
     function createCategory() {
-        current_user = JSON.parse(Cookies.get("current-user") ?? "{}").id;
         let data = {
             year: new_category_year,
-            label: "INTERNAL",
+            label: new_category_type,
             name: new_category_name,
             deadline: new_category_deadline + "T00:00:00+01:00",
-            minScore: minScore,
-            maxScore: maxScore,
-            researcherId: current_user,
-            scoreStepSize: scoreStepSize
+            min_score: minScore,
+            max_score: maxScore,
+            score_step_size: scoreStepSize
         };
         return fetch("/api/categories", {
             method: "POST",
@@ -89,14 +87,7 @@
             body: JSON.stringify(data)
         })
             .then(resp => resp.json())
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    categories = [...categories, resp.content];
-                }
-            })
+            .then(resp => {})
             .catch(err => console.log(err));
     }
 
@@ -127,10 +118,10 @@
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Conference Type</Heading>
             <div class="flex flex-row w-full justify-evenly">
-                <Radio bind:group={new_category_type} checked={true} name="category_type" value="Internal">
+                <Radio bind:group={new_category_type} name="category_type" value="INTERNAL">
                     Internal
                 </Radio>
-                <Radio bind:group={new_category_type} name="category_type" value="External"> External</Radio>
+                <Radio bind:group={new_category_type} name="category_type" value="EXTERNAL"> External</Radio>
             </div>
         </div>
         <div class="flex flex-row justify-between items-center">
@@ -146,7 +137,7 @@
             <input bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
         </div>
         <Button color="primary"
-                on:click={() => {finishCreation();createCategory();}}
+                on:click={() => {finishCreation();createCategory();show=false;}}
                 size="xs" type="submit">
             Save
         </Button>

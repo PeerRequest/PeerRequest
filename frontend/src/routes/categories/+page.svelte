@@ -60,6 +60,10 @@
     onMount(() => {
         loadCategories()
     });
+
+    $: if (!show_create_category_modal) {
+        loadCategories();
+    }
 </script>
 
 <svelte:head>
@@ -77,7 +81,7 @@
         <Heading class="mb-4" tag="h2">Conferences</Heading>
         <Button class="mb-4"
                 outline
-                on:click={() => show_create_category_modal = true}
+                on:click={() => {show_create_category_modal = true}}
                 size="lg">
             Create new Conference
         </Button>
