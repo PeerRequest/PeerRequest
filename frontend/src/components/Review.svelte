@@ -23,7 +23,7 @@
 
     {#if paper !== null}
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}/{paper.id}">{paper.title}</BreadcrumbItem>
+            <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.title}</BreadcrumbItem>
         </TableBodyCell>
     {/if}
 
