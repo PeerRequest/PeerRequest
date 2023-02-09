@@ -2,12 +2,14 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.repos.DirectRequestRepository;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+/**
+ * Implementation of a Direct Request Service.
+ */
 @Service
 public class DirectRequestServiceImpl implements DirectRequestService {
 

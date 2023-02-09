@@ -6,9 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-
-
+/**
+ * Defines a DirectRequest Repository.
+ */
 public interface DirectRequestRepository extends CrudRepository<DirectRequest, Long> {
+
     /**
      * Defines the list operation.
      *
@@ -41,6 +43,12 @@ public interface DirectRequestRepository extends CrudRepository<DirectRequest, L
         }
     }
 
+    @Query("select e from DirectRequest e order by e.id DESC")
+    List<DirectRequest> list(Pageable pageable);
+
+    @Query("select e from DirectRequest e where e.id < ?1 order by e.id DESC")
+    List<DirectRequest> list(Long cursor, Pageable pageable);
+
     @Query("select e from DirectRequest e where e.reviewerId = ?1 order by e.id DESC")
     List<DirectRequest> listByUser(String userId, Pageable pageable);
 
@@ -52,11 +60,5 @@ public interface DirectRequestRepository extends CrudRepository<DirectRequest, L
 
     @Query("select e from DirectRequest e where e.id < ?1 and e.directRequestProcessId = ?2 order by e.id DESC")
     List<DirectRequest> listByEntry(Long cursor, Long directRequestProcessId, Pageable pageable);
-
-    @Query("select e from DirectRequest e order by e.id DESC")
-    List<DirectRequest> list(Pageable pageable);
-
-    @Query("select e from DirectRequest e where e.id < ?1 order by e.id DESC")
-    List<DirectRequest> list(Long cursor, Pageable pageable);
 
 }
