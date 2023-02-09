@@ -82,7 +82,7 @@
         <Button class="mb-4"
                 outline
                 on:click={() => {show_create_category_modal = true}}
-                size="lg">
+                size="xs">
             Create new Conference
         </Button>
         <Categories>
