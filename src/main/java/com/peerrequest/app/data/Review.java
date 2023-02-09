@@ -81,7 +81,7 @@ public class Review {
      * @return Review represented by the DTO
      */
     public static Review fromDto(Dto dto) {
-        return fromDto(dto, dto.reviewerId().get(), dto.entryId().get());
+        return fromDto(dto, dto.reviewerId().get(), dto.entryId().get(), dto.reviewDocumentId().get());
     }
 
     /**
@@ -90,12 +90,12 @@ public class Review {
      * @param dto DTO
      * @return Review represented by the DTO
      */
-    public static Review fromDto(Dto dto, String reviewerId, Long entryId) {
+    public static Review fromDto(Dto dto, String reviewerId, Long entryId, String documentId) {
         return Review.builder()
             .id(dto.id().orElse(null))
             .reviewerId(reviewerId)
             .entryId(entryId)
-            .reviewDocumentId(dto.reviewDocumentId().orElse(null))
+            .reviewDocumentId(documentId)
             .confidenceLevel(dto.confidenceLevel())
             .summary(dto.summary())
             .mainWeakness(dto.mainWeaknesses())

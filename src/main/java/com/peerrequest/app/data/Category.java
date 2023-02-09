@@ -29,7 +29,7 @@ import org.hibernate.annotations.TimeZoneStorageType;
 @AllArgsConstructor
 @Entity
 @Table(name = "category", uniqueConstraints = {
-    @UniqueConstraint(name = "uc_category_name_label", columnNames = {"name", "label"})
+    @UniqueConstraint(name = "uc_category_name_label", columnNames = {"name", "year", "label"})
 })
 public class Category {
     @Id
