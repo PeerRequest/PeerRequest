@@ -11,13 +11,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
-
+/**
+ * Represents a Direct Request.
+ */
 @Builder
 @AllArgsConstructor
 @Entity
 @Table(name = "direct_request", uniqueConstraints = {
-        @UniqueConstraint(name = "uc_direct-request_reviewer-id_process-id",
-                columnNames = {"reviewer_id", "direct_request_process_id"})
+    @UniqueConstraint(name = "uc_direct-request_reviewer-id_process-id",
+        columnNames = {"reviewer_id", "direct_request_process_id"})
 })
 public class DirectRequest {
     @Id
@@ -43,10 +45,22 @@ public class DirectRequest {
     protected DirectRequest() {
     }
 
+    /**
+     * Build a Direct Request from a DTO.
+     *
+     * @param dto DTO
+     * @return Direct Request represented by the DTO
+     */
     public static DirectRequest fromDto(Dto dto) {
         return fromDto(dto, dto.reviewerId().get(), dto.state().get());
     }
 
+    /**
+     * Build a Direct Request from a DTO with a specific reviewerID and request state.
+     *
+     * @param dto DTO
+     * @return Entry represented by the DTO
+     */
     public static DirectRequest fromDto(Dto dto, String reviewerId, RequestState state) {
         return DirectRequest.builder()
                 .id(dto.id().orElse(null))
@@ -104,6 +118,9 @@ public class DirectRequest {
         PENDING
     }
 
+    /**
+     * A DTO for the {@link com.peerrequest.app.data.DirectRequest} entity.
+     */
     public record Dto(
             @JsonProperty("id") Optional<Long> id,
             @JsonProperty("state") Optional<RequestState> state,
