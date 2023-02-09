@@ -20,4 +20,7 @@ abstract class ServiceBasedController {
 
     @Autowired
     protected DirectRequestProcessService directRequestProcessService;
+    
+    @Autowired
+    protected DocumentService documentService;
 }

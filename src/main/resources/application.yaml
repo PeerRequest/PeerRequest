@@ -31,5 +31,9 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  servlet:
+    multipart:
+      max-file-size: 64MB
+      max-request-size: 64MB
 server:
   port: ${PORT:8080}
