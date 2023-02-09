@@ -31,7 +31,7 @@ public class CategoriesController extends ServiceBasedController {
     Paged<List<Category.Dto>> listCategories(@RequestParam Optional<Integer> limit,
                                              @RequestParam Optional<Integer> page) {
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
             limit = Optional.of(Math.min(limit.get(), maxPageSize));
