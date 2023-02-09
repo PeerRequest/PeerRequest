@@ -1,14 +1,17 @@
 <script>
-    import {BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {BreadcrumbItem, Button, Heading} from "flowbite-svelte";
     import Container from "../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
     import Category from "../../components/Category.svelte";
     import Categories from "../../components/Categories.svelte";
+    import CreateCategoryModal from "../../components/CreateCategoryModal.svelte";
     import {onMount} from "svelte";
-    import Error from "../../components/Error.svelte";
-    import PaginationComponent from "../../components/PaginationComponent.svelte";
     import {page} from '$app/stores';
     import {goto} from "$app/navigation";
+    import Error from "../../components/Error.svelte";
+    import PaginationComponent from "../../components/PaginationComponent.svelte";
+
+    let show_create_category_modal = false;
 
     let categories = null;
     const loading_lines = 5;
@@ -57,6 +60,10 @@
     onMount(() => {
         loadCategories()
     });
+
+    $: if (!show_create_category_modal) {
+        loadCategories();
+    }
 </script>
 
 <svelte:head>
@@ -72,7 +79,12 @@
             <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
         </ResponsiveBreadCrumb>
         <Heading class="mb-4" tag="h2">Conferences</Heading>
-
+        <Button class="mb-4"
+                outline
+                on:click={() => {show_create_category_modal = true}}
+                size="xs">
+            Create new Conference
+        </Button>
         <Categories>
             {#if categories === null}
                 {#each [...Array(loading_lines).keys()] as i}
@@ -85,6 +97,7 @@
             {/if}
         </Categories>
 
+
         <PaginationComponent
                 previous={previous}
                 next={next}
@@ -94,3 +107,6 @@
     </Container>
 {/if}
 
+<CreateCategoryModal existing_categories="{categories}"
+                     hide="{() => show_create_category_modal = false}"
+                     show="{show_create_category_modal}"/>
