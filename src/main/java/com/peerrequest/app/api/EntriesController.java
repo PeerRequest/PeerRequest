@@ -48,9 +48,7 @@ public class EntriesController extends ServiceBasedController {
             entryPage.getSize(),
             entryPage.getNumber() + 1,
             entryPage.getTotalPages(),
-            this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterEntry)
-                .stream()
-                .map(Entry::toDto).toList());
+            entryPage.stream().map(Entry::toDto).toList());
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}")
@@ -80,7 +78,7 @@ public class EntriesController extends ServiceBasedController {
         if (category.get().getLabel() == Category.CategoryLabel.EXTERNAL
             && !category.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "only the owner may add an entry to external category");
+                "only the owner may add an entry to an external category");
         }
 
         if (dto.name() == null) {
@@ -117,7 +115,7 @@ public class EntriesController extends ServiceBasedController {
 
         if (!patchEntry.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "Only the user that created the entry may patch it");
+                "only the owner may update the entry");
         }
 
         var option = this.entryService.update(dto.id().get(), dto);
@@ -135,7 +133,7 @@ public class EntriesController extends ServiceBasedController {
         var researcherId = user.getAttribute("sub").toString();
         if (!option.get().getResearcherId().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "Only the user that created the entry may delete it");
+                "only the owner may delete the entry");
         }
 
         var deleted = this.entryService.delete(entryId);
