@@ -42,7 +42,7 @@
             <Reviews>
                 {#each mocks_reviews.filter((r) => r.paper === mocks_papers[data.paper_id - 1]) as r}
                     <Review
-                            href="/categories/{r.paper.category.id}/{r.paper.id}/{r.id}"
+                            href="/categories/{r.paper.category.id}/entries/{r.paper.id}/{r.id}"
                             id={r.id}
                     />
                 {/each}

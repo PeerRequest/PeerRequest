@@ -28,7 +28,7 @@
             show_paper=true>
         {#each reviews.filter((r) => user.name === r.reviewer) as r}
             <Review
-                    href="/categories/{r.paper.category.id}/{r.paper.id}/{r.id}"
+                    href="/categories/{r.paper.category.id}/entries/{r.paper.id}/{r.id}"
                     id={r.id}
                     paper={r.paper}
                     category={r.paper.category}
