@@ -25,6 +25,7 @@
     let entry = null;
     let category = null;
     let path = $page.url.pathname;
+    let go_after;
 
     function loadEntry() {
         entry = null;
@@ -51,6 +52,7 @@
                     console.log(error);
                 } else {
                     category = resp;
+                    go_after = "/categories/" + category.id;
                 }
             })
             .catch(err => console.log(err))
@@ -133,6 +135,6 @@
         </Container>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                              to_delete={path} delete_name="{entry.name}"/>
+                              to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
     {/if}
 {/if}
