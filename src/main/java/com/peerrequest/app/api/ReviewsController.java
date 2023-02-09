@@ -1,15 +1,18 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.Entry;
-import com.peerrequest.app.data.Message;
-import com.peerrequest.app.data.Paged;
-import com.peerrequest.app.data.Review;
+import com.peerrequest.app.data.*;
+
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -113,36 +116,74 @@ public class ReviewsController extends ServiceBasedController {
     //post for review is missing on purpose, happens in a context of a request; delete is also not part of our design
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-    void getReviewDocument(@AuthenticationPrincipal OAuth2User user,
+    ResponseEntity<byte[]> getReviewDocument(@AuthenticationPrincipal OAuth2User user,
                            @PathVariable Long entryId,
                            @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         var entry = this.entryService.get(entryId);
         checkAuthReviewerOrResearcher(review, entry, user);
 
-        //todo: Implement after DocumentService is finished
-        throw new RuntimeException("Not implemented yet");
+        var document = this.documentService.get(review.get().getReviewDocumentId());
+
+        if (document.isEmpty()) {
+            throw new RuntimeException("review document does not exist");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.parseMediaType("application/pdf"));
+        String filename = document.get().getName();
+
+        headers.add("Content-Disposition", "inline; filename=" + filename);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        return new ResponseEntity<>(document.get().getFile(), headers, HttpStatus.OK);
     }
 
     @PostMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-    void postReviewDocument(@AuthenticationPrincipal OAuth2User user,
-                           @PathVariable Long reviewId) {
+    Review.Dto postReviewDocument(@AuthenticationPrincipal OAuth2User user,
+                            @PathVariable Long reviewId,
+                            @RequestParam("file") MultipartFile file) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
-        // old document has to be deleted
-        //todo: Implement after DocumentService is finished
-        throw new RuntimeException("Not implemented yet");
+        String fileName = file.getOriginalFilename();
+        String documentId;
+
+        try {
+            byte[] fileBytes = file.getBytes();
+            Document stored = new Document(null, fileBytes, fileName);
+
+            var document = this.documentService.create(stored.toDto());
+            documentId = document.getId();
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong");
+        }
+
+        var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
+                review.get().getEntryId(), documentId);
+
+        return this.reviewService.update(reviewId, updateReview.toDto()).get().toDto();
     }
 
-    @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-    void deleteReviewDocument(@AuthenticationPrincipal OAuth2User user,
+     @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
+     ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user,
                               @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
-        //todo: Implement after DocumentService is finished
-        throw  new RuntimeException("Not implemented yet");
+        var response = this.documentService.delete(review.get().getReviewDocumentId());
+
+        if (response.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review document does not exist");
+        }
+
+        var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
+                review.get().getEntryId(), null);
+
+        this.reviewService.update(reviewId, updateReview.toDto());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/messages")
