@@ -54,10 +54,21 @@
             .catch(err => console.log(err))
     }
 
+    function loadEntryDocument() {
+        document = null;
+        fetch("/api" + path + "/paper")
+            .then(resp => resp.blob())
+            .then(resp => {
+                document = window.URL.createObjectURL(resp);
+            })
+            .catch(err => console.log(err))
+    }
+
 
     onMount(() => {
         loadEntry()
         loadCategory()
+        loadEntryDocument()
     });
 
     let show_edit_modal = false;
