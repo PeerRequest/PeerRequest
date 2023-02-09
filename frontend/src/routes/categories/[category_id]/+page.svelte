@@ -230,7 +230,7 @@
                    show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                              to_delete={path}/>
+                              to_delete={path} delete_name="{category.name}"/>
     {/if}
 {/if}
 
