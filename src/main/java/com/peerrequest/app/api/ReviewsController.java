@@ -1,10 +1,8 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -167,8 +165,7 @@ public class ReviewsController extends ServiceBasedController {
     }
 
      @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-     ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user,
-                              @PathVariable Long reviewId) {
+     ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user, @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
