@@ -1,27 +1,21 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.Category;
-import com.peerrequest.app.data.Document;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Paged;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -68,34 +62,13 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}/paper")
-    ResponseEntity<byte[]> getPaper(@PathVariable(name = "entry_id") Long id,
-                                    @AuthenticationPrincipal OAuth2User user) {
-        var option = this.entryService.get(id);
-        if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
-        }
-
-        // TODO: Allow request if user is reviewing the paper
-        if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "only the reviewer and the researcher may view the paper");
-        }
-
-        var document = this.documentService.get(option.get().getDocumentId());
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = document.get().getName();
-
-        headers.add("Content-Disposition", "inline; filename=" + filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-
-        return new ResponseEntity<>(document.get().getFile(), headers, HttpStatus.OK);
+    void getPaper(@PathVariable(name = "entry_id") Long id) {
+        // TODO: Implement after DocumentService is finished
+        throw new RuntimeException("Not implemented yet");
     }
 
     @PostMapping("/categories/{category_id}/entries")
-    Entry.Dto createEntries(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
+    Entry.Dto createEntries(@RequestBody Entry.Dto dto,
                             @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
         var category = this.categoryService.get(categoryId);
         if (category.isEmpty()) {
@@ -112,24 +85,11 @@ public class EntriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
 
-        if (dto.documentId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id must not be set");
+        if (dto.documentId().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "document_id is required");
         }
 
-        String fileName = file.getOriginalFilename();
-        String documentId;
-
-        try {
-            byte[] fileBytes = file.getBytes();
-            Document stored = new Document(null, fileBytes, fileName);
-
-            var document = this.documentService.create(stored.toDto());
-            documentId = document.getId();
-        } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
-        }
-
-        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId, documentId);
+        var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId);
         return this.entryService.create(entry.toDto()).toDto();
     }
 
