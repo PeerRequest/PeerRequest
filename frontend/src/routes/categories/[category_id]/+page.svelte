@@ -127,6 +127,9 @@
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     });
 
+    $: if (!show_edit_modal) {
+        loadCategory()
+    }
 </script>
 
 
@@ -247,7 +250,7 @@
         <SubmitPaperModal category_path ={path} conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
                           show="{show_submit_modal}"/>
 
-        <EditModal conference={path} hide="{() => show_edit_modal = false}"
+        <EditModal conference={category} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
