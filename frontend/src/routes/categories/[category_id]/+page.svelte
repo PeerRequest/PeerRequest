@@ -101,9 +101,8 @@
     });
 
     $: if (!show_edit_modal) {
-        loadCategory();
+        loadCategory()
     }
-
 </script>
 
 

@@ -45,9 +45,8 @@
             body: JSON.stringify(data),
         })
             .then((response) => response.json())
-            .then((response_data) => (response_data))
+            .then((response_data) => (hide()))
             .catch(err => console.log(err))
-        hide()
     }
 </script>
 
@@ -62,7 +61,7 @@
     </svelte:fragment>
 
 
-    <form>
+    <form on:submit|preventDefault={() => finishSubmission()}>
         <div class="grid gap-y-6">
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Name</Heading>
