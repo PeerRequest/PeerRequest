@@ -81,7 +81,7 @@
 
     function loadCategory() {
         category = null;
-        fetch("/api/" + path)
+        fetch("/api" + path)
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
