@@ -52,7 +52,7 @@ public class Entry {
     }
 
     /**
-     * Build a Category from a DTO.
+     * Build a Entry from a DTO.
      *
      * @param dto DTO
      * @return entry represented by the DTO
