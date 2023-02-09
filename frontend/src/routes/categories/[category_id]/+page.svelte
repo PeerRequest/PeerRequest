@@ -226,7 +226,7 @@
                     {#each entries as e}
                         <Paper
                                 href="/categories/{category.id}/{e.id}"
-                                paper={e}
+                                bind:paper={e}
                                 category={category}
                         />
                     {/each}
