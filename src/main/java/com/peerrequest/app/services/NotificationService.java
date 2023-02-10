@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EntryService entryService;
+
+    @Autowired
     private JavaMailSender mailSender;
 
     private static final String domain = "PeerRequest";
@@ -25,24 +31,68 @@ public class NotificationService {
         mail.setTo(toEmail);
         mail.setText(message);
         mail.setSubject(subject);
-
-        try {
-            mailSender.send(mail);
-        } catch (MailSendException e) {
-            //log error
-        }
+        mailSender.send(mail);
     }
 
+    /**
+     * Sends an entry notification.
+     *
+     * @param emitterId       userID of the user who caused the notification
+     * @param receiverId      userId of the user who receives the notification
+     * @param entryId         entryID of the entry
+     * @param messageTemplate entry message
+     */
+    public void sendEntryNotification(String emitterId,
+                                       String receiverId,
+                                       Long entryId,
+                                       EntryMessageTemplates messageTemplate) {
+        var emitter = userService.get(emitterId);
+        var receiver = userService.get(receiverId);
+        var entry = entryService.get(entryId);
 
+        if (emitter.isEmpty() || receiver.isEmpty() || entry.isEmpty()) {
+            return;
+        }
+
+        sendEmail(
+            receiver.get().getEmail(),
+            messageTemplate.getSubject(),
+            messageTemplate.getMessage(
+                receiver.get().firstName(),
+                emitter.get().firstName() + " " + emitter.get().lastName(),
+                entry.get().getName())
+        );
+    }
+
+    /**
+     * Sends a review notification.
+     *
+     * @param emitterId       userID of the user who caused the notification
+     * @param receiverId      userId of the user who receives the notification
+     * @param entryId         entryID of the entry of the review
+     * @param messageTemplate review message
+     */
     public void sendReviewNotification(String emitterId,
                                        String receiverId,
-                                       Long reviewId,
+                                       Long entryId,
                                        ReviewMessageTemplates messageTemplate) {
-        //todo: get necessary data from other services and replace mock data
-        sendEmail("trashmailmm420@gmail.com", messageTemplate.getSubject(), "messageTemplate.getMessage()");
+        var emitter = userService.get(emitterId);
+        var receiver = userService.get(receiverId);
+        var entry = entryService.get(entryId);
+
+        if (emitter.isEmpty() || receiver.isEmpty() || entry.isEmpty()) {
+            return;
+        }
+
+        sendEmail(
+            receiver.get().getEmail(),
+            messageTemplate.getSubject(),
+            messageTemplate.getMessage(
+                receiver.get().firstName(),
+                emitter.get().firstName() + " " + emitter.get().lastName(),
+                entry.get().getName())
+        );
     }
-
-
 
     /**
      * Message templates for a review messages.
@@ -76,8 +126,8 @@ public class NotificationService {
             welcoming + "%s posted a comment on the message board of the review of the entry %s.\nTake a look!"
         );
 
-        public String getMessage(String emitter, String entryName) {
-            return String.format(message, emitter, entryName);
+        public String getMessage(String receiver, String emitter, String entryName) {
+            return String.format(receiver, message, emitter, entryName);
         }
 
         @Getter
@@ -141,6 +191,10 @@ public class NotificationService {
         REQUEST_WITHDRAWN(domain + " - Request Withdrawn",
             welcoming + "%s withdrew their request to you for their entry %s."
         );
+
+        public String getMessage(String receiver, String emitter, String entryName) {
+            return String.format(receiver, message, emitter, entryName);
+        }
 
         @Getter
         private final String subject;
