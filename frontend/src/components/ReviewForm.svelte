@@ -1,19 +1,42 @@
 <script>
     import { Label, Range, Textarea, ButtonGroup, Button } from "flowbite-svelte";
+    import {onMount} from "svelte";
+
 
     export let minScore;
     export let maxScore;
-    export let score = 0;
 
-    export let minConfidence;
-    export let maxConfidence;
     export let confidence = 0;
     export let confidenceLevels = ["Low", "Medium" , "High"];
 
+    export let review = {
+        "confidence_level": null,
+        "summary": null,
+        "main_weaknesses": null,
+        "main_strengths": null,
+        "questions_for_authors": null,
+        "answers_from_authors": null,
+        "other_comments": null,
+        "score": minScore
+    }
+
+    let edited_summary = review.summary;
+    let edited_main_weaknesses = review.main_weaknesses;
+    let edited_main_strengths = review.main_strengths;
+    let edited_questions_for_authors = review.questions_for_authors;
+    let edited_answers_the_authors = review.answers_from_authors;
+    let edited_other_comments = review.other_comments;
+
+    onMount(() => {
+        if (review.confidence_level !== null) {
+            confidence = confidenceLevels.findIndex(review.confidence_level)
+        }
+    })
+
 </script>
 
-<Label>Score: {score} / {maxScore}</Label>
-<Range bind:value={score} id="score" max={maxScore} min={minScore} />
+<Label>Score: {review.score} / {maxScore}</Label>
+<Range bind:value={review.score} id="score" max={maxScore} min={minScore} />
 
 <div class="my-4"></div>
 
@@ -26,7 +49,7 @@
 <hr class="my-4">
 
 <Label class="mb-2" for="summary">Summary of the paper</Label>
-<Textarea id="summary" name="summary" placeholder="Summary of the paper" rows="4" />
+<Textarea name="summary" placeholder="Summary of the paper" rows="4" value="lol" />
 
 <Label class="mb-2" for="weaknesses">Main weaknesses</Label>
 <Textarea id="weaknesses" name="weaknesses" placeholder="Main weaknesses" rows="4" />
