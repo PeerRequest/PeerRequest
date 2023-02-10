@@ -278,6 +278,8 @@ public class DirectRequestsController extends ServiceBasedController {
                     Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
 
             this.reviewService.create(review);
+
+            // TODO: Send notification to researcher
         }
 
         DirectRequest updatedDirectRequest = new DirectRequest(request.get().getId(),
