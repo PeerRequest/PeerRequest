@@ -69,6 +69,7 @@
             .catch(err => console.log(err))
     }
 
+
     onMount(() => {
         loadEntry()
         loadCategory()
@@ -144,9 +145,9 @@
 
         </Container>
 
-
         <EditModal paper={entry} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
+
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
     {/if}
