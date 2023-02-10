@@ -33,6 +33,11 @@ public class EntryServiceImpl implements EntryService {
     }
 
     @Override
+    public Page<Entry> listByResearcher(int page, int maxCount, String researcherId) {
+        return repo.findByResearcherId(researcherId, Pageable.ofSize(maxCount).withPage(page));
+    }
+
+    @Override
     public Optional<Entry> get(Long cursor) {
         return repo.findById(cursor);
     }

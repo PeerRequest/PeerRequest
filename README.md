@@ -12,14 +12,19 @@
 
 ### Environment Variables
 
-| Key                       | Example                                | Info                                     |
-|---------------------------|----------------------------------------|------------------------------------------|
-| PR_KEYCLOAK_URL           | https://your.keycloak-instance.example | base URL or your keycloak instance       |
-| PR_KEYCLOAK_CLIENT_ID     | peerrequest                            | client id for OAuth2                     |
-| PR_KEYCLOAK_CLIENT_SECRET | asd****************dsa                 | client secret for OAuth2                 |
-| PR_DATABASE_URL           | jdbc:postgresql://host:port/database   | database url to connect to your database |
-| PR_DATABASE_USER          | user                                   | database user                            |
-| PR_DATABASE_PASSWORD      | super-secret-password                  | database password                        |
+| Key                         | Example                                | Info                                                                  |
+|-----------------------------|----------------------------------------|-----------------------------------------------------------------------|
+| PR_KEYCLOAK_URL             | https://your.keycloak-instance.example | base URL or your keycloak instance                                    |
+| PR_KEYCLOAK_REALM           | PeerRequest                            | name of your keycloak realm                                           |
+| PR_KEYCLOAK_ADMIN_REALM     | master                                 | name of your keycloak master realm (Default: `master`)                |
+| PR_KEYCLOAK_ADMIN_USER      | admin                                  | username of the admin account (Default: `admin`)                      |
+| PR_KEYCLOAK_ADMIN_CLIENT_ID | admin-cli                              | client-id of the master realm admin-cli client (Default: `admin-cli`) |
+| PR_KEYCLOAK_ADMIN_PASSWORD  | ***********                            | password of the admin account                                         |
+| PR_KEYCLOAK_CLIENT_ID       | peerrequest                            | client id for OAuth2                                                  |
+| PR_KEYCLOAK_CLIENT_SECRET   | asd****************dsa                 | client secret for OAuth2                                              |
+| PR_DATABASE_URL             | jdbc:postgresql://host:port/database   | database url to connect to your database                              |
+| PR_DATABASE_USER            | user                                   | database user                                                         |
+| PR_DATABASE_PASSWORD        | super-secret-password                  | database password                                                     |
 
 Convenience script for [DSN](https://en.wikipedia.org/wiki/Data_source_name) database urls
 
