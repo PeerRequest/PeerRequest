@@ -32,7 +32,6 @@
     let reviewers = [];
     let authors;
     let name;
-    let open_slots;
     let category_id = category.id;
     let fileInput;
     let file;
@@ -155,12 +154,12 @@
 
     <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => processSubmission()}>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Enter Paper Title</Heading>
+            <Heading size="sm" tag="h4"> Enter paper title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
                    type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4"> Enter Paper Authors</Heading>
+            <Heading size="sm" tag="h4">Enter paper authors</Heading>
             <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
@@ -170,7 +169,7 @@
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <Heading size="md" tag="h4">Choose The Number Of Review Slots</Heading>
+            <Heading class="mr-3" size="sm" tag="h4">Choose number of review slots</Heading>
             <input class="justify-end rounded-lg"
                    id=selected_open_slots
                    min={reviewers.length > 0 ? reviewers.length : 1}

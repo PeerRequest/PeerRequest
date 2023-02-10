@@ -5,7 +5,6 @@
     import ResponsiveBreadCrumb from "../../../components/ResponsiveBreadCrumb.svelte";
     import Container from "../../../components/Container.svelte";
     import ExternAssignReviewerModal from "../../../components/ExternAssignReviewerModal.svelte";
-    import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
     import EditModal from "../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../components/ConfirmDeletionModal.svelte";
     import Error from "../../../components/Error.svelte";
@@ -34,7 +33,6 @@
     export let data;
 
     let show_assign_modal = false;
-    let show_submit_modal = false;
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
     let show_create_entry_modal = false;
@@ -135,6 +133,10 @@
     $: if (!show_edit_modal) {
         loadCategory()
     }
+
+    $: if (!show_create_entry_modal) {
+        loadEntries()
+    }
 </script>
 
 
@@ -223,6 +225,7 @@
 
             <Papers
                     category_type={map_type(category.label)}
+                    show_category=true
             >
                 {#if entries === null}
                     {#each [...Array(loading_lines).keys()] as i}
@@ -253,11 +256,6 @@
                              show_assign_modal = false;
                            }}
                                    show={show_assign_modal}/>
-
-        <SubmitPaperModal category={category} category_path={path} papers="{entries}"
-                          conference_type="{map_type(category.label)}"
-                          hide="{() => show_submit_modal = false}"
-                          show="{show_submit_modal}"/>
 
         <EditModal conference={category} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
