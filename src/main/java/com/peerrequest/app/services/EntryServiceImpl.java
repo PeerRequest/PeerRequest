@@ -33,6 +33,11 @@ public class EntryServiceImpl implements EntryService {
     }
 
     @Override
+    public Page<Entry> listByResearcher(int page, int maxCount, String researcherId) {
+        return repo.findByResearcherId(researcherId, Pageable.ofSize(maxCount).withPage(page));
+    }
+
+    @Override
     public Optional<Entry> get(Long cursor) {
         return repo.findById(cursor);
     }
@@ -48,6 +53,10 @@ public class EntryServiceImpl implements EntryService {
 
         if (newProps.name() != null) {
             entry.setName(newProps.name());
+        }
+
+        if (newProps.authors().isPresent()) {
+            entry.setAuthors(newProps.authors().get());
         }
 
         return Optional.of(repo.save(entry));
