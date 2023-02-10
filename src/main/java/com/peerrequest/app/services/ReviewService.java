@@ -55,13 +55,6 @@ public interface ReviewService
     Optional<Message> deleteMessage(Long cursor);
 
     /**
-     * Notifies a researcher about an edit of the review form of a review from a reviewer.
-     *
-     * @param cursor id of the Review
-     */
-    void notifyResearcherOfEdit(Long cursor);
-
-    /**
      * Notifies a reviewer about an edit of the review form of a review from a researcher.
      *
      * @param cursor id of the Review

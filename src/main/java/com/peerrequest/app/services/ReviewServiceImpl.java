@@ -35,7 +35,6 @@ public class ReviewServiceImpl implements ReviewService {
             return repo.findByEntryId(filter.entryId().get(), PageRequest.of(page, maxCount));
         }
         return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
-
     }
 
     @Override
@@ -138,18 +137,6 @@ public class ReviewServiceImpl implements ReviewService {
         var message = optional.get();
         messageRepo.delete(message);
         return Optional.of(message);
-    }
-
-    @Override
-    public void notifyResearcherOfEdit(Long cursor) {
-        //todo: add notification service method
-        throw new RuntimeException("not implemented yet");
-    }
-
-    @Override
-    public void notifyReviewerOfEdit(Long cursor) {
-        //todo: add notification service method
-        throw new RuntimeException("not implemented yet");
     }
 
     @Override
