@@ -265,7 +265,7 @@
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{category.name}"/>
 
-        <CreateEntryModal category={category} existing_entries={entries} show={show_create_entry_modal}
+        <CreateEntryModal category={category} entries={entries} show={show_create_entry_modal}
                           hide={() => show_create_entry_modal = false}></CreateEntryModal>
     {/if}
 {/if}
