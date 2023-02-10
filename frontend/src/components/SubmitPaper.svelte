@@ -16,6 +16,15 @@
     import mock_data from "../mock_data.js";
     import PdfUploader from "./PdfUploader.svelte";
 
+    export let category;
+    export let error;
+
+
+    let authors;
+    let name;
+    let category_id = category.id;
+    let category_path = `/api/categories/${category_id}+"/entries"`
+
     export let show = false;
     export let hide = () => {
         /* NOP */
@@ -40,22 +49,56 @@
             alert("Warning! Not enough open slots!")
         }
     }
+
+
+    function createEntry() {
+        let data = {
+            authors: authors,
+            name: name,
+            category_id: category_id
+        };
+        return fetch(category_path, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    try {
+                        hide();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
 </script>
+
+
 
 <div class="flex flex-row justify-between items-center">
     <Heading size="md" tag="h4"> Enter Paper Title</Heading>
-    <input id= entered_entry_title type= text required>
+    <input id=entered_entry_title required type=text>
 </div>
 <div class="flex flex-row justify-between items-center">
     <Heading size="md" tag="h4"> Enter Paper Authors</Heading>
-    <input id= entered_entry_authors type= text placeholder="(Optional)">
+    <input id=entered_entry_authors placeholder="(Optional)" type=text>
 </div>
 
 <PdfUploader/>
 
 <div class="flex flex-row justify-between items-center">
     <Heading size="md" tag="h4">Choose The Number Of Review Slots</Heading>
-    <input class="justify-end" id= selected_open_slots type=number min= { reviewers.length > 0 ? reviewers.length : 1 } value= 1 >
+    <input class="justify-end" id=selected_open_slots min={ reviewers.length > 0 ? reviewers.length : 1 } type=number
+           value=1>
 </div>
 
 <Button color="primary">
@@ -64,7 +107,7 @@
 <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" on:show={() => apply_query("")}>
     <div class="p-3" slot="header">
         <Search on:input={(e) => apply_query(e.target.value)} on:keyup={(e) => apply_query(e.target.value)}
-                size="md" />
+                size="md"/>
     </div>
     {#each users.filter(u => !reviewers.includes(u) && (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
         <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
@@ -94,12 +137,12 @@
                           <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
                                   y1="17.153" x2="45.045"
-                                  y2="43.056" />
+                                  y2="43.056"/>
                           </g>
                                     <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
                                   y1="43.153" x2="44.947"
-                                  y2="17.056" />
+                                  y2="17.056"/>
                           </g>
                       </svg>
                             </Button>

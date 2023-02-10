@@ -10,6 +10,7 @@
     import ConfirmDeletionModal from "../../../components/ConfirmDeletionModal.svelte";
     import Error from "../../../components/Error.svelte";
     import {page} from '$app/stores';
+    import CreateEntryModal from "../../../components/CreateEntryModal.svelte";
 
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
@@ -36,6 +37,7 @@
     let show_submit_modal = false;
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
+    let show_create_entry_modal = false;
 
     /*
     function bidding() {
@@ -212,7 +214,9 @@
                     {/if}
                 </div>
 
-                <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper
+                <Button class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
+                    Submit
+                    Paper
                 </Button>
             </div>
 
@@ -250,7 +254,9 @@
                            }}
                                    show={show_assign_modal}/>
 
-        <SubmitPaperModal category_path ={path} conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
+        <SubmitPaperModal category={category} category_path={path} papers="{entries}"
+                          conference_type="{map_type(category.label)}"
+                          hide="{() => show_submit_modal = false}"
                           show="{show_submit_modal}"/>
 
         <EditModal conference={category} urlpath={path} hide="{() => show_edit_modal = false}"
@@ -258,6 +264,9 @@
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{category.name}"/>
+
+        <CreateEntryModal category={category} existing_entries={entries} show={show_create_entry_modal}
+                          hide={() => show_create_entry_modal = false}></CreateEntryModal>
     {/if}
 {/if}
 
