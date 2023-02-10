@@ -1,26 +1,14 @@
 <script>
     import {Table, TableBody, TableHead, TableHeadCell} from "flowbite-svelte";
 
-    export let show_reviewer = false;
-    export let show_paper = false;
-    export let show_category = false;
 </script>
 
 <Table noborder={false} shadow={true}>
     <TableHead>
         <TableHeadCell>Review</TableHeadCell>
-
-        {#if show_reviewer}
-            <TableHeadCell>Reviewer</TableHeadCell>
-        {/if}
-
-        {#if show_paper}
-            <TableHeadCell>Research Paper</TableHeadCell>
-        {/if}
-
-        {#if show_category}
-            <TableHeadCell>Conference</TableHeadCell>
-        {/if}
+        <TableHeadCell>Reviewer</TableHeadCell>
+        <TableHeadCell>Research Paper</TableHeadCell>
+        <TableHeadCell>Conference</TableHeadCell>
 
     </TableHead>
 
