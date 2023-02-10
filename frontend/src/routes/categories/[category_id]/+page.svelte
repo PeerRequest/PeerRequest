@@ -26,7 +26,7 @@
     }
 
     function map_deadline(deadline) {
-        return new Date(Date.parse(deadline)).toLocaleString();
+        return new Date(Date.parse(deadline)).toLocaleDateString();
     }
 
     /** @type {import("./$types").PageData} */
@@ -49,7 +49,10 @@
         name: "",
         year: "",
         label: "",
-        deadline: ""
+        deadline: "",
+        score_step_size: "",
+        min_score: "",
+        max_score: ""
     };
 
     let current_user = {
