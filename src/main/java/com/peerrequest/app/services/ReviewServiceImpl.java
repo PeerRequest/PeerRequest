@@ -106,9 +106,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Message> listMessages(Long cursor, int maxCount, Message.Dto filter) {
-        return messageRepo.list(cursor, Pageable.ofSize(maxCount),
-            filter == null ? null : (filter.reviewId().isPresent() ? filter.reviewId().get() : null));
+    public Page<Message> listMessages(int page, int maxCount, Message.Dto filter) {
+        if (filter.reviewId().isPresent()) {
+            return messageRepo.findByReviewId(filter.reviewId().get(), PageRequest.of(page, maxCount));
+        }
+        return messageRepo.findAll(Pageable.ofSize(maxCount).withPage(page));
     }
 
     @Override

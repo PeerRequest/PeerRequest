@@ -195,9 +195,9 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/messages")
-    List<Message.Dto> listMessages(@AuthenticationPrincipal OAuth2User user,
+    Paged<List<Message.Dto>> listMessages(@AuthenticationPrincipal OAuth2User user,
                                    @RequestParam Optional<Integer> limit,
-                                   @RequestParam Optional<Long> after,
+                                   @RequestParam Optional<Integer> page,
                                    @PathVariable Long entryId,
                                    @PathVariable Long reviewId) {
         checkAuthReviewerOrResearcher(this.reviewService.get(reviewId), this.entryService.get(entryId), user);
@@ -212,8 +212,14 @@ public class ReviewsController extends ServiceBasedController {
         Message.Dto messageFilter = new Message.Dto(Optional.empty(),
             Optional.of(reviewId), Optional.empty(), null, null);
 
-        return this.reviewService.listMessages(after.orElse(null), limit.orElse(maxPageSize), messageFilter)
-            .stream().map(Message::toDto).toList();
+        var messagePage = this.reviewService.listMessages(page.map(p-> p - 1).orElse(0), limit.orElse(maxPageSize),
+            messageFilter);
+        return new Paged<>(
+            messagePage.getSize(),
+            messagePage.getNumber() + 1,
+            messagePage.getTotalPages(),
+            messagePage.stream().map(Message::toDto).toList()
+        );
     }
 
     @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/messages/{messageId}")
