@@ -4,11 +4,41 @@
         Button,
         CloseButton,
         Heading,
-        Radio, TableBodyRow, TableHeadCell, TableHead, Table, TableBody, TableBodyCell, Chevron, Dropdown, Search
+        TableBodyRow,
+        TableHeadCell,
+        TableHead,
+        Table,
+        TableBody,
+        TableBodyCell,
+        Chevron,
+        Dropdown,
+        Search,
+        Fileupload,
+        Spinner
     } from "flowbite-svelte" ;
     import mock_data from "../mock_data.js";
-    import PdfUploader from "./PdfUploader.svelte";
-    import {page} from "$app/stores";
+
+    let upload_state = "";
+    let annotations_file = null;
+    let fileuploadprops = {
+        id: "annotations_file_input",
+        accept: ".pdf,application/pdf"
+    };
+
+    function file_upload() {
+        if (upload_state === "uploading" || upload_state === "done") return;
+
+        const input = document.getElementById(fileuploadprops.id);
+        const file = input.files[0];
+
+        // upload file here
+        console.log(file);
+
+        upload_state = "uploading";
+        setTimeout(() => {
+            upload_state = Math.random() < 0.5 ? "failed" : "done";
+        }, 2200);
+    }
 
     export let error = null;
     export let category;
@@ -43,21 +73,23 @@
     let authors;
     let name;
     let category_id = category.id;
-    let category_path = `/api/categories/${category_id}+"/entries"`
+    let category_path = `/api/categories/${category_id}/entries`
 
+    let fileInput;
+    let file;
+    let new_entry_id;
 
     function createEntry() {
-        let data = {
-            authors: authors,
-            name: name,
-            category_id: category_id
-        };
+        file = fileInput.files[0];
+        console.log(file);
+        const formData = new FormData();
+        formData.append("authors", authors);
+        formData.append("name", name);
+        formData.append("file", file);
         return fetch(category_path, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+
+            body: formData
         })
             .then(resp => resp.json())
             .then(resp => {
@@ -67,9 +99,11 @@
                 } else {
                     try {
                         hide();
+                        new_entry_id = resp.content.id;
                     } catch (error) {
                         console.log(error);
                     }
+                    sendDirectRequest()
                 }
             })
             .catch(err => console.log(err));
@@ -89,7 +123,7 @@
                      on:click={hide}/>
     </svelte:fragment>
 
-    <form class="grid gap-y-6" on:submit|preventDefault={() => createEntry()}>
+    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => createEntry()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Enter Paper Title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
@@ -101,7 +135,45 @@
                    placeholder="(Optional)" type=text>
         </div>
 
-        <PdfUploader/>
+
+        <div class="flex flex-row justify-between items-center">
+            <input bind:this={fileInput} type="file"/>
+        </div>
+
+
+        <!--
+        <div class="flex flex-1 items-center ">
+            <Fileupload {...fileuploadprops} bind:value={annotations_file} inputClass="my-auto annotations_file_input"
+                        on:change={() => upload_state = ""}
+                        size="lg"
+            />
+            <Button class="m-auto"
+                    color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}
+                    disabled={!annotations_file} on:click={file_upload}
+                    outline size="md">
+                {#if upload_state === "uploading"}
+                    <Spinner class="mr-3" size="5"/>
+                {:else }
+                    {#if upload_state === "done"}
+                        <svg class="mr-3" width="15px" height="15px" viewBox="0 0 15 15" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 7L5.5 11.5L14 3" stroke="black" stroke-linecap="square"/>
+                        </svg>
+                    {:else }
+                        {#if upload_state === "failed" }
+                            <svg class="mr-3" width="15px" height="15px" xmlns="http://www.w3.org/2000/svg" x="0px"
+                                 y="0px"
+                                 viewBox="0 0 490 490" style="enable-background:new 0 0 490 490;" xml:space="preserve">
+                <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490
+                  489.292,457.678 277.331,245.004 489.292,32.337 "/>
+          </svg>
+                        {/if}
+                    {/if}
+                {/if}{upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
+            </Button>
+        </div>
+        -->
+
 
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Choose The Number Of Review Slots</Heading>
@@ -165,7 +237,7 @@
         </Table>
 
     </div>
-    <Button color="primary" size="sm" type="submit">
+    <Button color="primary" on:click={() => createEntry()} size="sm" type="submit">
         Finish Submission
     </Button>
 
