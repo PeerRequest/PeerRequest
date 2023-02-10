@@ -35,13 +35,13 @@
         {delete_name}
     </div>
     <CloseButton class="absolute top-0 right-2"
-                 on:click={hide}/>
+                 on:click={() => hide()}/>
     <div class="text-center font-bold">
         Are you sure?
     </div>
     <div class="justify-center gap-x-16 w-full flex">
         <Button class="mb-4 h-8" color="primary" on:click={() => deleteObject()} size="lg">Yes</Button>
-        <Button class="mb-4 h-8" color="red" on:click={hide()} size="lg">No</Button>
+        <Button class="mb-4 h-8" color="red" on:click={() => hide()} size="lg">No</Button>
     </div>
 
 </Modal>
