@@ -78,7 +78,7 @@ public class EntriesController extends ServiceBasedController {
         // TODO: Allow request if user is reviewing the paper
         if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "only the reviewer and the researcher may view the paper");
+                "only the reviewer and the researcher may view the paper");
         }
 
         var document = this.documentService.get(option.get().getDocumentId());
@@ -178,5 +178,25 @@ public class EntriesController extends ServiceBasedController {
 
         var deleted = this.entryService.delete(entryId);
         return deleted.map(Entry::toDto);
+    }
+
+    @GetMapping("/entries")
+    Paged<List<Entry.Dto>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
+                                                   @RequestParam("page") Optional<Integer> page,
+                                                   @AuthenticationPrincipal OAuth2User user) {
+        if (limit.isPresent()) {
+            if (limit.get() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
+            }
+            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+        }
+
+        var entryPage = this.entryService.listByResearcher(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+            user.getAttribute("sub"));
+        return new Paged<>(
+            entryPage.getSize(),
+            entryPage.getNumber() + 1,
+            entryPage.getTotalPages(),
+            entryPage.stream().map(Entry::toDto).toList());
     }
 }

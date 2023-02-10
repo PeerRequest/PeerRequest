@@ -28,7 +28,7 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
     @Override
     public Optional<DirectRequestProcess> get(Long cursor) {
-        return repo.getByEntryId(cursor);
+        return repo.findById(cursor);
     }
 
     @Override
@@ -59,5 +59,10 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
         var directRequestProcess = optional.get();
         repo.delete(directRequestProcess);
         return Optional.of(directRequestProcess);
+    }
+
+    @Override
+    public Optional<DirectRequestProcess> getByEntry(Long entryId) {
+        return repo.getByEntryId(entryId);
     }
 }

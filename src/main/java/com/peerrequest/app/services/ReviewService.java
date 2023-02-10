@@ -4,6 +4,7 @@ import com.peerrequest.app.data.Message;
 import com.peerrequest.app.data.Review;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 
 /**
  * Describes the functionality of a ReviewService.
@@ -66,4 +67,6 @@ public interface ReviewService
      * @param cursor id of the Review
      */
     void notifyReviewerOfEdit(Long cursor);
+
+    Page<Review> listByReviewerId(int page, int maxCount, String researcherId);
 }

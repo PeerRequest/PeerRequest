@@ -37,3 +37,11 @@ spring:
       max-request-size: 64MB
 server:
   port: ${PORT:8080}
+keycloak:
+  admin:
+    serverUrl: ${PR_KEYCLOAK_URL}
+    realm: ${PR_KEYCLOAK_REALM}
+    admin-realm: ${PR_KEYCLOAK_ADMIN_REALM:master}
+    username: ${PR_KEYCLOAK_ADMIN_USER:admin}
+    password: ${PR_KEYCLOAK_ADMIN_PASSWORD}
+    clientId: ${PR_KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
