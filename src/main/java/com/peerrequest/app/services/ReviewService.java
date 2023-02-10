@@ -27,7 +27,7 @@ public interface ReviewService
      * @param filter   filter, may be null
      * @return the filtered list
      */
-    List<Message> listMessages(Long cursor, int maxCount, Message.Dto filter);
+    Page<Message> listMessages(int cursor, int maxCount, Message.Dto filter);
 
     /**
      * Returns a message.
