@@ -25,8 +25,14 @@
 
     let entry = null;
     let category = null;
+    let reviews = null;
     let path = $page.url.pathname;
     let go_after;
+
+    const loading_lines = 5;
+    let currentPage = 1;
+    let lastPage = 1;
+    let limit = 1;
 
     function loadEntry() {
         entry = null;
@@ -69,10 +75,29 @@
             .catch(err => console.log(err))
     }
 
+    function loadReviews() {
+        reviews = null;
+        currentPage = parseInt(($page.url.searchParams.get("page") ?? 1).toString())
+        limit = parseInt(($page.url.searchParams.get("limit") ?? 100).toString())
+        fetch("/api" + path + "/reviews?page=" + currentPage + "&limit=" + limit)
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    lastPage = resp.last_page;
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
     onMount(() => {
         loadEntry()
         loadCategory()
         loadEntryDocument()
+        loadReviews()
     });
 
     let show_edit_modal = false;
