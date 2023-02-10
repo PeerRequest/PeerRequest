@@ -1,6 +1,5 @@
 <script>
     import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
-    import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import PaperView from "../../../../../components/PaperView.svelte";
@@ -11,9 +10,6 @@
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
-
-
-    const mocks_reviews = mock_data.reviews;
 
     let show_confirm_deletion_modal = false;
 
