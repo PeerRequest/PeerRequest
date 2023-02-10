@@ -25,7 +25,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}/{paper.id}">{paper.name}</BreadcrumbItem>
+            <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
         </TableBodyCell>
 
         {#if category !== null}
