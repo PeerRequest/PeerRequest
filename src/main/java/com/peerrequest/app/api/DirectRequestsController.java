@@ -271,10 +271,11 @@ public class DirectRequestsController extends ServiceBasedController {
 
         if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
 
-            Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get().getEntryId();
+            Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get()
+                    .getEntryId();
 
-            Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId), Optional.empty(), Review.ConfidenceLevel.LOW,
-                    null, null, null, null, null, null, null);
+            Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
+                    Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
 
             this.reviewService.create(review);
         }
@@ -322,8 +323,8 @@ public class DirectRequestsController extends ServiceBasedController {
         DirectRequest directRequestObject = new DirectRequest(null, DirectRequest.RequestState.ACCEPTED,
                 reviewerId, directRequestProcess.get().getId());
 
-        Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId), Optional.empty(), Review.ConfidenceLevel.LOW,
-                null, null, null, null, null, null, null);
+        Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
+                Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
 
         this.reviewService.create(review);
 
