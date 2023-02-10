@@ -11,14 +11,14 @@
 </script>
 
 <style>
-    #pdfContainer {
-        /*@apply w-[50%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;*/
-      @apply w-[100%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;
-    }
+  #pdfContainer {
+    /*@apply w-[50%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;*/
+    @apply w-[100%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;
+  }
 
-    #pdfContainer.hidden {
-        @apply w-0 h-0;
-    }
+  #pdfContainer.hidden {
+    @apply w-0 h-0;
+  }
 </style>
 
 <div class="flex">
@@ -30,6 +30,6 @@
 </div>
 
 
-  <div class="max-md:hidden" id="pdfContainer">
-    <PdfViewer document={document} />
-  </div>
+<div class="max-md:hidden" id="pdfContainer">
+  <PdfViewer document={document} />
+</div>
