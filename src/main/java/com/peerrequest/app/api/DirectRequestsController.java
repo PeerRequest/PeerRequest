@@ -54,6 +54,10 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
 
+        if (this.directRequestProcessService.getByEntry(entryId).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "process does already exist");
+        }
+
         if (dto.openSlots().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "open slots is required");
         }
