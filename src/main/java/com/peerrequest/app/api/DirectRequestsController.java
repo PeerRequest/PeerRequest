@@ -2,6 +2,7 @@ package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.DirectRequestProcess;
+import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
 import java.util.List;
 import java.util.Optional;
@@ -142,10 +143,10 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return directRequest with requestId
      */
     @GetMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests")
-    public List<DirectRequest.Dto> listDirectRequestsByEntry(@RequestParam Optional<Integer> limit,
-                                                             @RequestParam Optional<Long> after,
-                                                             @PathVariable("entry_id") final Long entryId,
-                                                             @AuthenticationPrincipal OAuth2User user) {
+    public Paged<List<DirectRequest.Dto>> listDirectRequestsByEntry(@RequestParam Optional<Integer> limit,
+                                                                    @RequestParam Optional<Integer> page,
+                                                                    @PathVariable("entry_id") final Long entryId,
+                                                                    @AuthenticationPrincipal OAuth2User user) {
         if (this.entryService.get(entryId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
@@ -170,8 +171,14 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         DirectRequest filterDirectRequest = new DirectRequest(null, null, null, option.get().getId());
-        // TODO: Implement list method
-        throw new RuntimeException("Not implemented yet");
+
+        var directRequestPage = this.directRequestService.list(page.map(p -> p - 1).orElse(0),
+                limit.orElse(maxPageSize), filterDirectRequest.toDto());
+        return new Paged<>(
+            directRequestPage.getSize(),
+            directRequestPage.getNumber() + 1,
+            directRequestPage.getTotalPages(),
+            directRequestPage.stream().map(DirectRequest::toDto).toList());
     }
 
 
