@@ -1,9 +1,6 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.DirectRequest;
-import com.peerrequest.app.data.DirectRequestProcess;
-import com.peerrequest.app.data.Paged;
-import com.peerrequest.app.data.Review;
+import com.peerrequest.app.data.*;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -52,6 +49,10 @@ public class DirectRequestsController extends ServiceBasedController {
                                                         @AuthenticationPrincipal OAuth2User user) {
         if (this.entryService.get(entryId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        if (this.directRequestProcessService.getByEntry(entryId).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "process does already exist");
         }
 
         if (dto.openSlots().isEmpty()) {
@@ -361,5 +362,27 @@ public class DirectRequestsController extends ServiceBasedController {
         this.reviewService.create(review);
 
         return this.directRequestService.create(directRequestObject.toDto()).toDto();
+    }
+
+    @DeleteMapping("/{category_id}/entries/{entry_id}/process/requests/{request_id}")
+    DirectRequest.Dto deleteDirectRequest(@PathVariable("request_id") Long id,
+                                                 @AuthenticationPrincipal OAuth2User user) {
+        var option = this.directRequestService.get(id);
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
+        }
+        var directRequestProcess = this.directRequestProcessService.get(option.get().getDirectRequestProcessId());
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "process does not exist");
+        }
+
+        var researcherId = this.entryService.get(directRequestProcess.get().getEntryId()).get().getResearcherId();
+
+        if (!researcherId.equals(user.getAttribute("sub"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the researcher may delete the request");
+        }
+
+        var deleted = this.directRequestService.delete(id);
+        return deleted.map(DirectRequest::toDto).get();
     }
 }
