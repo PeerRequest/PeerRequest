@@ -12,4 +12,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface EntryRepository extends CrudRepository<Entry, Long>, JpaRepository<Entry, Long> {
     Page<Entry> findByCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Entry> findByResearcherId(String researcherId, Pageable pageable);
 }
