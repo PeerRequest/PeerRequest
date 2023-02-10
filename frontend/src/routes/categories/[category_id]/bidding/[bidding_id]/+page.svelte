@@ -5,16 +5,17 @@
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import Paper from "../../../../../components/Paper.svelte";
     import Papers from "../../../../../components/Papers.svelte";
-    import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
-    import EditModal from "../../../../../components/EditModal.svelte";
+
 
     const pages = mock_data.pagination;
+
     const bidding = mock_data.bidding;
     const categories = mock_data.categories;
     const papers = mock_data.papers;
 
     let rating = 0;
-    let biddingOngoing = true;
+    let biddingOngoing = false;
+    let ratingsSubmitted = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -27,9 +28,9 @@
         alert("Next btn clicked. Make a call to your server to fetch data.");
     };
 
-    let show_edit_modal = false;
-    let show_confirm_deletion_modal = false;
-
+    function handleClick() {
+        biddingOngoing = !biddingOngoing;
+    }
 </script>
 
 <svelte:head>
@@ -37,7 +38,7 @@
 </svelte:head>
 
 <Container>
-    <div class="flex max-md:flex-wrap justify-between items-center">
+    <div class="flex max-md:flex-wrap justify-between items-center mb-4">
         <div>
             <ResponsiveBreadCrumb>
                 <BreadcrumbItem home href="/">Home</BreadcrumbItem>
@@ -49,54 +50,34 @@
             </ResponsiveBreadCrumb>
             <Heading tag="h2">{"Bidding for " + categories[data.category_id - 1].name}</Heading>
             <Heading class="mb-5" tag="h6">
-                <Secondary>{"Review Deadline: " + bidding[data.bidding_id - 1].deadline }</Secondary>
+                <Secondary>{"Review Deadline: " + categories[data.category_id - 1].deadline }</Secondary>
             </Heading>
         </div>
 
         {#if categories[data.category_id - 1].is_my_category()}
             <div class="mr-5">
-                <Button color="primary"
-                        on:click={() => {biddingOngoing = false; categories[data.category_id - 1].open = false}}
-                        disabled={!biddingOngoing}
-                        href="/categories/{categories[data.category_id - 1].id}/assignment"
-                >
-                    Stop Bidding
+                <Button on:click={handleClick}>
+                    {biddingOngoing ? "Start bidding" : "Stop bidding"}
                 </Button>
 
-                <Button color="primary"
-                        disabled={!biddingOngoing}>
-                    Refresh Bidding
+                <Button disabled={!biddingOngoing}
+                        href={!biddingOngoing ? "" : "../assignment"}
+                        outline>
+                    Get results
                 </Button>
             </div>
+            {:else}
+            <div class="mr-5">
+                <Button disabled={ratingsSubmitted}
+                        on:click={() => ratingsSubmitted=true}>
+                    {!ratingsSubmitted ? "Submit ratings" : "Ratings submitted"}
+                </Button>
+
+            </div>
+
         {/if}
 
     </div>
-
-
-    <div class="-mt-2 mb-5">
-        {#if categories[data.category_id - 1].is_my_category()}
-            <Button size="xs"
-                    disabled={!biddingOngoing}
-                    outline
-                    on:click={() => show_edit_modal=true}
-            >
-                Edit Deadline
-            </Button>
-
-            <Button size="xs"
-                    color="red"
-                    outline
-                    on:click={() => show_confirm_deletion_modal=true}>
-                Delete Bidding
-            </Button>
-
-        {:else}
-            <Button color="red" size="xs" outline>
-                Decline Bidding
-            </Button>
-        {/if}
-    </div>
-
 
     {#if categories[data.category_id - 1].is_my_category()}
         <Papers>
@@ -137,13 +118,3 @@
         </Pagination>
     </div>
 </Container>
-
-<EditModal bidding={bidding[data.bidding_id -1]}
-                   hide={() => show_edit_modal = false}
-                   show={show_edit_modal}
-/>
-
-<ConfirmDeletionModal hide={() => show_confirm_deletion_modal = false}
-                      show={show_confirm_deletion_modal}
-                      to_delete={categories[data.category_id - 1]}
-/>

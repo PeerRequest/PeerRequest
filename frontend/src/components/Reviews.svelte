@@ -3,13 +3,21 @@
 
     export let show_reviewer = false;
     export let show_paper = false;
+    export let show_review = false;
     export let show_category = false;
     export let select_reviewer = false;
 </script>
 
 <Table noborder={false} shadow={true}>
     <TableHead>
-        <TableHeadCell>Review</TableHeadCell>
+
+        {#if show_paper}
+            <TableHeadCell>Research Paper</TableHeadCell>
+        {/if}
+
+        {#if show_review}
+            <TableHeadCell>Reviews</TableHeadCell>
+        {/if}
 
         {#if show_reviewer}
             <TableHeadCell>Reviewer</TableHeadCell>
@@ -17,10 +25,6 @@
             {#if select_reviewer}
                 <TableHeadCell></TableHeadCell>
             {/if}
-        {/if}
-
-        {#if show_paper}
-            <TableHeadCell>Research Paper</TableHeadCell>
         {/if}
 
         {#if show_category}

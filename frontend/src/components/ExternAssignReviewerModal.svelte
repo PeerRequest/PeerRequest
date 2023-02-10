@@ -17,7 +17,6 @@
     } from "flowbite-svelte";
     import mock_data from "../mock_data.js";
 
-
     let bidding = mock_data.bidding[0];
 
 
@@ -143,7 +142,6 @@
                                         on:click={() => reviewers = reviewers.filter(e => e !== r)}>
                                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                                          width="32px" height="32px" viewBox="0 0 64 64"
-                                         enable-background="new 0 0 64 64"
                                          xml:space="preserve">
                       <g>
                         <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
@@ -167,7 +165,7 @@
 
     <svelte:fragment slot="footer">
         <Button color="primary"
-                href={bidding.category.id + (strategy === "direct" ? "/assignment/" : "/bidding/" + bidding.id)}
+                href={bidding.category.id + (strategy === "direct" ? "/assignment/" : "/bidding/"+ bidding.id) }
                 on:click={() => result(strategy === "direct", strategy === "direct" ?
             Object.fromEntries(Object.entries(paper_matches).filter(([key, value]) =>
             reviewers.some(r => value && key.startsWith(r.id.toString())))) : {})}>{strategy === "direct" ?
