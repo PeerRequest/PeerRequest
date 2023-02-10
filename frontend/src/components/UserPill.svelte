@@ -18,8 +18,7 @@
 </script>
 
 <div class="flex items-center lg:order-2">
-    <Button class="!p-1 lg:!pr-2" color="primary" id="avatar_with_name" pill>
-        <Avatar class="lg:mr-2" src="/img/avatar-4.jpg"/>
+    <Button class="!p-1 lg:!pr-2 h-12 max-w-xl" color="primary" id="avatar_with_name" pill>
         <span class="hidden md:inline">{current_user.first_name + " " + current_user.last_name}</span>
     </Button>
     <Dropdown class="w-full" inline triggeredBy="#avatar_with_name">
