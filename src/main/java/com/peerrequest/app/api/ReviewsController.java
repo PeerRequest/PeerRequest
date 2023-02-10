@@ -5,6 +5,7 @@ import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Message;
 import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
+import com.peerrequest.app.services.messages.ReviewMessageTemplates;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
@@ -176,7 +177,8 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @DeleteMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
-    ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user, @PathVariable Long reviewId) {
+    ResponseEntity<?> deleteReviewDocument(@AuthenticationPrincipal OAuth2User user,
+                                           @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
@@ -190,6 +192,31 @@ public class ReviewsController extends ServiceBasedController {
             review.get().getEntryId(), null);
 
         this.reviewService.update(reviewId, updateReview.toDto());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/notify")
+    ResponseEntity<?> notifyReview(@AuthenticationPrincipal OAuth2User user,
+                                   @PathVariable Long entryId,
+                                   @PathVariable Long reviewId) {
+
+        var entry = this.entryService.get(entryId);
+
+        if (entry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        try {
+            checkAuthReviewer(this.reviewService.get(reviewId), user);
+            this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
+                entry.get().getResearcherId(), entryId, ReviewMessageTemplates.EDIT_REVIEWER);
+
+        } catch (ResponseStatusException r) {
+            checkAuthResearcher(entry, user);
+            this.notificationService.sendReviewNotification(entry.get().getResearcherId(),
+                user.getAttribute("sub").toString(), entryId, ReviewMessageTemplates.EDIT_RESEARCHER);
+        }
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -212,7 +239,7 @@ public class ReviewsController extends ServiceBasedController {
         Message.Dto messageFilter = new Message.Dto(Optional.empty(),
             Optional.of(reviewId), Optional.empty(), null, null);
 
-        var messagePage = this.reviewService.listMessages(page.map(p-> p - 1).orElse(0), limit.orElse(maxPageSize),
+        var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
             messageFilter);
         return new Paged<>(
             messagePage.getSize(),
@@ -261,6 +288,15 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var message = Message.fromDto(dto, reviewId, user.getAttribute("sub"));
+
+        if (review.get().getReviewerId().equals(user.getAttribute("sub").toString())) {
+            this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
+                entry.get().getResearcherId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
+        } else {
+            this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
+                review.get().getReviewerId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
+        }
+
         return this.reviewService.createMessage(message.toDto()).toDto();
     }
 
