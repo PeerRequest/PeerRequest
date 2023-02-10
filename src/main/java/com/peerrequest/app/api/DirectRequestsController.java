@@ -138,6 +138,31 @@ public class DirectRequestsController extends ServiceBasedController {
         return option.get().toDto();
     }
 
+    @DeleteMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}")
+    Optional<DirectRequest.Dto> deleteDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                                    @PathVariable("request_id") final Long requestId,
+                                                    @AuthenticationPrincipal OAuth2User user) {
+        var entry = this.entryService.get(entryId);
+        if (entry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        if (user.getAttribute("sub").toString().equals(entry.get().getResearcherId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the researcher may delete an request");
+        }
+
+        var request = this.directRequestService.get(requestId);
+
+        if (request.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request does not exist");
+        }
+        if (!request.get().getState().equals(DirectRequest.RequestState.PENDING)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "a request can only be deleted if it is pending");
+        }
+
+        this.directRequestService.delete(requestId);
+    }
+
     /**
      * Gets the list of all requests of an entry.
      *
