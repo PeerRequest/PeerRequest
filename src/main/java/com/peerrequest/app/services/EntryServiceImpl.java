@@ -50,6 +50,10 @@ public class EntryServiceImpl implements EntryService {
             entry.setName(newProps.name());
         }
 
+        if (newProps.authors().isPresent()) {
+            entry.setAuthors(newProps.authors().get());
+        }
+
         return Optional.of(repo.save(entry));
     }
 
