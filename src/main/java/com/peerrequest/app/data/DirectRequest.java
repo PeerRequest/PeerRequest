@@ -77,9 +77,9 @@ public class DirectRequest {
      */
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
-                Optional.of(getState()),
-                Optional.of(getReviewerId()),
-                Optional.of(getDirectRequestProcessId()));
+                getState() == null ? Optional.empty() : Optional.of(getState()),
+                getReviewerId() == null ? Optional.empty() : Optional.of(getReviewerId()),
+                getDirectRequestProcessId() == null ? Optional.empty() : Optional.of(getDirectRequestProcessId()));
     }
 
     @Override
