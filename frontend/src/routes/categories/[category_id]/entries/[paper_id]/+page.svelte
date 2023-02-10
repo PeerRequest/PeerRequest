@@ -10,9 +10,12 @@
     import {page} from '$app/stores';
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
+    import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
 
 
     const mocks_reviews = mock_data.reviews;
+
+    let show_confirm_deletion_modal = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -23,6 +26,7 @@
     let entry = null;
     let category = null;
     let path = $page.url.pathname;
+    let go_after;
 
     function loadEntry() {
         entry = null;
@@ -49,15 +53,26 @@
                     console.log(error);
                 } else {
                     category = resp;
+                    go_after = "/categories/" + category.id;
                 }
             })
             .catch(err => console.log(err))
     }
 
+    function loadEntryDocument() {
+        document = null;
+        fetch("/api" + path + "/paper")
+            .then(resp => resp.blob())
+            .then(resp => {
+                document = window.URL.createObjectURL(resp);
+            })
+            .catch(err => console.log(err))
+    }
 
     onMount(() => {
         loadEntry()
         loadCategory()
+        loadEntryDocument()
     });
 
     let show_edit_modal = false;
@@ -99,9 +114,16 @@
                 </Badge>
             </Heading>
 
-            <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
-                Edit Paper
-            </Button>
+
+            <div class="justify-start gap-x-4 flex">
+                <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
+                    Edit Paper
+                </Button>
+                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        on:click={() => show_confirm_deletion_modal = true}>
+                    Delete Paper
+                </Button>
+            </div>
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
@@ -122,7 +144,10 @@
 
         </Container>
 
+
         <EditModal paper={entry} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
+        <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                              to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
     {/if}
 {/if}
