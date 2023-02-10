@@ -1,9 +1,9 @@
 <script>
     import {BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
-    import mock_data from "../../../../../mock_data.js";
-    import Container from "../../../../../components/Container.svelte";
-    import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
-    import ReviewView from "../../../../../components/ReviewView.svelte";
+    import mock_data from "../../../../../../mock_data.js";
+    import Container from "../../../../../../components/Container.svelte";
+    import ResponsiveBreadCrumb from "../../../../../../components/ResponsiveBreadCrumb.svelte";
+    import ReviewView from "../../../../../../components/ReviewView.svelte";
 
     const mocks_papers = mock_data.papers;
     const mocks_categories = mock_data.categories;
