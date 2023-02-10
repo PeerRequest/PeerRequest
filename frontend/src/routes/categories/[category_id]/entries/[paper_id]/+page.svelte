@@ -1,5 +1,5 @@
 <script>
-    import {Badge, BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
     import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
@@ -9,6 +9,7 @@
     import Error from "../../../../../components/Error.svelte";
     import {page} from '$app/stores';
     import {onMount} from "svelte";
+    import EditModal from "../../../../../components/EditModal.svelte";
 
 
     const mocks_reviews = mock_data.reviews;
@@ -54,11 +55,16 @@
     }
 
 
-
     onMount(() => {
         loadEntry()
         loadCategory()
     });
+
+    let show_edit_modal = false;
+
+    $: if (!show_edit_modal) {
+        loadEntry()
+    }
 </script>
 
 <svelte:head>
@@ -88,10 +94,14 @@
                 </BreadcrumbItem>
                 <BreadcrumbItem>{entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
-            <Heading class="mb-4 flex items-center" tag="h2">{path}
+            <Heading class="mb-4 flex items-center" tag="h2">{entry.name}
                 <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer" target="_blank">Download</a>
                 </Badge>
             </Heading>
+
+            <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
+                Edit Paper
+            </Button>
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
@@ -111,5 +121,8 @@
             </div>
 
         </Container>
+
+        <EditModal paper={entry} urlpath={path} hide="{() => show_edit_modal = false}"
+                   show="{show_edit_modal}"/>
     {/if}
 {/if}
