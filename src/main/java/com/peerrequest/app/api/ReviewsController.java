@@ -133,6 +133,14 @@ public class ReviewsController extends ServiceBasedController {
         var entry = this.entryService.get(entryId);
         checkAuthReviewerOrResearcher(review, entry, user);
 
+        if (review.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review does not exist");
+        }
+
+        if (review.get().getReviewDocumentId() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review document does not exist");
+        }
+
         var document = this.documentService.get(review.get().getReviewDocumentId());
 
         if (document.isEmpty()) {
