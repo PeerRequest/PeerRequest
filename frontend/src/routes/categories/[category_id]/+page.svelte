@@ -1,6 +1,5 @@
 <script>
-    import {BreadcrumbItem, Button, ChevronLeft, ChevronRight, Heading, Pagination, Secondary} from "flowbite-svelte";
-    import mock_data from "../../../mock_data.js";
+    import {BreadcrumbItem, Button, Heading, Secondary} from "flowbite-svelte";
     import Papers from "../../../components/Papers.svelte";
     import Paper from "../../../components/Paper.svelte";
     import ResponsiveBreadCrumb from "../../../components/ResponsiveBreadCrumb.svelte";
@@ -14,10 +13,8 @@
 
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
-
-    const pages = mock_data.pagination;
-    const papers = mock_data.papers;
-    const biddings = mock_data.bidding;
+    import {goto} from "$app/navigation";
+    import PaginationComponent from "../../../components/PaginationComponent.svelte";
 
     function map_type(type) {
         switch (type) {
@@ -29,15 +26,8 @@
     }
 
     function map_deadline(deadline) {
-        return new Date(Date.parse(deadline)).toLocaleString();
+        return new Date(Date.parse(deadline)).toLocaleDateString();
     }
-
-    const previous = () => {
-        alert("Previous btn clicked. Make a call to your server to fetch data.");
-    };
-    const next = () => {
-        alert("Next btn clicked. Make a call to your server to fetch data.");
-    };
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -59,7 +49,10 @@
         name: "",
         year: "",
         label: "",
-        deadline: ""
+        deadline: "",
+        score_step_size: "",
+        min_score: "",
+        max_score: ""
     };
 
     let current_user = {
@@ -70,9 +63,28 @@
         id: null
     };
 
+    let entries = null;
     const loading_lines = 5;
     export let error = null;
 
+
+    function previous() {
+        if (currentPage > 1) {
+            currentPage -= 1;
+            $page.url.searchParams.set("page", currentPage);
+            goto($page.url)
+            loadEntries()
+        }
+    }
+
+    function next() {
+        if (currentPage < lastPage) {
+            currentPage += 1;
+            $page.url.searchParams.set("page", currentPage);
+            goto($page.url)
+            loadEntries()
+        }
+    }
 
     let currentPage = 1;
     let lastPage = 1;
@@ -88,8 +100,25 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    lastPage = resp.last_page;
                     category = resp;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function loadEntries() {
+        entries = null;
+        currentPage = parseInt(($page.url.searchParams.get("page") ?? 1).toString())
+        limit = parseInt(($page.url.searchParams.get("limit") ?? 100).toString())
+        fetch("/api" + path + "/entries?page=" + currentPage + "&limit=" + limit)
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    lastPage = resp.last_page;
+                    entries = resp.content;
                 }
             })
             .catch(err => console.log(err))
@@ -97,6 +126,7 @@
 
     onMount(() => {
         loadCategory()
+        loadEntries()
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     });
 
@@ -189,38 +219,32 @@
 
             <Papers
                     category_type={map_type(category.label)}
-                    show_category=true
-                    show_slots=true
             >
-                {#each papers as p}
-                    {#if p.category === category}
+                {#if entries === null}
+                    {#each [...Array(loading_lines).keys()] as i}
+                        <Paper loading="true"/>
+                    {/each}
+                {:else }
+                    {#each entries as e}
                         <Paper
-                                href="/categories/{p.category.id}/{p.id}"
-                                paper={p}
-                                slots={p.slots}
-                                category={p.category}
+                                href="/categories/{category.id}/{e.id}"
+                                bind:paper={e}
+                                category={category}
                         />
-                    {/if}
-                {/each}
+                    {/each}
+                {/if}
             </Papers>
 
 
-            <div class="mx-auto my-8">
-                <Pagination icon on:next={next} on:previous={previous} {pages}>
-                    <svelte:fragment slot="prev">
-                        <span class="sr-only">Previous</span>
-                        <ChevronLeft class="w-5 h-5"/>
-                    </svelte:fragment>
-                    <svelte:fragment slot="next">
-                        <span class="sr-only">Next</span>
-                        <ChevronRight class="w-5 h-5"/>
-                    </svelte:fragment>
-                </Pagination>
-            </div>
-
+            <PaginationComponent
+                    previous={previous}
+                    next={next}
+                    bind:currentPage={currentPage}
+                    bind:lastPage={lastPage}
+            />
         </Container>
 
-        <ExternAssignReviewerModal hide={() => show_assign_modal = false} papers={papers} result={(is_direct_assignment, matches) => {
+        <ExternAssignReviewerModal hide={() => show_assign_modal = false} papers={entries} result={(is_direct_assignment, matches) => {
                              console.log(is_direct_assignment, matches);
                              show_assign_modal = false;
                            }}
