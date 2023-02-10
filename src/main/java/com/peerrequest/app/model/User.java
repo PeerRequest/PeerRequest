@@ -6,7 +6,7 @@ import net.minidev.json.JSONObject;
 /**
  * This class represents a user.
  */
-public record User(@Getter com.peerrequest.app.model.User.UserSelector id, @Getter String firstName,
+public record User(@Getter String id, @Getter String firstName,
                    @Getter String lastName, @Getter String email) {
 
     /**
@@ -27,18 +27,10 @@ public record User(@Getter com.peerrequest.app.model.User.UserSelector id, @Gett
      */
     public JSONObject toJson() {
         var json = new JSONObject();
-        json.put("id", this.id.id());
+        json.put("id", this.id());
         json.put("first_name", this.firstName());
         json.put("last_name", this.lastName());
         json.put("email", this.email());
         return json;
-    }
-
-    /**
-     * Identifies a User.
-     *
-     * @param id id of a User
-     */
-    public record UserSelector(String id) {
     }
 }
