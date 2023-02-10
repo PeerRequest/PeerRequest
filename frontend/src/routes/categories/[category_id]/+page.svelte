@@ -234,7 +234,7 @@
                 {:else }
                     {#each entries as e}
                         <Paper
-                                href="/categories/{category.id}/{e.id}"
+                                href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
                                 category={category}
                         />
