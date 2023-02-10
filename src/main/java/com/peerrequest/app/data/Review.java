@@ -41,34 +41,34 @@ public class Review {
     @Getter
     @Setter
     private ConfidenceLevel confidenceLevel;
-    @Column(name = "summary", nullable = false)
+    @Column(name = "summary")
     @Getter
     @Setter
     private String summary;
-    @Column(name = "main_weaknesses", nullable = false)
+    @Column(name = "main_weaknesses")
     @Getter
     @Setter
     private String mainWeakness;
-    @Column(name = "main_strengths", nullable = false)
+    @Column(name = "main_strengths")
     @Getter
     @Setter
     private String mainStrengths;
-    @Column(name = "questions_for_authors", nullable = false)
+    @Column(name = "questions_for_authors")
     @Getter
     @Setter
     private String questionsForAuthors;
-    @Column(name = "answers_from_authors", nullable = false)
+    @Column(name = "answers_from_authors")
     @Getter
     @Setter
     private String answersFromAuthors;
-    @Column(name = "ohter_comments", nullable = false)
+    @Column(name = "other_comments")
     @Getter
     @Setter
     private String otherComments;
-    @Column(name = "score", nullable = false)
+    @Column(name = "score")
     @Getter
     @Setter
-    private float score;
+    private Float score;
 
     protected Review() {
 
@@ -81,7 +81,7 @@ public class Review {
      * @return Review represented by the DTO
      */
     public static Review fromDto(Dto dto) {
-        return fromDto(dto, dto.reviewerId().get(), dto.entryId().get(), dto.reviewDocumentId().get());
+        return fromDto(dto, dto.reviewerId().get(), dto.entryId().get(), dto.reviewDocumentId().orElse(null));
     }
 
     /**
@@ -117,7 +117,7 @@ public class Review {
             getId() == null ? Optional.empty() : Optional.of(getId()),
             Optional.of(getReviewerId()),
             Optional.of(getEntryId()),
-            Optional.of(getReviewDocumentId()),
+            getReviewDocumentId() == null ? Optional.empty() : Optional.of(getReviewDocumentId()),
             getConfidenceLevel(),
             getSummary(),
             getMainWeakness(),

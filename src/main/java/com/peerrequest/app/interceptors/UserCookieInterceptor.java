@@ -25,7 +25,7 @@ public class UserCookieInterceptor implements HandlerInterceptor {
         if (auth instanceof OAuth2AuthenticationToken token) {
             var oauth2User = token.getPrincipal();
             var user =
-                new User(new User.UserSelector(oauth2User.getAttribute("sid")), oauth2User.getAttribute("given_name"),
+                new User(oauth2User.getAttribute("sid"), oauth2User.getAttribute("given_name"),
                     oauth2User.getAttribute("family_name"), oauth2User.getAttribute("email"));
 
             var json = user.toJson();
