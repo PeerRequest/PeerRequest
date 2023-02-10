@@ -5,6 +5,8 @@ import com.peerrequest.app.data.repos.DirectRequestRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,7 +25,14 @@ public class DirectRequestServiceImpl implements DirectRequestService {
 
     @Override
     public Page<DirectRequest> list(int page, int maxCount, DirectRequest.Dto filter) {
-        return null;
+        if (filter.directRequestProcessId().isPresent()) {
+            return repo.findByDirectRequestProcessId(filter.directRequestProcessId().get(),
+                    PageRequest.of(page, maxCount));
+        } else if (filter.reviewerId().isPresent()) {
+            return repo.findByReviewerId(filter.reviewerId().get(), PageRequest.of(page, maxCount));
+        } else {
+            return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
+        }
     }
 
     @Override
