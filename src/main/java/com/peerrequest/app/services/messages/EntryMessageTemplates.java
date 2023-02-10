@@ -10,8 +10,6 @@ public enum EntryMessageTemplates {
      * Message template when an entry got deleted.
      * Notifies all reviewers of the entry about the deletion.
      */
-
-    //check
     ENTRY_DELETED(
         "PeerRequest - Entry Deleted",
         "Hi %s,\n%s deleted their entry %s. Therefore your review is no longer needed."
@@ -21,8 +19,6 @@ public enum EntryMessageTemplates {
      * Message template when a researcher of an entry requests a user to review their entry.
      * Notifies requested user about the direct request.
      */
-
-    //check
     DIRECT_REQUEST(
         "PeerRequest - Review Request",
         "Hi %s,\n%s has requested a review for his entry %s from you.\nTake a look!"
