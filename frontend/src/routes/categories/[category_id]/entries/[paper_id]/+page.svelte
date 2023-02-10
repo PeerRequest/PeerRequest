@@ -9,6 +9,7 @@
     import Error from "../../../../../components/Error.svelte";
     import {page} from '$app/stores';
     import {onMount} from "svelte";
+    import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
 
 
@@ -74,6 +75,12 @@
         loadCategory()
         loadEntryDocument()
     });
+
+    let show_edit_modal = false;
+
+    $: if (!show_edit_modal) {
+        loadEntry()
+    }
 </script>
 
 <svelte:head>
@@ -108,7 +115,11 @@
                 </Badge>
             </Heading>
 
+
             <div class="justify-start gap-x-4 flex">
+                <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
+                    Edit Paper
+                </Button>
                 <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
                         on:click={() => show_confirm_deletion_modal = true}>
                     Delete Paper
@@ -133,6 +144,9 @@
             </div>
 
         </Container>
+
+        <EditModal paper={entry} urlpath={path} hide="{() => show_edit_modal = false}"
+                   show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
