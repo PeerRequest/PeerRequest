@@ -4,9 +4,11 @@
         Button,
         CloseButton,
         Heading
-
     } from "flowbite-svelte" ;
+    import {onMount} from "svelte";
+    import Cookies from "js-cookie";
 
+    export let error = null;
     export let show = false;
     export let conference = null;
     export let bidding = null;
@@ -20,23 +22,22 @@
     let edited_category_year = conference.year;
     let edited_category_name = conference.name;
     let edited_category_deadline = conference.deadline;
+    let edited_min_score = conference.min_score;
+    let edited_max_score = conference.max_score;
+    let edited_score_step_size = conference.score_step_size;
 
-    
-    function finishSubmission() {
-        if (edited_category_deadline !== conference.deadline) {
-           edited_category_deadline = edited_category_deadline + "T00:00:00+01:00";
-        }
+    function editCategory() {
         let data = {
             id: conference.id,
             year: edited_category_year,
             label: conference.label,
             name: edited_category_name,
-            deadline: edited_category_deadline,
-            min_score: conference.min_score,
-            max_score: conference.max_score,
-            score_step_size: conference.score_step_size
+            deadline: (edited_category_deadline !== conference.deadline) ?
+                edited_category_deadline + "T00:00:00+01:00" : edited_category_deadline,
+            min_score: edited_min_score,
+            max_score: edited_max_score,
+            score_step_size: edited_score_step_size
         };
-
         fetch('/api/categories', {
             method: 'PATCH',
             headers: {
@@ -45,12 +46,24 @@
             body: JSON.stringify(data),
         })
             .then((response) => response.json())
-            .then((response_data) => (hide()))
+            .then((response) => {
+                if (response.status < 200 || response.status >= 300) {
+                    error = "" + response.status + ": " + response.message;
+                    console.log(error);
+                } else {
+                    try {
+                        hide();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            })
             .catch(err => console.log(err))
     }
+
 </script>
 
-<Modal class="h-full w-full" bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
+<Modal bind:open={show} class="h-full w-full" on:hide={() => hide ? hide() : null} permanent={true} size="lg">
 
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
@@ -61,22 +74,34 @@
     </svelte:fragment>
 
 
-    <form on:submit|preventDefault={() => finishSubmission()}>
+    <form on:submit|preventDefault={() => editCategory()}>
         <div class="grid gap-y-6">
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Name</Heading>
-                <input class="min-w-[27rem] w-full rounded-lg" bind:value="{edited_category_name}" type=text required>
+                <input bind:value="{edited_category_name}" class="min-w-[27rem] w-full rounded-lg" required type=text>
             </div>
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Year</Heading>
-                <input class="w-full rounded-lg" bind:value={edited_category_year} type=number required>
+                <input bind:value={edited_category_year} class="w-full rounded-lg" required type=number>
             </div>
 
             <div class="flex flex-row justify-between items-center">
                 <Heading size="md" tag="h4"> Deadline</Heading>
-                <input class="w-full rounded-lg" bind:value={edited_category_deadline} type=date>
+                <input bind:value={edited_category_deadline} class="w-full rounded-lg" type=date>
             </div>
-            <Button type="submit" color="primary" size="xs" on:click={() => finishSubmission()}>
+            <div class="flex flex-row justify-between items-center">
+                <Heading size="md" tag="h4">Minimum Score</Heading>
+                <input bind:value={edited_min_score} class="w-full rounded-lg" required type=number>
+            </div>
+            <div class="flex flex-row justify-between items-center">
+                <Heading size="md" tag="h4">Maximum Score</Heading>
+                <input bind:value={edited_max_score} class="w-full rounded-lg" required type=number>
+            </div>
+            <div class="flex flex-row justify-between items-center">
+                <Heading size="md" tag="h4">Score Step Size</Heading>
+                <input bind:value={edited_score_step_size} class="w-full rounded-lg" required type=number>
+            </div>
+            <Button color="primary"  size="xs" type="submit">
                 Save
             </Button>
         </div>
