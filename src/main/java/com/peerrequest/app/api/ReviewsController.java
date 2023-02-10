@@ -1,6 +1,10 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.Document;
+import com.peerrequest.app.data.Entry;
+import com.peerrequest.app.data.Message;
+import com.peerrequest.app.data.Paged;
+import com.peerrequest.app.data.Review;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
@@ -9,7 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,9 +36,9 @@ public class ReviewsController extends ServiceBasedController {
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews")
     Paged<List<Review.Dto>> listReviews(@AuthenticationPrincipal OAuth2User user,
-                                 @RequestParam Optional<Integer> limit,
-                                 @RequestParam Optional<Integer> page,
-                                 @PathVariable Long entryId) {
+                                        @RequestParam Optional<Integer> limit,
+                                        @RequestParam Optional<Integer> page,
+                                        @PathVariable Long entryId) {
         checkAuthResearcher(this.entryService.get(entryId), user);
 
         if (limit.isPresent()) {
@@ -48,8 +59,8 @@ public class ReviewsController extends ServiceBasedController {
             reviewPage.getNumber() + 1,
             reviewPage.getTotalPages(),
             this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterReview)
-                    .stream()
-                    .map(Review::toDto).toList());
+                .stream()
+                .map(Review::toDto).toList());
     }
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}")
@@ -71,7 +82,7 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
 
-        try  {
+        try {
             checkAuthReviewer(this.reviewService.get(dto.id().get()), user);
             if (dto.answersFromAuthors() != null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -115,8 +126,8 @@ public class ReviewsController extends ServiceBasedController {
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
     ResponseEntity<byte[]> getReviewDocument(@AuthenticationPrincipal OAuth2User user,
-                           @PathVariable Long entryId,
-                           @PathVariable Long reviewId) {
+                                             @PathVariable Long entryId,
+                                             @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         var entry = this.entryService.get(entryId);
         checkAuthReviewerOrResearcher(review, entry, user);
@@ -140,8 +151,8 @@ public class ReviewsController extends ServiceBasedController {
 
     @PostMapping("/categories/{categoryId}/entries/{entryId}/reviews/{reviewId}/document")
     Review.Dto postReviewDocument(@AuthenticationPrincipal OAuth2User user,
-                            @PathVariable Long reviewId,
-                            @RequestParam("file") MultipartFile file) {
+                                  @PathVariable Long reviewId,
+                                  @RequestParam("file") MultipartFile file) {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
@@ -159,7 +170,7 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
-                review.get().getEntryId(), documentId);
+            review.get().getEntryId(), documentId);
 
         return this.reviewService.update(reviewId, updateReview.toDto()).get().toDto();
     }
@@ -176,7 +187,7 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
-                review.get().getEntryId(), null);
+            review.get().getEntryId(), null);
 
         this.reviewService.update(reviewId, updateReview.toDto());
 
@@ -270,6 +281,27 @@ public class ReviewsController extends ServiceBasedController {
         checkAuthMessage(option, user);
 
         return option.get().toDto();
+    }
+
+    @GetMapping("/reviews")
+    Paged<List<Review.Dto>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
+                                                    @RequestParam("page") Optional<Integer> page,
+                                                    @AuthenticationPrincipal OAuth2User user) {
+        if (limit.isPresent()) {
+            if (limit.get() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
+            }
+            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+        }
+
+        var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
+            Math.min(limit.orElse(maxPageSize), maxPageSize),
+            user.getAttribute("sub"));
+        return new Paged<>(
+            reviewPage.getSize(),
+            reviewPage.getNumber() + 1,
+            reviewPage.getTotalPages(),
+            reviewPage.stream().map(Review::toDto).toList());
     }
 
     private void checkAuthReviewer(Optional<Review> review, OAuth2User user) {

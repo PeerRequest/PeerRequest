@@ -100,7 +100,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
 
-
     @Override
     public Optional<Message> getMessage(Long cursor) {
         return messageRepo.findById(cursor);
@@ -149,5 +148,10 @@ public class ReviewServiceImpl implements ReviewService {
     public void notifyReviewerOfEdit(Long cursor) {
         //todo: add notification service method
         throw new RuntimeException("not implemented yet");
+    }
+
+    @Override
+    public Page<Review> listByReviewerId(int page, int maxCount, String reviewerId) {
+        return repo.findByReviewerId(reviewerId, Pageable.ofSize(maxCount).withPage(page));
     }
 }
