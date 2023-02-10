@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +36,10 @@ public class UserController extends ServiceBasedController {
             responsePage.getTotalPages(),
             responsePage.toList()
         );
+    }
+
+    @GetMapping("/users/{id}")
+    Optional<User> getById(@PathVariable String id) {
+        return userService.get(id);
     }
 }
