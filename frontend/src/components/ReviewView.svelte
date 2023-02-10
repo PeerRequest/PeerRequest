@@ -3,9 +3,56 @@
     import ReviewForm from "./ReviewForm.svelte";
     import PdfUploader from "./PdfUploader.svelte";
     import MessageBoard from "./MessageBoard.svelte";
+    import {onMount} from "svelte";
+    import Cookies from "js-cookie";
+    import {page} from '$app/stores';
+    import PaperView from "./PaperView.svelte";
 
-    export let review;
-    export let category;
+    export let review = {
+        reviewer_id: "",
+        entry_id: ""
+    }
+    export let category = {
+        category_id:""
+    }
+    export let current_user = {
+        id: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        account_management_url: "",
+    };
+    let reviewerUser = false;
+    let path = $page.url.pathname;
+    export let document = "/lorem_ipsum.pdf";
+    export let error = null;
+
+
+    function loadReviewDocument() {
+        document = null;
+        fetch("/api" + path + "/document")
+            .then(resp => resp.blob())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    document = window.URL.createObjectURL(resp);
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        // get current user data from cookie
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+        if (current_user.id === review.reviewer_id) {
+            reviewerUser = true;
+        }
+        else {
+            loadReviewDocument()
+        }
+    })
 </script>
 
 <div class="flex flex-auto h-full">
@@ -29,30 +76,42 @@
             </svg>
                     Review form
                 </div>
-                <ReviewForm maxScore="{category.max_score}" minScore="{category.min_score}"/>
+                <ReviewForm maxScore="{category.max_score}" minScore="{category.min_score}" reviewerUser="{reviewerUser}"/>
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" style="enable-background:new 0 0 87.881 87.881;"
                          viewBox="0 0 87.881 87.881" x="0px"
                          xml:space="preserve" xmlns="http://www.w3.org/2000/svg" y="0px">
-            <g>
-              <path d="M70.828,0H33.056C27.535,0,23.044,4.484,23.03,10.001h-2.975c-7.183,0-13.027,5.844-13.027,13.027v51.826
-                c0,7.184,5.844,13.027,13.027,13.027h37.772c7.183,0,13.026-5.844,13.026-13.027v-2.975c5.517-0.015,10.001-4.506,10.001-10.026
-                V10.027C80.854,4.498,76.356,0,70.828,0z M64.854,30.054v37.774v7.026c0,3.881-3.146,7.027-7.026,7.027H20.055
-                c-3.882,0-7.027-3.146-7.027-7.027V23.028c0-3.881,3.146-7.027,7.027-7.027h37.772c3.88,0,7.026,3.146,7.026,7.027L64.854,30.054
-                L64.854,30.054z M74.854,61.853c0,2.212-1.793,4.011-4.001,4.024V30.054v-7.026c0-7.183-5.844-13.027-13.026-13.027H29.031
-                C29.045,7.793,30.844,6,33.056,6h37.773c2.22,0,4.026,1.807,4.026,4.027V61.853z"/>
-                <rect height="6" width="36" x="20.941" y="27.313"/>
-                <rect height="6" width="36" x="20.941" y="40.187"/>
-                <rect height="6" width="36" x="20.941" y="53.061"/>
-                <rect height="6" width="36" x="20.941" y="65.935"/>
-            </g>
-          </svg>
-                    Upload PDF file
+                        <g>
+                          <path d="M70.828,0H33.056C27.535,0,23.044,4.484,23.03,10.001h-2.975c-7.183,0-13.027,5.844-13.027,13.027v51.826
+                            c0,7.184,5.844,13.027,13.027,13.027h37.772c7.183,0,13.026-5.844,13.026-13.027v-2.975c5.517-0.015,10.001-4.506,10.001-10.026
+                            V10.027C80.854,4.498,76.356,0,70.828,0z M64.854,30.054v37.774v7.026c0,3.881-3.146,7.027-7.026,7.027H20.055
+                            c-3.882,0-7.027-3.146-7.027-7.027V23.028c0-3.881,3.146-7.027,7.027-7.027h37.772c3.88,0,7.026,3.146,7.026,7.027L64.854,30.054
+                            L64.854,30.054z M74.854,61.853c0,2.212-1.793,4.011-4.001,4.024V30.054v-7.026c0-7.183-5.844-13.027-13.026-13.027H29.031
+                            C29.045,7.793,30.844,6,33.056,6h37.773c2.22,0,4.026,1.807,4.026,4.027V61.853z"/>
+                            <rect height="6" width="36" x="20.941" y="27.313"/>
+                            <rect height="6" width="36" x="20.941" y="40.187"/>
+                            <rect height="6" width="36" x="20.941" y="53.061"/>
+                            <rect height="6" width="36" x="20.941" y="65.935"/>
+                        </g>
+                      </svg>
+                    {#if reviewerUser}
+                        Upload PDF file
+                    {:else}
+                        Reviewed PDF file
+                    {/if}
                 </div>
-                <Label class="pb-2">Your PDF</Label>
-                <PdfUploader/>
+                {#if reviewerUser}
+                    <Label class="pb-2">Your PDF</Label>
+                    <PdfUploader/>
+                {:else}
+                    <Label class="pb-2">Your Reviewed PDF</Label>
+                    <div class="absolute h-full w-[50%]">
+                        <PaperView document="{document}"/>
+                    </div>
+
+                {/if}
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
