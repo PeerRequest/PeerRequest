@@ -8,6 +8,7 @@
 
     export let confidence = 0;
     export let confidenceLevels = ["Low", "Medium" , "High"];
+    export let reviewerUser = false;
 
     export let review = {
         "confidence_level": null,
