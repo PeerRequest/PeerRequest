@@ -143,4 +143,9 @@ public class ReviewServiceImpl implements ReviewService {
     public Page<Review> listByReviewerId(int page, int maxCount, String reviewerId) {
         return repo.findByReviewerId(reviewerId, Pageable.ofSize(maxCount).withPage(page));
     }
+
+    @Override
+    public List<String> getReviewerIdsByEntryId(Long entryId) {
+        return repo.getAllReviewerIdsByEntryId(entryId);
+    }
 }

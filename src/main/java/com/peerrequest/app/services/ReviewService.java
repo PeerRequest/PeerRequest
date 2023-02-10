@@ -55,11 +55,12 @@ public interface ReviewService
     Optional<Message> deleteMessage(Long cursor);
 
     /**
-     * Notifies a reviewer about an edit of the review form of a review from a researcher.
+     * Returns reviewer IDs from all reviews of an entry.
      *
-     * @param cursor id of the Review
+     * @param entryId id of the  entry
+     * @return reviewerIDs
      */
-    void notifyReviewerOfEdit(Long cursor);
+    List<String> getReviewerIdsByEntryId(Long entryId);
 
     Page<Review> listByReviewerId(int page, int maxCount, String researcherId);
 }
