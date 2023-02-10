@@ -158,12 +158,19 @@
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
                     <Reviews>
-                        {#each mocks_reviews.filter((r) => r.paper === entry) as r}
-                            <Review
-                                    href="/categories/{r.paper.category.id}/entries/{r.paper.id}/{r.id}"
-                                    id={r.id}
-                            />
-                        {/each}
+                        {#if reviews === null}
+                            {#each [...Array(loading_lines).keys()] as i}
+                                <Review loading="true"/>
+                            {/each}
+                        {:else }
+                            {#each reviews as r}
+                                <Review
+                                        bind:review={r}
+                                        category={category}
+                                        paper={entry}
+                                />
+                            {/each}
+                        {/if}
                     </Reviews>
                 </div>
             </div>
