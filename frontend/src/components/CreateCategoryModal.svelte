@@ -28,6 +28,7 @@
     export let existing_categories;
     let categories_without_id;
     let already_exists = false;
+    const empty = "";
 
 
     let new_category_year;
@@ -66,6 +67,16 @@
         }
     }
 
+    function resetForm() {
+        new_category_year = empty;
+        new_category_type = empty;
+        new_category_name = empty;
+        new_category_deadline = empty;
+        minScore = empty;
+        maxScore = empty;
+        scoreStepSize = empty;
+    }
+
 
     function createCategory() {
         let data = {
@@ -86,6 +97,17 @@
         })
             .then(resp => resp.json())
             .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    try {
+                        hide();
+                        resetForm();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
             })
             .catch(err => console.log(err));
     }
@@ -100,7 +122,7 @@
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
     </svelte:fragment>
-    <form class="grid gap-y-6">
+    <form class="grid gap-y-6" on:submit|preventDefault={() => finishCreation()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name</Heading>
             <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
@@ -136,7 +158,7 @@
             <input bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
         </div>
         <Button color="primary"
-                on:click={() => {finishCreation();createCategory();show=false;}}
+                on:click={() => {finishCreation();createCategory();}}
                 size="xs" type="submit">
             Save
         </Button>
