@@ -295,6 +295,29 @@ public class DirectRequestsController extends ServiceBasedController {
         return directRequestService.update(request.get().getId(), updatedDirectRequest.toDto()).get().toDto();
     }
 
+    @GetMapping("/requests")
+    Paged<List<DirectRequest.Dto>> listRequestsByResearcher(@RequestParam("limit") Optional<Integer> limit,
+                                                    @RequestParam("page") Optional<Integer> page,
+                                                    @AuthenticationPrincipal OAuth2User user) {
+        if (limit.isPresent()) {
+            if (limit.get() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
+            }
+            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+        }
+
+        DirectRequest filterDirectRequest = new DirectRequest(null, null, user.getAttribute("sub"), null);
+
+        var requestPage = this.directRequestService.list(page.orElse(0), limit.orElse(maxPageSize),
+                filterDirectRequest.toDto());
+
+        return new Paged<>(
+                requestPage.getSize(),
+                requestPage.getNumber() + 1,
+                requestPage.getTotalPages(),
+                requestPage.stream().map(DirectRequest::toDto).toList());
+    }
+
     /**
      * Claims an open slot.
      *
