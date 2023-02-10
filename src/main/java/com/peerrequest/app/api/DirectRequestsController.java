@@ -160,7 +160,10 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "a request can only be deleted if it is pending");
         }
 
-        this.directRequestService.delete(requestId);
+
+
+        var deleted =  this.directRequestService.delete(requestId);
+        return deleted.map(DirectRequest::toDto);
     }
 
     /**
