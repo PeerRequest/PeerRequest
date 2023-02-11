@@ -62,5 +62,9 @@ public interface ReviewService
      */
     List<String> getReviewerIdsByEntryId(Long entryId);
 
+    List<Review> listByEntryId(Long entryId);
+
     Page<Review> listByReviewerId(int page, int maxCount, String researcherId);
+
+    List<Message> listMessageByReviewId(Long reviewId);
 }

@@ -165,6 +165,10 @@ public class ReviewsController extends ServiceBasedController {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
+        if (review.get().getReviewDocumentId() != null) {
+            this.documentService.delete(review.get().getReviewDocumentId());
+        }
+
         String fileName = file.getOriginalFilename();
         String documentId;
 
