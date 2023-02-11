@@ -19,6 +19,8 @@
 
     export let error = null;
 
+    let users = null;
+    let reviewer = null;
     let entry = null;
     let category = null;
     let reviews = null;
@@ -89,7 +91,6 @@
             .catch(err => console.log(err))
     }
 
-
     onMount(() => {
         loadEntry()
         loadCategory()
@@ -123,7 +124,7 @@
                 <BreadcrumbItem home href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
                 <BreadcrumbItem href="/categories/{data.category_id}">
-                    {#if category=== null}
+                    {#if category === null}
                         LOADING
                     {:else }
                         {category.name}
@@ -132,7 +133,8 @@
                 <BreadcrumbItem>{entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
             <Heading class="mb-4 flex items-center" tag="h2">{entry.name}
-                <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer" target="_blank">Download</a>
+                <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
+                                                             target="_blank">Download</a>
                 </Badge>
             </Heading>
 
@@ -153,7 +155,7 @@
                 </div>
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
-                    <Reviews show_reviewer="true">
+                    <Reviews show_reviewer=true>
                         {#if reviews === null}
                             {#each [...Array(loading_lines).keys()] as i}
                                 <Review loading="true"/>
@@ -161,7 +163,7 @@
                         {:else }
                             {#each reviews as r}
                                 <Review
-                                        show_reviewer="true"
+                                        show_reviewer=true
                                         bind:review={r}
                                         category={category}
                                         paper={entry}
