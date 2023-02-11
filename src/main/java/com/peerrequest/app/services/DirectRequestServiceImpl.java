@@ -2,7 +2,6 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.repos.DirectRequestRepository;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

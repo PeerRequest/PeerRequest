@@ -3,10 +3,9 @@ package com.peerrequest.app.api;
 import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.Paged;
+import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
-
-import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
