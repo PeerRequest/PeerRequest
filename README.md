@@ -28,7 +28,7 @@
 | PR_SMTP_SERVER              | smtp.gmail.com                         | smtp server of your email provider                                    |
 | PR_SMTP_PORT                | 587                                    | smtp server port                                                      |
 | PR_SMTP_EMAIL               | example@gmail.com                      | your email address of your email provider                             |
-| PR_SMTP_APP_PW              | add****************nfs                 | your application password of your email                               |
+| PR_SMTP_SERVER_PW           | add****************nfs                 | smtp server password                                                  |
 
 Convenience script for [DSN](https://en.wikipedia.org/wiki/Data_source_name) database urls
 
