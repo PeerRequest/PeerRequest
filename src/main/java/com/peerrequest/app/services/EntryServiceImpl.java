@@ -25,6 +25,9 @@ public class EntryServiceImpl implements EntryService {
     @Autowired
     private DirectRequestProcessService directRequestProcessService;
 
+    @Autowired
+    private DocumentService documentService;
+
 
     @Override
     public Entry create(Entry.Dto newEntity) {
@@ -84,6 +87,8 @@ public class EntryServiceImpl implements EntryService {
 
         var entry = optional.get();
         repo.delete(entry);
+
+        this.documentService.delete(entry.getDocumentId());
 
         for (var review : this.reviewService.listByEntryId(cursor)) {
             this.reviewService.delete(review.getId());
