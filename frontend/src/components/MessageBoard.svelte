@@ -3,7 +3,10 @@
     import {Button, Chevron, Dropdown, DropdownItem} from "flowbite-svelte";
     import {afterUpdate, onMount} from "svelte";
     import Error from "./Error.svelte";
+    import {page} from '$app/stores';
 
+
+    let path = $page.url.pathname;
 
     export let error = null;
     export let review = {
@@ -45,18 +48,31 @@
     const submitComment = (e) => {
         e.preventDefault()
         if (!comment) return;
-        let comments = sortedComments
         let newComment = {
-            "id": comments.length,
-            //TODO : Usercontoller
-            "user": "Kaori Chiriro",
             "content": comment,
             "timestamp": new Date()
         }
-        comments = [newComment, ...comments]
-        sortedComments = handleOrder(comments)
+        fetch("/api" + path + "/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newComment)
+        })
+            .then(resp => resp)
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    loadComments()
+                }
+            })
+            .catch(err => {
+                    console.log(err)
+                }
+            )
         comment = ""
-        amount = sortedComments.length
     }
 
     function loadComments() {
@@ -68,13 +84,16 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    sortedComments = resp.content;
+                    sortedComments = handleOrder(resp.content);
+                    amount = sortedComments.length
                 }
             })
             .catch(err => console.log(err))
     }
 
     onMount(() => {
+        console.log(path)
+
         loadComments()
     })
 </script>
