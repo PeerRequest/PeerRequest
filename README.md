@@ -25,6 +25,10 @@
 | PR_DATABASE_URL             | jdbc:postgresql://host:port/database   | database url to connect to your database                              |
 | PR_DATABASE_USER            | user                                   | database user                                                         |
 | PR_DATABASE_PASSWORD        | super-secret-password                  | database password                                                     |
+| PR_SMTP_SERVER              | smtp.gmail.com                         | smtp server of your email provider                                    |
+| PR_SMTP_PORT                | 587                                    | smtp server port                                                      |
+| PR_SMTP_EMAIL               | example@gmail.com                      | your email address of your email provider                             |
+| PR_SMTP_SERVER_PW           | add****************nfs                 | smtp server password                                                  |
 
 Convenience script for [DSN](https://en.wikipedia.org/wiki/Data_source_name) database urls
 
