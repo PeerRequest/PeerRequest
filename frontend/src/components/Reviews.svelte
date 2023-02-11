@@ -9,7 +9,6 @@
 <Table noborder={false} shadow={true}>
     <TableHead>
         <TableHeadCell>Review</TableHeadCell>
-
         {#if show_reviewer}
             <TableHeadCell>Reviewer</TableHeadCell>
         {/if}
