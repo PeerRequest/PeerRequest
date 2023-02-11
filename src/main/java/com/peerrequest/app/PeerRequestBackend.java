@@ -11,9 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PeerRequestBackend {
 
-    @Autowired
-    private NotificationService service;
-
     public static void main(String[] args) {
         SpringApplication.run(PeerRequestBackend.class, args);
     }
