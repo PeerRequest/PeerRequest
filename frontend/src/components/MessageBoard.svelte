@@ -21,8 +21,8 @@
 
 
     const handleOrder = (sorting_data) => {
-        if (order) return sortedComments = sorting_data.sort((a, b) => new Date(a.date) - new Date(b.date))
-        return sortedComments = sorting_data.sort((a, b) => new Date(b.date) - new Date(a.date))
+        if (order) return sortedComments = sorting_data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        return sortedComments = sorting_data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     };
 
     afterUpdate(() => {
@@ -48,9 +48,10 @@
         let comments = sortedComments
         let newComment = {
             "id": comments.length,
+            //TODO : Usercontoller
             "user": "Kaori Chiriro",
             "content": comment,
-            "date": new Date()
+            "timestamp": new Date()
         }
         comments = [newComment, ...comments]
         sortedComments = handleOrder(comments)
