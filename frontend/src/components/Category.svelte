@@ -15,7 +15,6 @@
     }
 
     function map_deadline(deadline) {
-        console.log(deadline);
         if (deadline != null) {
             return new Date(Date.parse(deadline)).toLocaleDateString();
         } else {
