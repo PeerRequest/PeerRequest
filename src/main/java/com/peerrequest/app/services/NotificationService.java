@@ -1,5 +1,6 @@
 package com.peerrequest.app.services;
 
+import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import com.peerrequest.app.services.messages.ReviewMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,33 @@ public class NotificationService {
         mail.setSubject(subject);
         // TODO: remove //!
         //  mailSender.send(mail);
+    }
+
+    /**
+     * Sends a category notification.
+     *
+     * @param receiverId      userId of the user who receives the notification
+     * @param entryId         entryID of the entry of the review
+     * @param messageTemplate review message
+     */
+    public void sendCategoryNotification(
+                                       String receiverId,
+                                       Long entryId,
+                                       CategoryMessageTemplates messageTemplate) {
+        var receiver = userService.get(receiverId);
+        var entry = entryService.get(entryId);
+
+        if (receiver.isEmpty() || entry.isEmpty()) {
+            return;
+        }
+
+        sendEmail(
+                receiver.get().getEmail(),
+                messageTemplate.getSubject(),
+                messageTemplate.getMessage(
+                        receiver.get().firstName(),
+                        entry.get().getName())
+        );
     }
 
     /**

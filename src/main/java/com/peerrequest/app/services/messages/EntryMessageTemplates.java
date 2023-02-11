@@ -3,7 +3,7 @@ package com.peerrequest.app.services.messages;
 import lombok.Getter;
 
 /**
- * Message templates for a entry messages.
+ * Message templates for entry messages.
  */
 public enum EntryMessageTemplates {
     /**
