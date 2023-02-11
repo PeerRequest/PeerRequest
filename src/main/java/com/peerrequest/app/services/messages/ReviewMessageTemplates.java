@@ -3,7 +3,7 @@ package com.peerrequest.app.services.messages;
 import lombok.Getter;
 
 /**
- * Message templates for a review messages.
+ * Message templates for review messages.
  */
 public enum ReviewMessageTemplates {
     /**
