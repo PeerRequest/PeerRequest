@@ -1,7 +1,6 @@
 <script>
-    import {Label, TabItem, Tabs} from "flowbite-svelte";
+    import {Button, Fileupload, Label, TabItem, Tabs} from "flowbite-svelte";
     import ReviewForm from "./ReviewForm.svelte";
-    import PdfUploader from "./PdfUploader.svelte";
     import MessageBoard from "./MessageBoard.svelte";
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
@@ -24,12 +23,19 @@
     };
     let reviewerUser = false;
     let path = $page.url.pathname;
-    export let document = "/lorem_ipsum.pdf";
+    export let pdf_document = "/lorem_ipsum.pdf";
     export let error = null;
 
+    let fileInput = null;
+    let file;
+    let upload_state = "";
+    let fileuploadprops = {
+        id: "annotations_file_input",
+        accept: ".pdf,application/pdf"
+    };
 
     function loadReviewDocument() {
-        document = null;
+        pdf_document = null;
         fetch("/api" + path + "/document")
             .then(resp => resp.blob())
             .then(resp => {
@@ -37,10 +43,38 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    document = window.URL.createObjectURL(resp);
+                    pdf_document = window.URL.createObjectURL(resp);
                 }
             })
             .catch(err => console.log(err))
+    }
+
+    function uploadReviewPdf() {
+        if (upload_state === "uploading" || upload_state === "done") return;
+        upload_state = "uploading";
+        const input = document.getElementById(fileuploadprops.id);
+        file = input.files[0];
+        console.log(file);
+        const formData = new FormData();
+        formData.append("file", file);
+        fetch("/api" + path + "/document", {
+            method:"POST",
+            body: formData
+        })
+            .then(resp => resp)
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    upload_state = "done"
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                upload_state = "failed"
+                }
+            )
     }
 
     onMount(() => {
@@ -104,11 +138,21 @@
                 </div>
                 {#if reviewerUser}
                     <Label class="pb-2">Your PDF</Label>
-                    <PdfUploader/>
+                    <div class="flex flex-row justify-between items-center">
+                        <Fileupload {...fileuploadprops} bind:value={fileInput} inputClass="my-auto annotations_file_input"
+                                    on:change={() => upload_state = ""}
+                                    size="lg"
+                        />
+                        <Button disabled={!fileInput}
+                                on:click={() => uploadReviewPdf()} outline
+                                color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")} >
+                            {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
+                        </Button>
+                    </div>
                 {:else}
                     <Label class="pb-2">Your Reviewed PDF</Label>
                     <div class="absolute h-full w-[50%]">
-                        <PaperView document="{document}"/>
+                        <PaperView document="{pdf_document}"/>
                     </div>
 
                 {/if}
