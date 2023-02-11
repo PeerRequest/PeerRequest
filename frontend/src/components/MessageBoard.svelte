@@ -67,7 +67,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    sortedComments = resp;
+                    sortedComments = resp.content;
                 }
             })
             .catch(err => console.log(err))
