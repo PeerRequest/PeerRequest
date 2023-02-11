@@ -1,6 +1,5 @@
 <script>
     import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
-    import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import PaperView from "../../../../../components/PaperView.svelte";
@@ -12,9 +11,6 @@
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
 
-
-    const mocks_reviews = mock_data.reviews;
-
     let show_confirm_deletion_modal = false;
 
     /** @type {import("./$types").PageData} */
@@ -25,8 +21,14 @@
 
     let entry = null;
     let category = null;
+    let reviews = null;
     let path = $page.url.pathname;
     let go_after;
+
+    const loading_lines = 5;
+    let currentPage = 1;
+    let lastPage = 1;
+    let limit = 1;
 
     function loadEntry() {
         entry = null;
@@ -69,11 +71,30 @@
             .catch(err => console.log(err))
     }
 
+    function loadReviews() {
+        reviews = null;
+        currentPage = parseInt(($page.url.searchParams.get("page") ?? 1).toString())
+        limit = parseInt(($page.url.searchParams.get("limit") ?? 100).toString())
+        fetch("/api" + path + "/reviews?page=" + currentPage + "&limit=" + limit)
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    lastPage = resp.last_page;
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
 
     onMount(() => {
         loadEntry()
         loadCategory()
         loadEntryDocument()
+        loadReviews()
     });
 
     let show_edit_modal = false;
@@ -132,13 +153,21 @@
                 </div>
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
-                    <Reviews>
-                        {#each mocks_reviews.filter((r) => r.paper === entry) as r}
-                            <Review
-                                    href="/categories/{r.paper.category.id}/entries/{r.paper.id}/{r.id}"
-                                    id={r.id}
-                            />
-                        {/each}
+                    <Reviews show_reviewer="true">
+                        {#if reviews === null}
+                            {#each [...Array(loading_lines).keys()] as i}
+                                <Review loading="true"/>
+                            {/each}
+                        {:else }
+                            {#each reviews as r}
+                                <Review
+                                        show_reviewer="true"
+                                        bind:review={r}
+                                        category={category}
+                                        paper={entry}
+                                />
+                            {/each}
+                        {/if}
                     </Reviews>
                 </div>
             </div>
