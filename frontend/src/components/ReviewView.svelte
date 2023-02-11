@@ -206,7 +206,7 @@
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400"><b class="text-3xl font-bold text-gray-900">Message
                     board:</b>
-                    <MessageBoard review={review} category={category}/>
+                    <MessageBoard review={review} category={category} path={path}/>
                 </p>
             </TabItem>
         </Tabs>
