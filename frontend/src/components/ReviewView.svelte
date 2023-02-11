@@ -116,7 +116,7 @@
             </svg>
                     Review form
                 </div>
-                <ReviewForm maxScore="{category.max_score}" minScore="{category.min_score}"
+                <ReviewForm category="{category}" review="{review}"
                             reviewerUser="{reviewerUser}"/>
             </TabItem>
             <TabItem>
