@@ -11,7 +11,6 @@
         TableBody,
         TableBodyRow,
         TableBodyCell
-
     } from "flowbite-svelte" ;
     import mock_data from "../mock_data.js";
     import PdfUploader from "./PdfUploader.svelte";
@@ -32,6 +31,7 @@
     export let result = () => {
         /* NOP */
     }
+    export let category_type;
     let query = "";
     let users = mock_data.users;
     let reviewers = [];
@@ -42,12 +42,7 @@
     }
 
     function addReviewer(u) {
-        let inputValOpenSlots = document.getElementById("selected_open_slots").value;
-        if (reviewers.length + 1 <= inputValOpenSlots) {
-            reviewers = reviewers.concat([u])
-        } else {
-            alert("Warning! Not enough open slots!")
-        }
+        reviewers = reviewers.concat([u]);
     }
 
 
@@ -83,7 +78,6 @@
 </script>
 
 
-
 <div class="flex flex-row justify-between items-center">
     <Heading size="md" tag="h4"> Enter Paper Title</Heading>
     <input id=entered_entry_title required type=text>
@@ -93,7 +87,15 @@
     <input id=entered_entry_authors placeholder="(Optional)" type=text>
 </div>
 
-<PdfUploader/>
+<div class="space-y-6">
+    <div class="flex flex-row justify-between items-center">
+        <Heading size="md" tag="h4"> Enter Paper Title</Heading>
+        <input class="rounded-lg" id=entered_entry_title type=text required>
+    </div>
+    <div class="flex flex-row justify-between items-center">
+        <Heading size="md" tag="h4"> Enter Paper Authors</Heading>
+        <input class="rounded-lg" id=entered_entry_authors type=text placeholder="(Optional)">
+    </div>
 
 <div class="flex flex-row justify-between items-center">
     <Heading size="md" tag="h4">Choose The Number Of Review Slots</Heading>
@@ -150,6 +152,45 @@
                     </TableBodyCell>
                 </TableBodyRow>
             {/each}
-        </TableBody>
-    </Table>
+        </Dropdown>
+
+        <div class="h-[50vh]">
+            <Table divClass="relative">
+                <TableHead>
+                    <TableHeadCell>Name</TableHeadCell>
+                </TableHead>
+                <TableBody class="divide-y">
+                    {#each reviewers as r }
+                        <TableBodyRow>
+                            <TableBodyCell>{r.name}</TableBodyCell>
+                            <TableBodyCell>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <Button pill class="!p-2" outline color="red"
+                                            on:click={() => reviewers = reviewers.filter(e => e !== r)}>
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                             width="32px" height="32px" viewBox="0 0 64 64"
+                                             enable-background="new 0 0 64 64"
+                                             xml:space="preserve">
+                                  <g>
+                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10"
+                                          x1="18.947"
+                                          y1="17.153" x2="45.045"
+                                          y2="43.056"/>
+                                  </g>
+                                            <g>
+                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10"
+                                          x1="19.045"
+                                          y1="43.153" x2="44.947"
+                                          y2="17.056"/>
+                                  </g>
+                              </svg>
+                                    </Button>
+                                </div>
+                            </TableBodyCell>
+                        </TableBodyRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </div>
+    {/if}
 </div>
