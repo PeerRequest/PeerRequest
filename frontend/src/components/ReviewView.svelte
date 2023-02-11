@@ -2,6 +2,8 @@
     import {Button, Fileupload, Label, TabItem, Tabs} from "flowbite-svelte";
     import ReviewForm from "./ReviewForm.svelte";
     import MessageBoard from "./MessageBoard.svelte";
+    import ConfirmDeletionModal from "./ConfirmDeletionModal.svelte";
+
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
@@ -21,9 +23,9 @@
         email: "",
         account_management_url: "",
     };
-    let reviewerUser = false;
+    let reviewerUser = true;
     let path = $page.url.pathname;
-    export let pdf_document = "/lorem_ipsum.pdf";
+    export let pdf_document = null;
     export let error = null;
 
     let fileInput = null;
@@ -33,6 +35,7 @@
         id: "annotations_file_input",
         accept: ".pdf,application/pdf"
     };
+    let show_confirm_deletion_modal = false
 
     function loadReviewDocument() {
         pdf_document = null;
@@ -68,6 +71,7 @@
                     console.log(error);
                 } else {
                     upload_state = "done"
+                    loadReviewDocument()
                 }
             })
             .catch(err => {
@@ -83,10 +87,12 @@
         if (current_user.id === review.reviewer_id) {
             reviewerUser = true;
         }
-        else {
-            loadReviewDocument()
-        }
+        loadReviewDocument()
     })
+
+    $: if (!show_confirm_deletion_modal) {
+        loadReviewDocument()
+    }
 </script>
 
 <div class="flex flex-auto h-full">
@@ -136,9 +142,9 @@
                         Reviewed PDF file
                     {/if}
                 </div>
-                {#if reviewerUser}
-                    <Label class="pb-2">Your PDF</Label>
-                    <div class="flex flex-row justify-between items-center">
+                <Label class="pb-2">Your PDF</Label>
+                <div class="flex flex-row justify-between items-center">
+                    {#if reviewerUser}
                         <Fileupload {...fileuploadprops} bind:value={fileInput} inputClass="my-auto annotations_file_input"
                                     on:change={() => upload_state = ""}
                                     size="lg"
@@ -148,12 +154,14 @@
                                 color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")} >
                             {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
                         </Button>
-                    </div>
-                {:else}
-                    <Label class="pb-2">Your Reviewed PDF</Label>
-                    <div class="absolute h-full w-[50%]">
+                    {/if}
+
+                </div>
+                {#if pdf_document !== null}
+                    <div class="absolute flex h-full w-[50%] right-1/4 left-1/4 justify-center">
                         <PaperView document="{pdf_document}"/>
                     </div>
+                    <Button on:click={() => show_confirm_deletion_modal = true}>Delete</Button>
 
                 {/if}
             </TabItem>
@@ -201,3 +209,6 @@
         </Tabs>
     </div>
 </div>
+
+<ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                      to_delete={path + "/document"} delete_name="Review Document" afterpath="{path}"/>
