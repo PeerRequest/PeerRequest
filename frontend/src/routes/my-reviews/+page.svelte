@@ -5,9 +5,29 @@
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
     import Reviews from "../../components/Reviews.svelte";
     import Review from "../../components/Review.svelte";
+    import {onMount} from "svelte";
 
-    const user = mock_data.users[23];
-    const reviews = mock_data.reviews;
+    export let error;
+    let reviews = null;
+
+    function loadUserReviews() {
+        reviews = null;
+        fetch("/api/reviews")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        loadUserReviews();
+    });
 
 </script>
 
@@ -26,7 +46,7 @@
     <Reviews
             show_category=true
             show_paper=true>
-        {#each reviews.filter((r) => user.name === r.reviewer) as r}
+        {#each reviews !== null as r}
             <Review
                     href="/categories/{r.paper.category.id}/entries/{r.paper.id}/{r.id}"
                     id={r.id}
