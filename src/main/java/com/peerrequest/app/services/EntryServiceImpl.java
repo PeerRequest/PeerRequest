@@ -2,11 +2,8 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.repos.EntryRepository;
-
 import java.util.List;
 import java.util.Optional;
-
-import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
