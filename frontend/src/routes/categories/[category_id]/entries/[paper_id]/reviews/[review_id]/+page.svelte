@@ -53,8 +53,6 @@
             .catch(err => console.log(err))
     }
 
-
-
     function loadUsers() {
         users = null;
         fetch("/api/users")

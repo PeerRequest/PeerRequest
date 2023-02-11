@@ -7,8 +7,6 @@
     export let review;
     export let category = null;
 
-    //TODO: UserController
-
     export let paper = null;
     export let loading = false;
 
@@ -16,13 +14,12 @@
     export let show_paper = false;
     export let show_reviewer = false;
 
-
     let users = null;
     let reviewer = null;
 
     function loadReviewer() {
         loadUsers();
-        if (users === !null) {
+        if (users !== null) {
             reviewer = users.find(user => user.id === review.reviewer_id)
         } else {
             console.log("No users could be found.")
@@ -70,7 +67,7 @@
         {#if show_reviewer}
             <TableBodyCell>
                 <BreadcrumbItem>
-                    {reviewer === !null ? ((reviewer.name === !null) ? reviewer.name : "undefined") : "no reviewer"}
+                    {reviewer === !null ? ((reviewer.name !== null) ? reviewer.name : "undefined") : "no reviewer"}
                 </BreadcrumbItem>
             </TableBodyCell>
         {/if}
