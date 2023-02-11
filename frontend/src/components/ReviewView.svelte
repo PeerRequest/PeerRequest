@@ -3,6 +3,9 @@
     import ReviewForm from "./ReviewForm.svelte";
     import PdfUploader from "./PdfUploader.svelte";
     import MessageBoard from "./MessageBoard.svelte";
+
+    export let review;
+    export let category;
 </script>
 
 <div class="flex flex-auto h-full">
@@ -26,7 +29,7 @@
             </svg>
                     Review form
                 </div>
-                <ReviewForm maxConfidence="2" maxScore="5" minConfidence="0" minScore="0"/>
+                <ReviewForm maxScore="{category.max_score}" minScore="{category.min_score}"/>
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
