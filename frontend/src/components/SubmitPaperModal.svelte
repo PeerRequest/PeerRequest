@@ -1,7 +1,11 @@
 <script>
-    import {Button, Modal,} from "flowbite-svelte";
+    import {
+        Modal,
+        Button,
+        CloseButton,
+        Footer
+    } from "flowbite-svelte" ;
     import SubmitPaper from "./SubmitPaper.svelte";
-    import PdfUploader from "./PdfUploader.svelte";
 
     import { createEventDispatcher } from 'svelte';
 
@@ -14,7 +18,7 @@
     export let error;
     export let category;
     export let show = false;
-    export let category_type = "Internal";
+    export let conference_type = "Internal";
     export let hide = () => {
         /* NOP */
     };
@@ -61,9 +65,6 @@
                     Finish Submission
                 </Button>
             </div>
-        </form>
-    {/if}
-    {#if (category_type === "External")}
-        <PdfUploader/>
-    {/if}
+        </Footer>
+    </form>
 </Modal>
