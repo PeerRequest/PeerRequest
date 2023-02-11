@@ -24,6 +24,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private MessageRepository messageRepo;
 
+    @Autowired
+    private DocumentService documentService;
+
     @Override
     public Review create(Review.Dto newEntity) {
         return repo.save(Review.fromDto(newEntity));
@@ -90,6 +93,8 @@ public class ReviewServiceImpl implements ReviewService {
 
         var review = optional.get();
         repo.delete(review);
+
+        this.documentService.delete(review.getReviewDocumentId());
 
         for (var message : this.messageRepo.findByReviewId(cursor)) {
             deleteMessage(message.getId());
