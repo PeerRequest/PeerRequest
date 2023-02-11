@@ -5,11 +5,11 @@
     import ResponsiveBreadCrumb from "../../../components/ResponsiveBreadCrumb.svelte";
     import Container from "../../../components/Container.svelte";
     import ExternAssignReviewerModal from "../../../components/ExternAssignReviewerModal.svelte";
-    import SubmitPaperModal from "../../../components/SubmitPaperModal.svelte";
     import EditModal from "../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../components/ConfirmDeletionModal.svelte";
     import Error from "../../../components/Error.svelte";
     import {page} from '$app/stores';
+    import CreateEntryModal from "../../../components/CreateEntryModal.svelte";
 
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
@@ -26,16 +26,20 @@
     }
 
     function map_deadline(deadline) {
-        return new Date(Date.parse(deadline)).toLocaleDateString();
+        if (deadline != null) {
+            return new Date(Date.parse(deadline)).toLocaleDateString();
+        } else {
+            return "not specified"
+        }
     }
 
     /** @type {import("./$types").PageData} */
     export let data;
 
     let show_assign_modal = false;
-    let show_submit_modal = false;
     let show_edit_modal = false;
     let show_confirm_deletion_modal = false;
+    let show_create_entry_modal = false;
 
     /*
     function bidding() {
@@ -133,6 +137,10 @@
     $: if (!show_edit_modal) {
         loadCategory()
     }
+
+    $: if (!show_create_entry_modal) {
+        loadEntries()
+    }
 </script>
 
 
@@ -212,13 +220,16 @@
                     {/if}
                 </div>
 
-                <Button class="mb-4 h-8" color="primary" on:click={() => show_submit_modal = true} size="xs">Submit Paper
+                <Button class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
+                    Submit
+                    Paper
                 </Button>
             </div>
 
 
             <Papers
                     category_type={map_type(category.label)}
+                    show_category=true
             >
                 {#if entries === null}
                     {#each [...Array(loading_lines).keys()] as i}
@@ -250,14 +261,14 @@
                            }}
                                    show={show_assign_modal}/>
 
-        <SubmitPaperModal category_path ={path} conference_type="{map_type(category.label)}" hide="{() => show_submit_modal = false}"
-                          show="{show_submit_modal}"/>
-
         <EditModal conference={category} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                              to_delete={path} delete_name="{category.name}" afterpath="/categories"/>
+                              to_delete={path} delete_name="{category.name}"/>
+
+        <CreateEntryModal category={category} entries={entries} show={show_create_entry_modal}
+                          hide={() => show_create_entry_modal = false}></CreateEntryModal>
     {/if}
 {/if}
 

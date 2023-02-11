@@ -3,25 +3,33 @@
     import {onMount} from "svelte";
     import {page} from '$app/stores';
 
-    export let minScore;
-    export let maxScore;
+    export let category= {
+        id:null,
+        min_score: 0.5,
+        max_score: 5,
+        score_step_size: 0.25,
+    }
+    let minScore = category.min_score;
+    let maxScore = category.max_score;
     export let error = null;
 
     export let confidence = 0;
-    export let confidenceLevels = ["Low", "Medium" , "High"];
-    export let reviewerUser = false;
+    export let confidenceLevels = ["LOW", "MEDIUM" , "HIGH"];
+    export let reviewerUser = true;
 
     export let review = {
         id:null,
-        confidence_level: null,
-        summary: null,
-        main_weaknesses: null,
-        main_strengths: null,
-        questions_for_authors: null,
-        answers_from_authors: null,
-        other_comments: null,
+        entry_id:null,
+        confidence_level: "",
+        summary: "",
+        main_weaknesses: "",
+        main_strengths: "",
+        questions_for_authors: "",
+        answers_from_authors: "",
+        other_comments: "",
         score: minScore
     }
+
 
     let edited_summary = review.summary;
     let edited_main_weaknesses = review.main_weaknesses;
@@ -29,14 +37,16 @@
     let edited_questions_for_authors = review.questions_for_authors;
     let edited_answers_the_authors = review.answers_from_authors;
     let edited_other_comments = review.other_comments;
-    let edited_score = review.score;
+    let edited_score = minScore;
 
     let path = $page.url.pathname;
 
+
     function editReviewForm() {
-        let data = {
+        let editedReviewForm = {
             id: review.id,
             confidence_level: confidenceLevels[confidence],
+            summary: edited_summary,
             main_weaknesses: edited_main_weaknesses,
             main_strengths: edited_main_strengths,
             questions_for_authors: edited_questions_for_authors,
@@ -44,12 +54,12 @@
             other_comments: edited_other_comments,
             score: edited_score
         };
-        fetch("/api" + path, {
+        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews" , {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(editedReviewForm),
         })
             .then((response) => response.json())
             .then((response) => {
@@ -65,14 +75,14 @@
 
     onMount(() => {
         if (review.confidence_level !== null) {
-            confidence = confidenceLevels.findIndex(review.confidence_level)
+            confidence = confidenceLevels.indexOf(review.confidence_level)
         }
     })
 
 </script>
 
 <Label>Score: {edited_score} / {maxScore}</Label>
-<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} />
+<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}" />
 
 <div class="my-4"></div>
 

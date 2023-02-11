@@ -153,7 +153,7 @@
                 </div>
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
-                    <Reviews>
+                    <Reviews show_reviewer="true">
                         {#if reviews === null}
                             {#each [...Array(loading_lines).keys()] as i}
                                 <Review loading="true"/>
@@ -161,6 +161,7 @@
                         {:else }
                             {#each reviews as r}
                                 <Review
+                                        show_reviewer="true"
                                         bind:review={r}
                                         category={category}
                                         paper={entry}
