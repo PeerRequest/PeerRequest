@@ -2,7 +2,11 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.repos.EntryRepository;
+
+import java.util.List;
 import java.util.Optional;
+
+import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +21,13 @@ public class EntryServiceImpl implements EntryService {
 
     @Autowired
     private EntryRepository repo;
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private DirectRequestProcessService directRequestProcessService;
+
 
     @Override
     public Entry create(Entry.Dto newEntity) {
@@ -35,6 +46,11 @@ public class EntryServiceImpl implements EntryService {
     @Override
     public Page<Entry> listByResearcher(int page, int maxCount, String researcherId) {
         return repo.findByResearcherId(researcherId, Pageable.ofSize(maxCount).withPage(page));
+    }
+
+    @Override
+    public List<Entry> listByCategoryId(Long categoryId) {
+        return repo.findByCategoryId(categoryId);
     }
 
     @Override
@@ -71,6 +87,15 @@ public class EntryServiceImpl implements EntryService {
 
         var entry = optional.get();
         repo.delete(entry);
+
+        for (var review : this.reviewService.listByEntryId(cursor)) {
+            this.reviewService.delete(review.getId());
+        }
+
+        var directRequestProcess = this.directRequestProcessService.getByEntry(cursor);
+        directRequestProcess.ifPresent(requestProcess
+                -> this.directRequestProcessService.delete(requestProcess.getId()));
+
         return Optional.of(entry);
     }
 }
