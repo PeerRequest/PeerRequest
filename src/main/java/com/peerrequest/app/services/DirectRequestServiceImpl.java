@@ -2,6 +2,8 @@ package com.peerrequest.app.services;
 
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.repos.DirectRequestRepository;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,5 +66,16 @@ public class DirectRequestServiceImpl implements DirectRequestService {
         var request = optional.get();
         repo.delete(request);
         return Optional.of(request);
+    }
+
+    @Override
+    public List<DirectRequest> listByDirectRequestProcessIdAndState(Long directRequestProcessId,
+                                                                    DirectRequest.RequestState state) {
+        return repo.findByDirectRequestProcessIdAndState(directRequestProcessId, state);
+    }
+
+    @Override
+    public List<DirectRequest> listByDirectRequestProcessId(Long directRequestProcessId) {
+        return this.repo.findByDirectRequestProcessId(directRequestProcessId);
     }
 }

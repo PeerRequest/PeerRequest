@@ -90,6 +90,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         var review = optional.get();
         repo.delete(review);
+
+        for (var message : this.messageRepo.findByReviewId(cursor)) {
+            deleteMessage(message.getId());
+        }
+
         return Optional.of(review);
     }
 
@@ -145,7 +150,19 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public List<Message> listMessageByReviewId(Long reviewId) {
+        return messageRepo.findByReviewId(reviewId);
+    }
+
+    @Override
     public List<String> getReviewerIdsByEntryId(Long entryId) {
         return repo.getAllReviewerIdsByEntryId(entryId);
+    }
+
+
+
+    @Override
+    public List<Review> listByEntryId(Long entryId) {
+        return repo.findByEntryId(entryId);
     }
 }
