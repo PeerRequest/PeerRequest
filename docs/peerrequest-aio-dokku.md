@@ -14,13 +14,13 @@ This guide assumes you can **SSH** into your server and you have **sudo** privil
 5. Build the Keycloak docker image ([Details](../keycloak))
    - On your local machine inside the cloned repository:
 
-   ```bash
-   cd keycloak
-   docker build -t peerrequest-keycloak .
-   
-   # send the image to your server
-   docker save peerrequest-keycloak | ssh myvps "sudo docker load"
-   ```
+     ```bash
+     cd keycloak
+     docker build -t peerrequest-keycloak .
+     
+     # send the image to your server
+     docker save peerrequest-keycloak | ssh myvps "sudo docker load"
+     ```
 
 6. Create a new Keycloak instance in dokku
    - On the host system:
