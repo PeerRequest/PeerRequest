@@ -41,27 +41,27 @@ public class Review {
     @Getter
     @Setter
     private ConfidenceLevel confidenceLevel;
-    @Column(name = "summary")
+    @Column(name = "summary", length = 2048)
     @Getter
     @Setter
     private String summary;
-    @Column(name = "main_weaknesses")
+    @Column(name = "main_weaknesses", length = 2048)
     @Getter
     @Setter
     private String mainWeakness;
-    @Column(name = "main_strengths")
+    @Column(name = "main_strengths", length = 2048)
     @Getter
     @Setter
     private String mainStrengths;
-    @Column(name = "questions_for_authors")
+    @Column(name = "questions_for_authors", length = 2048)
     @Getter
     @Setter
     private String questionsForAuthors;
-    @Column(name = "answers_from_authors")
+    @Column(name = "answers_from_authors", length = 2048)
     @Getter
     @Setter
     private String answersFromAuthors;
-    @Column(name = "other_comments")
+    @Column(name = "other_comments", length = 2048)
     @Getter
     @Setter
     private String otherComments;
