@@ -3,12 +3,15 @@
     import {onMount} from "svelte";
     import {page} from '$app/stores';
 
+    /** @type {import("./$types").PageData} */
+    export let data;
+
     export let minScore;
     export let maxScore;
     export let error = null;
 
     export let confidence = 0;
-    export let confidenceLevels = ["Low", "Medium" , "High"];
+    export let confidenceLevels = ["LOW", "MEDIUM" , "HIGH"];
     export let reviewerUser = false;
 
     export let review = {
@@ -33,6 +36,7 @@
 
     let path = $page.url.pathname;
 
+
     function editReviewForm() {
         let data = {
             id: review.id,
@@ -44,7 +48,7 @@
             other_comments: edited_other_comments,
             score: edited_score
         };
-        fetch("/api" + path, {
+        fetch("/api/categories/" + data.category_id + "/entries/" + data.paper_id + "/reviews" , {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
