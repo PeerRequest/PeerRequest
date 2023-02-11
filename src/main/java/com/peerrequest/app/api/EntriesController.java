@@ -209,5 +209,17 @@ public class EntriesController extends ServiceBasedController {
             this.notificationService.sendEntryNotification(emitterId, reviewerId, entryId,
                 EntryMessageTemplates.ENTRY_DELETED);
         }
+
+        var directRequestProcessId = this.directRequestProcessService.getByEntry(entryId);
+
+        if (directRequestProcessId.isEmpty()) {
+            return;
+        }
+
+        for (var request : this.directRequestService.listByDirectRequestProcessIdAndState(
+                directRequestProcessId.get().getId(), DirectRequest.RequestState.PENDING)) {
+            this.notificationService.sendEntryNotification(emitterId, request.getReviewerId(), entryId,
+                    EntryMessageTemplates.REQUEST_WITHDRAWN);
+        }
     }
 }
