@@ -1,11 +1,13 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.Category;
-import com.peerrequest.app.data.Document;
-import com.peerrequest.app.data.Entry;
-import com.peerrequest.app.data.Paged;
+import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.repos.ReviewRepository;
+import com.peerrequest.app.services.NotificationService;
+import com.peerrequest.app.services.ReviewService;
+import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +33,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class EntriesController extends ServiceBasedController {
-
     private final int maxPageSize = 100;
 
     @GetMapping("/categories/{category_id}/entries")
@@ -176,6 +177,8 @@ public class EntriesController extends ServiceBasedController {
                 "only the owner may delete the entry");
         }
 
+        sendDeleteEntryNotifications(entryId, user.getAttribute("sub").toString());
+
         var deleted = this.entryService.delete(entryId);
         return deleted.map(Entry::toDto);
     }
@@ -198,5 +201,13 @@ public class EntriesController extends ServiceBasedController {
             entryPage.getNumber() + 1,
             entryPage.getTotalPages(),
             entryPage.stream().map(Entry::toDto).toList());
+    }
+
+    private void sendDeleteEntryNotifications(Long entryId, String emitterId) {
+        List<String> reviewerIds = this.reviewService.getReviewerIdsByEntryId(entryId);
+        for (String reviewerId : reviewerIds) {
+            this.notificationService.sendEntryNotification(emitterId, reviewerId, entryId,
+                EntryMessageTemplates.ENTRY_DELETED);
+        }
     }
 }
