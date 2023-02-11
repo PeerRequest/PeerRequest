@@ -1,6 +1,5 @@
 <script>
     import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
-    import mock_data from "../../../../../mock_data.js";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import PaperView from "../../../../../components/PaperView.svelte";
@@ -10,9 +9,9 @@
     import {page} from '$app/stores';
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
+    import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
 
-
-    const mocks_reviews = mock_data.reviews;
+    let show_confirm_deletion_modal = false;
 
     /** @type {import("./$types").PageData} */
     export let data;
@@ -22,7 +21,14 @@
 
     let entry = null;
     let category = null;
+    let reviews = null;
     let path = $page.url.pathname;
+    let go_after;
+
+    const loading_lines = 5;
+    let currentPage = 1;
+    let lastPage = 1;
+    let limit = 1;
 
     function loadEntry() {
         entry = null;
@@ -49,6 +55,7 @@
                     console.log(error);
                 } else {
                     category = resp;
+                    go_after = "/categories/" + category.id;
                 }
             })
             .catch(err => console.log(err))
@@ -64,11 +71,30 @@
             .catch(err => console.log(err))
     }
 
+    function loadReviews() {
+        reviews = null;
+        currentPage = parseInt(($page.url.searchParams.get("page") ?? 1).toString())
+        limit = parseInt(($page.url.searchParams.get("limit") ?? 100).toString())
+        fetch("/api" + path + "/reviews?page=" + currentPage + "&limit=" + limit)
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    lastPage = resp.last_page;
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
 
     onMount(() => {
         loadEntry()
         loadCategory()
         loadEntryDocument()
+        loadReviews()
     });
 
     let show_edit_modal = false;
@@ -110,9 +136,16 @@
                 </Badge>
             </Heading>
 
-            <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
-                Edit Paper
-            </Button>
+
+            <div class="justify-start gap-x-4 flex">
+                <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
+                    Edit Paper
+                </Button>
+                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        on:click={() => show_confirm_deletion_modal = true}>
+                    Delete Paper
+                </Button>
+            </div>
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
@@ -142,5 +175,8 @@
 
         <EditModal paper={entry} urlpath={path} hide="{() => show_edit_modal = false}"
                    show="{show_edit_modal}"/>
+
+        <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                              to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
     {/if}
 {/if}
