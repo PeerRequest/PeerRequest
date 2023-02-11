@@ -12,7 +12,7 @@
     export let data;
 
     export let error = null;
-
+    let users = null;
     let entry = null;
     let category = {
         "min_score": 0.5,
@@ -20,7 +20,6 @@
         "score_step_size": 0.25
     }
     let review = null
-    //TODO UserController
     let reviewer = null;
     let path = $page.url.pathname;
 
@@ -54,6 +53,28 @@
             .catch(err => console.log(err))
     }
 
+
+
+    function loadUsers() {
+        users = null;
+        fetch("/api/users")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    users = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function loadReviewer() {
+        loadUsers();
+        reviewer = users.find(user => user.id === review.reviewer_id)
+    }
+
     function loadReview() {
         review = null;
         fetch("/api" + path)
@@ -73,6 +94,7 @@
         loadEntry();
         loadCategory();
         loadReview();
+        loadReviewer();
     });
 </script>
 
