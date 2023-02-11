@@ -42,11 +42,13 @@
         fetch("/api" + path + "/document")
             .then(resp => resp.blob())
             .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    pdf_document = window.URL.createObjectURL(resp);
+                if (resp.type !== "application/json") {
+                    if (resp.status < 200 || resp.status >= 300) {
+                        error = "" + resp.status + ": " + resp.message;
+                        console.log(error);
+                    } else {
+                        pdf_document = window.URL.createObjectURL(resp);
+                    }
                 }
             })
             .catch(err => console.log(err))
