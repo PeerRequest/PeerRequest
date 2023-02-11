@@ -27,7 +27,7 @@ public interface ReviewService
      * @param filter   filter, may be null
      * @return the filtered list
      */
-    List<Message> listMessages(Long cursor, int maxCount, Message.Dto filter);
+    Page<Message> listMessages(int cursor, int maxCount, Message.Dto filter);
 
     /**
      * Returns a message.
@@ -55,18 +55,12 @@ public interface ReviewService
     Optional<Message> deleteMessage(Long cursor);
 
     /**
-     * Notifies a researcher about an edit of the review form of a review from a reviewer.
+     * Returns reviewer IDs from all reviews of an entry.
      *
-     * @param cursor id of the Review
+     * @param entryId id of the  entry
+     * @return reviewerIDs
      */
-    void notifyResearcherOfEdit(Long cursor);
-
-    /**
-     * Notifies a reviewer about an edit of the review form of a review from a researcher.
-     *
-     * @param cursor id of the Review
-     */
-    void notifyReviewerOfEdit(Long cursor);
+    List<String> getReviewerIdsByEntryId(Long entryId);
 
     Page<Review> listByReviewerId(int page, int maxCount, String researcherId);
 }

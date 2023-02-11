@@ -61,7 +61,7 @@
         const formData = new FormData();
         formData.append("file", file);
         fetch("/api" + path + "/document", {
-            method:"POST",
+            method: "POST",
             body: formData
         })
             .then(resp => resp)
@@ -75,8 +75,8 @@
                 }
             })
             .catch(err => {
-                console.log(err)
-                upload_state = "failed"
+                    console.log(err)
+                    upload_state = "failed"
                 }
             )
     }
@@ -116,7 +116,8 @@
             </svg>
                     Review form
                 </div>
-                <ReviewForm maxScore="{category.max_score}" minScore="{category.min_score}" reviewerUser="{reviewerUser}"/>
+                <ReviewForm category="{category}" review="{review}"
+                            reviewerUser="{reviewerUser}"/>
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
@@ -145,15 +146,19 @@
                 <Label class="pb-2">Your PDF</Label>
                 <div class="flex flex-row justify-between items-center">
                     {#if reviewerUser}
-                        <Fileupload {...fileuploadprops} bind:value={fileInput} inputClass="my-auto annotations_file_input"
+                        <Fileupload {...fileuploadprops} bind:value={fileInput}
+                                    inputClass="my-auto annotations_file_input"
                                     on:change={() => upload_state = ""}
                                     size="lg"
                         />
                         <Button disabled={!fileInput}
                                 on:click={() => uploadReviewPdf()} outline
-                                color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")} >
+                                color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
                             {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
                         </Button>
+                    {/if}
+                    {#if pdf_document !== null}
+                        <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>Delete</Button>
                     {/if}
 
                 </div>
@@ -161,8 +166,6 @@
                     <div class="absolute flex h-full w-[50%] right-1/4 left-1/4 justify-center">
                         <PaperView document="{pdf_document}"/>
                     </div>
-                    <Button on:click={() => show_confirm_deletion_modal = true}>Delete</Button>
-
                 {/if}
             </TabItem>
             <TabItem>
@@ -210,5 +213,5 @@
     </div>
 </div>
 
-<ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                      to_delete={path + "/document"} delete_name="Review Document" afterpath="{path}"/>
+<ConfirmDeletionModal afterpath="{path}" delete_name="Review Document"
+                      hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}" to_delete={path + "/document"}/>
