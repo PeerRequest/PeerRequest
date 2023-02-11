@@ -119,7 +119,7 @@
             <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
 
                 {#each sortedComments as data}
-                    <Comment bind:data={data}/>
+                    <Comment bind:comment={data}/>
                 {/each}
 
             </div>
