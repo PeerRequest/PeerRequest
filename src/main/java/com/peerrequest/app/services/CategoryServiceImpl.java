@@ -13,6 +13,9 @@ class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository repo;
 
+    @Autowired
+    private EntryService entryService;
+
     @Override
     public Category create(Category.Dto newEntity) {
         return repo.save(Category.fromDto(newEntity));
@@ -68,6 +71,11 @@ class CategoryServiceImpl implements CategoryService {
 
         var category = optional.get();
         repo.delete(category);
+
+        for (var entry : entryService.listByCategoryId(cursor)) {
+            entryService.delete(entry.getId());
+        }
+
         return Optional.of(category);
     }
 }
