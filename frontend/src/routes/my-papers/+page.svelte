@@ -1,14 +1,10 @@
 <script>
     import Container from "../../components/Container.svelte";
-    import mock_data from "../../mock_data.js";
     import {BreadcrumbItem, Heading} from "flowbite-svelte";
     import ResponsiveBreadCrumb from "../../components/ResponsiveBreadCrumb.svelte";
     import Papers from "../../components/Papers.svelte";
     import Paper from "../../components/Paper.svelte";
     import {onMount} from "svelte";
-
-    const user = mock_data.users[23];
-    const papers = mock_data.papers;
 
     export let error;
     let entries = null;
