@@ -19,15 +19,18 @@ public class NotificationService {
     @Autowired
     private EntryService entryService;
 
-    @Autowired
-    private JavaMailSender mailSender;
+    //TODO: remove //!
+    //@Autowired
+    //private JavaMailSender mailSender;
+
 
     private void sendEmail(String toEmail, String subject, String message) {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(toEmail);
         mail.setText(message);
         mail.setSubject(subject);
-        mailSender.send(mail);
+        // TODO: remove //!
+        //  mailSender.send(mail);
     }
 
     /**
