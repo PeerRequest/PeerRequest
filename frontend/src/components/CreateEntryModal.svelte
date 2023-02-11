@@ -14,7 +14,7 @@
         Dropdown,
         Search
     } from "flowbite-svelte" ;
-    import mock_data from "../mock_data.js";
+    import {onMount} from "svelte";
 
     export let error = null;
     export let category;
@@ -28,7 +28,7 @@
 
     let query = "";
     export let entries = null;
-    let users = mock_data.users;
+    let users = null;
     let reviewers = [];
     let authors;
     let name;
@@ -140,6 +140,25 @@
             })
             .catch(err => console.log(err));
     }
+
+    function loadUsers() {
+        users = null;
+        fetch("/api/users")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    users = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        loadUsers()
+    });
 
 </script>
 
