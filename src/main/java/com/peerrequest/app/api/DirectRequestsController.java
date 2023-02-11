@@ -1,6 +1,12 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.DirectRequest;
+import com.peerrequest.app.data.DirectRequestProcess;
+import com.peerrequest.app.data.Paged;
+import com.peerrequest.app.data.Review;
+import com.peerrequest.app.services.NotificationService;
+import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -138,6 +144,35 @@ public class DirectRequestsController extends ServiceBasedController {
         return option.get().toDto();
     }
 
+    @DeleteMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests/{request_id}")
+    Optional<DirectRequest.Dto> deleteDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                                    @PathVariable("request_id") final Long requestId,
+                                                    @AuthenticationPrincipal OAuth2User user) {
+        var entry = this.entryService.get(entryId);
+        if (entry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        if (user.getAttribute("sub").toString().equals(entry.get().getResearcherId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the researcher may delete an request");
+        }
+
+        var request = this.directRequestService.get(requestId);
+
+        if (request.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request does not exist");
+        }
+        if (!request.get().getState().equals(DirectRequest.RequestState.PENDING)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "a request can only be deleted if it is pending");
+        }
+
+        this.notificationService.sendEntryNotification(user.getAttribute("sub").toString(),
+            request.get().getReviewerId(), entryId, EntryMessageTemplates.REQUEST_WITHDRAWN);
+
+        var deleted =  this.directRequestService.delete(requestId);
+        return deleted.map(DirectRequest::toDto);
+    }
+
     /**
      * Gets the list of all requests of an entry.
      *
@@ -229,6 +264,9 @@ public class DirectRequestsController extends ServiceBasedController {
         var directRequest = new DirectRequest.Dto(Optional.empty(), Optional.of(DirectRequest.RequestState.PENDING),
                 request.reviewerId(), process.get().toDto().id());
 
+        this.notificationService.sendEntryNotification(user.getAttribute("sub").toString(), request.reviewerId().get(),
+            entryId, EntryMessageTemplates.DIRECT_REQUEST);
+
         return this.directRequestService.create(directRequest).toDto();
     }
 
@@ -277,17 +315,23 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state can not be set to pending");
         }
 
-        if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
+        Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get()
+            .getEntryId();
 
-            Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get()
-                    .getEntryId();
+        if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
 
             Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
                     Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
 
             this.reviewService.create(review);
 
-            // TODO: Send notification to researcher
+            this.notificationService.sendEntryNotification(reviewerId, user.getAttribute("sub").toString(),
+                entryId, EntryMessageTemplates.REQUEST_ACCEPTED);
+        }
+
+        if (updater.state().get() == DirectRequest.RequestState.DECLINED) {
+            this.notificationService.sendEntryNotification(reviewerId, user.getAttribute("sub").toString(),
+                entryId, EntryMessageTemplates.REQUEST_DECLINED);
         }
 
         DirectRequest updatedDirectRequest = new DirectRequest(request.get().getId(),
@@ -361,28 +405,9 @@ public class DirectRequestsController extends ServiceBasedController {
 
         this.reviewService.create(review);
 
+        this.notificationService.sendEntryNotification(reviewerId, researcherId, entryId,
+            EntryMessageTemplates.OPEN_SLOT_CLAIMED);
+
         return this.directRequestService.create(directRequestObject.toDto()).toDto();
-    }
-
-    @DeleteMapping("/{category_id}/entries/{entry_id}/process/requests/{request_id}")
-    DirectRequest.Dto deleteDirectRequest(@PathVariable("request_id") Long id,
-                                                 @AuthenticationPrincipal OAuth2User user) {
-        var option = this.directRequestService.get(id);
-        if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
-        }
-        var directRequestProcess = this.directRequestProcessService.get(option.get().getDirectRequestProcessId());
-        if (directRequestProcess.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "process does not exist");
-        }
-
-        var researcherId = this.entryService.get(directRequestProcess.get().getEntryId()).get().getResearcherId();
-
-        if (!researcherId.equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the researcher may delete the request");
-        }
-
-        var deleted = this.directRequestService.delete(id);
-        return deleted.map(DirectRequest::toDto).get();
     }
 }
