@@ -83,8 +83,8 @@
                         href="/categories/{findEntry(r.entry_id).category_id}/entries/{r.entry_id}/reviews/{r.id}"
                         bind:review={r}
                         paper={findEntry(r.entry_id)}
-                        show_paper={true}
-                        show_category={true}
+                        show_paper=true
+                        show_category=true
                         category_id={findEntry(r.entry_id).category_id}
                 />
             {/each}
