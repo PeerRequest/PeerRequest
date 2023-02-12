@@ -11,7 +11,7 @@
     export let category;
 
     let current_user;
-    let is_commenter = false;
+    let is_commenter = true;
 
     let path = ""
     let delete_self_path = ""
@@ -21,6 +21,7 @@
 
     let editable = false;
     let commentedTime = new Date;
+    //TODO UserController
     let user = null;
 
     let current = new Date()
@@ -89,30 +90,16 @@
             .catch(err => console.log(err))
     }
 
-    function loadUser() {
-        user = null;
-        fetch("/api/users/" + comment.creator_id )
-            .then(resp => resp.json())
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    user = resp
-                }
-            })
-            .catch(err => console.log(err))
-    }
-
     let mounted = false
     onMount(() => {
         path = "/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id
         delete_self_path = path + "/messages/" + comment.id;
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
-        loadUser()
         mounted = true
     })
     $: if (comment && mounted) {
+        console.log(current_user.id)
+        console.log(comment.creator_id)
         is_commenter = (current_user.id === comment.creator_id)
     }
 </script>
@@ -121,9 +108,9 @@
 <main>
     <div class="rounded-lg outline outline-blue-500 mx-4 my-4 max-w-[90vw]">
         <div class="h-1"/>
-        {#if comment !== null && user !== null}
+        {#if comment !== null}
             <div class="font-bold flex mx-2 w-full flex justify-between">
-                {user.firstName + " " + user.lastName}
+                {user}
                 {#if is_commenter}
                     <div class="flex justify-end">
                         <Button pill class="!p-2" outline on:click={() => editable = true}>
@@ -169,8 +156,6 @@
                            class="my-2.5 font-normal text-gray-700 mx-2 rounded-lg relative w-[98%]" type=text>
                 </form>
             {/if}
-        {:else }
-            LOADING COMMENT
         {/if}
         <div class="h-1"/>
     </div>
