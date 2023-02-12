@@ -60,6 +60,7 @@
         >
             {#each pending_requests as pr}
                 <Request
+                        on:requestUpdated={() => loadRequests()}
                         request={pr.first}
                         entry={pr.second}
                         pending=true
