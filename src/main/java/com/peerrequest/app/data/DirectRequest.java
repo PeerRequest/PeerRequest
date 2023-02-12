@@ -18,7 +18,7 @@ import org.hibernate.Hibernate;
 @AllArgsConstructor
 @Entity
 @Table(name = "direct_request", uniqueConstraints = {
-    @UniqueConstraint(name = "uc_direct-request_reviewer-id_process-id",
+    @UniqueConstraint(name = "uc_direct-request-process-id_reviewer-id",
         columnNames = {"reviewer_id", "direct_request_process_id"})
 })
 public class DirectRequest {
