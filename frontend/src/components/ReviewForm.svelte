@@ -27,7 +27,7 @@
         questions_for_authors: "",
         answers_from_authors: "",
         other_comments: "",
-        score: minScore
+        score: null
     }
 
 
@@ -37,7 +37,7 @@
     let edited_questions_for_authors = review.questions_for_authors;
     let edited_answers_the_authors = review.answers_from_authors;
     let edited_other_comments = review.other_comments;
-    let edited_score = review.score;
+    let edited_score = (review.score !== null) ? review.score : minScore
 
     let path = $page.url.pathname;
 
