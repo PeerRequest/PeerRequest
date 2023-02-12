@@ -71,7 +71,6 @@
     const loading_lines = 5;
     export let error = null;
 
-
     function previous() {
         if (currentPage > 1) {
             currentPage -= 1;
@@ -229,7 +228,6 @@
 
             <Papers
                     category_type={map_type(category.label)}
-                    show_category=true
             >
                 {#if entries === null}
                     {#each [...Array(loading_lines).keys()] as i}
