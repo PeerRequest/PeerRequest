@@ -1,19 +1,88 @@
 <script>
     import { Label, Range, Textarea, ButtonGroup, Button } from "flowbite-svelte";
+    import {onMount} from "svelte";
+    import {page} from '$app/stores';
 
-    export let minScore;
-    export let maxScore;
-    export let score = 0;
+    export let category= {
+        id:null,
+        min_score: 0.5,
+        max_score: 5,
+        score_step_size: 0.25,
+    }
+    let minScore = category.min_score;
+    let maxScore = category.max_score;
+    export let error = null;
 
-    export let minConfidence;
-    export let maxConfidence;
     export let confidence = 0;
-    export let confidenceLevels = ["Low", "Medium" , "High"];
+    export let confidenceLevels = ["LOW", "MEDIUM" , "HIGH"];
+    export let reviewerUser = true;
+
+    export let review = {
+        id:null,
+        entry_id:null,
+        confidence_level: "",
+        summary: "",
+        main_weaknesses: "",
+        main_strengths: "",
+        questions_for_authors: "",
+        answers_from_authors: "",
+        other_comments: "",
+        score: minScore
+    }
+
+
+    let edited_summary = review.summary;
+    let edited_main_weaknesses = review.main_weaknesses;
+    let edited_main_strengths = review.main_strengths;
+    let edited_questions_for_authors = review.questions_for_authors;
+    let edited_answers_the_authors = review.answers_from_authors;
+    let edited_other_comments = review.other_comments;
+    let edited_score = review.score;
+
+    let path = $page.url.pathname;
+
+
+    function editReviewForm() {
+        let editedReviewForm = {
+            id: review.id,
+            confidence_level: confidenceLevels[confidence],
+            summary: edited_summary,
+            main_weaknesses: edited_main_weaknesses,
+            main_strengths: edited_main_strengths,
+            questions_for_authors: edited_questions_for_authors,
+            answers_from_authors: edited_answers_the_authors,
+            other_comments: edited_other_comments,
+            score: edited_score
+        };
+        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews" , {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(editedReviewForm),
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                if (response.status < 200 || response.status >= 300) {
+                    error = "" + response.status + ": " + response.message;
+                    console.log(error);
+                } else {
+                    console.log("Save success")
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        if (review.confidence_level !== null) {
+            confidence = confidenceLevels.indexOf(review.confidence_level)
+        }
+    })
 
 </script>
 
-<Label>Score: {score} / {maxScore}</Label>
-<Range bind:value={score} id="score" max={maxScore} min={minScore} />
+<Label>Score: {edited_score} / {maxScore}</Label>
+<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}" />
 
 <div class="my-4"></div>
 
@@ -26,19 +95,22 @@
 <hr class="my-4">
 
 <Label class="mb-2" for="summary">Summary of the paper</Label>
-<Textarea id="summary" name="summary" placeholder="Summary of the paper" rows="4" />
+<Textarea bind:value={edited_summary} placeholder="Summary of the paper" rows="4" disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="weaknesses">Main weaknesses</Label>
-<Textarea id="weaknesses" name="weaknesses" placeholder="Main weaknesses" rows="4" />
+<Textarea bind:value={edited_main_weaknesses} placeholder="Main weaknesses" rows="4" disabled={!reviewerUser} />
 
 <Label class="mb-2" for="strengths">Main strengths</Label>
-<Textarea id="strengths" name="strengths" placeholder="Main strengths" rows="4" />
+<Textarea bind:value={edited_main_strengths} name="strengths" placeholder="Main strengths" rows="4" disabled={!reviewerUser} />
 
 <Label class="mb-2" for="other_comments">Other comments</Label>
-<Textarea id="other_comments" name="other_comments" placeholder="Other comments" rows="4" />
+<Textarea bind:value={edited_other_comments} name="other_comments" placeholder="Other comments" rows="4" disabled={!reviewerUser} />
 
 <Label class="mb-2" for="questions">Open questions for the authors</Label>
-<Textarea id="questions" name="questions" placeholder="Open questions for the authors" rows="4" />
+<Textarea bind:value={edited_questions_for_authors} name="questions" placeholder="Open questions for the authors" rows="4"
+          disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="answers">Answers from the authors</Label>
-<Textarea id="answers" name="answers" placeholder="Answers from the authors" rows="4" />
+<Textarea bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
+          disabled={reviewerUser}/>
+<Button class="w-full m-auto" on:click={() => editReviewForm()}> Save Changes </Button>
