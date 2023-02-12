@@ -9,13 +9,14 @@
 
     export let error;
 
-    let requests = [];
+    let requests = null;
+    let entries = null;
     let pending_requests = [];
     let accepted_requests = [];
 
 
     function loadRequests() {
-        requests = [];
+        requests = null;
 
         fetch("/api/requests")
             .then(resp => resp.json())
@@ -25,6 +26,7 @@
                     console.log(error);
                 } else {
                     requests = resp.content;
+                    filterRequests();
                 }
             })
             .catch(err => console.log(err))
@@ -33,17 +35,44 @@
 
     function filterRequests() {
         if (requests !== null) {
-            pending_requests = requests.filter(request => request.state === "PENDING")
-            accepted_requests = requests.filter(request => request.state === "ACCEPTED")
+            pending_requests = requests.filter(request => request.first.state === "PENDING")
+            console.log(pending_requests);
+            accepted_requests = requests.filter(request => request.first.state === "ACCEPTED")
         } else {
             console.log("No requests found.")
         }
     }
 
+    function loadEntries() {
+        entries = null;
+        fetch("/api/entries")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    entries = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function findEntry(entry_id) {
+        if (entries != null) {
+            return entries.filter(entry => entry.id === entry_id);
+        }
+        console.log("No entries found.")
+
+    }
+
 
     onMount(() => {
+        loadEntries()
         loadRequests()
-        filterRequests()
+        setTimeout(() => {
+        }, 250);
+
     });
 </script>
 
@@ -60,7 +89,8 @@
         >
             {#each pending_requests as pr}
                 <Request
-                        request={pr}
+                        request={pr.first}
+                        entry={findEntry(pr.first.entry_id)}
                         pending=true
                 />
             {/each}
@@ -70,7 +100,8 @@
         >
             {#each accepted_requests as ar}
                 <Request
-                        request={ar}
+                        request={ar.first}
+                        entry={findEntry(ar.first.entry_id)}
                         accepted=true
                 />
             {/each}
