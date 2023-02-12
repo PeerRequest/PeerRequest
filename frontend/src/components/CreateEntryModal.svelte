@@ -14,7 +14,8 @@
         Dropdown,
         Search
     } from "flowbite-svelte" ;
-    import mock_data from "../mock_data.js";
+    import {onMount} from "svelte";
+    import Cookies from "js-cookie";
 
     export let error = null;
     export let category;
@@ -28,7 +29,7 @@
 
     let query = "";
     export let entries = null;
-    let users = mock_data.users;
+    let users = null;
     let reviewers = [];
     let authors;
     let name;
@@ -36,6 +37,7 @@
     let fileInput;
     let file;
     let new_entry_id;
+    let current_user;
 
     let categoryPath = `/api/categories/${category_id}/entries`;
     let entryPath;
@@ -141,6 +143,28 @@
             .catch(err => console.log(err));
     }
 
+    function loadUsers() {
+        users = null;
+        fetch("/api/users")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    users = resp.content;
+                    users = users.filter(e => e.id !== current_user.id)
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        loadUsers()
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+        console.log(current_user)
+    });
+
 </script>
 
 <Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
@@ -184,14 +208,18 @@
                 <Search on:input={(e) => apply_query(e.target.value)} on:keyup={(e) => apply_query(e.target.value)}
                         size="md"/>
             </div>
-            {#each users.filter(u => !reviewers.includes(u) &&
-                (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
-                <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
-                <span class="cursor-pointer" on:click={() => addReviewer(u) }>
-                  {u.name}
-                </span>
-                </li>
-            {/each}
+            {#if users !== null}
+                {#each users.filter(u => !reviewers.includes(u) &&
+                    (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
+                    <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
+                    <span class="cursor-pointer" on:click={() => addReviewer(u) }>
+                      {u.firstName + " " + u.lastName}
+                    </span>
+                    </li>
+                {/each}
+            {:else }
+                LOADING USERS
+            {/if}
         </Dropdown>
     </form>
 
@@ -203,7 +231,7 @@
             <TableBody class="divide-y">
                 {#each reviewers as r }
                     <TableBodyRow>
-                        <TableBodyCell>{r.name}</TableBodyCell>
+                        <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
                         <TableBodyCell>
                             <div class="flex flex-wrap items-center gap-2">
                                 <Button pill class="!p-2" outline color="red"
