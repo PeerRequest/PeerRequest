@@ -1,14 +1,12 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.DirectRequest;
-import com.peerrequest.app.data.DirectRequestProcess;
-import com.peerrequest.app.data.Paged;
-import com.peerrequest.app.data.Review;
-import com.peerrequest.app.services.NotificationService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -246,20 +244,27 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         if (request.id().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "id must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
         }
 
         if (request.state().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "state must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state must not be set");
         }
 
         if (request.directRequestProcessId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "process id must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not be set");
         }
 
         if (request.reviewerId().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "reviewer id must be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must be set");
         }
+
+        /*
+        // TODO: Comment in commented out code
+        if (request.reviewerId().get().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "user can not review their own entry");
+        }
+         */
 
         for (var reviewer :
                 this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
@@ -285,13 +290,28 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return the updated request
      */
     @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests")
-    public DirectRequest.Dto patchDirectRequest(@RequestBody final DirectRequest.Dto updater,
+    public DirectRequest.Dto patchDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                                @RequestBody final DirectRequest.Dto updater,
                                                 @AuthenticationPrincipal OAuth2User user) {
-        if (updater.id().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be set");
+        if (updater.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
         }
 
-        var request = this.directRequestService.get(updater.id().get());
+        var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
+
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request process does not exist");
+        }
+
+        Optional<DirectRequest> request = Optional.empty();
+
+        for (var potentialRequest :
+                this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+            if (potentialRequest.getReviewerId().equals(user.getAttribute("sub"))) {
+                request = Optional.of(potentialRequest);
+            }
+        }
+
         if (request.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request does not exist");
         }
@@ -322,9 +342,6 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state can not be set to pending");
         }
 
-        Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get()
-            .getEntryId();
-
         if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
 
             Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
@@ -348,9 +365,11 @@ public class DirectRequestsController extends ServiceBasedController {
     }
 
     @GetMapping("/requests")
-    Paged<List<DirectRequest.Dto>> listRequestsByResearcher(@RequestParam("limit") Optional<Integer> limit,
-                                                    @RequestParam("page") Optional<Integer> page,
-                                                    @AuthenticationPrincipal OAuth2User user) {
+    Paged<List<Pair<DirectRequest.Dto, Entry.Dto>>> listRequestsByResearcher(
+            @RequestParam("limit") Optional<Integer> limit,
+            @RequestParam("page") Optional<Integer> page,
+            @AuthenticationPrincipal OAuth2User user) {
+
         if (limit.isPresent()) {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
@@ -363,11 +382,24 @@ public class DirectRequestsController extends ServiceBasedController {
         var requestPage = this.directRequestService.list(page.orElse(0), limit.orElse(maxPageSize),
                 filterDirectRequest.toDto());
 
+        List<Pair<DirectRequest.Dto, Entry.Dto>> pairList = new ArrayList<>();
+
+        for (var request : requestPage) {
+            var entryId = this.directRequestProcessService.get(request.getDirectRequestProcessId()).get().getEntryId();
+            var entry = this.entryService.get(entryId);
+
+            Pair<DirectRequest.Dto, Entry.Dto> pair = Pair.of(request.toDto(), entry.get().toDto());
+
+            pairList.add(pair);
+        }
+
+        var pairPage = new PageImpl<>(pairList);
+
         return new Paged<>(
-                requestPage.getSize(),
-                requestPage.getNumber() + 1,
-                requestPage.getTotalPages(),
-                requestPage.stream().map(DirectRequest::toDto).toList());
+                pairPage.getSize(),
+                pairPage.getNumber() + 1,
+                pairPage.getTotalPages(),
+                pairList);
     }
 
     /**

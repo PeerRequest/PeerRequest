@@ -160,7 +160,9 @@
                         </Button>
                     {/if}
                     {#if pdf_document !== null}
-                        <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>Delete</Button>
+                        <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
+                            Delete
+                        </Button>
                     {/if}
 
                 </div>
@@ -216,4 +218,5 @@
 </div>
 
 <ConfirmDeletionModal afterpath="{path}" delete_name="Review Document"
-                      hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}" to_delete={path + "/document"}/>
+                      hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                      to_delete={path + "/document"}/>
