@@ -1,9 +1,6 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.DirectRequest;
-import com.peerrequest.app.data.DirectRequestProcess;
-import com.peerrequest.app.data.Paged;
-import com.peerrequest.app.data.Review;
+import com.peerrequest.app.data.*;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.ArrayList;
 import java.util.List;
