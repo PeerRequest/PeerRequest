@@ -16,6 +16,7 @@
     } from "flowbite-svelte" ;
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
+    import {afterpath, to_delete} from "./ConfirmDeletionModal.svelte";
 
     export let show = false;
     export let paper;
@@ -33,6 +34,8 @@
     let reviewers = [];
     let current_user;
     let requestPath;
+    let requests = null;
+    let pending_reviewer = [];
 
 
     function addReviewer(u) {
@@ -54,6 +57,7 @@
                 } else {
                     users = resp.content;
                     users = users.filter(e => e.id !== current_user.id)
+                    loadRequests()
                 }
             })
             .catch(err => console.log(err))
@@ -80,6 +84,51 @@
                 } else {}
             })
             .catch(err => console.log(err));
+    }
+
+    function loadRequests() {
+        requests = null;
+        fetch("/api/categories/"+ paper.category_id + "/entries/" + paper.id + "/process/requests")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    requests = resp.content;
+                    requests.forEach(filterUsers)
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function filterUsers(r) {
+        reviewers = users.filter( u => u.id === r.reviewer_id)
+        requests.filter(request => {
+            if(request.state === "PENDING") {
+                pending_reviewer = pending_reviewer.concat(request.reviewer_id)
+            }
+        })
+    }
+
+    function retractRequest(reviewer) {
+        if(pending_reviewer.includes(reviewer)) {
+            let reviewer_request = requests.filter(request => request.reviewer_id)
+            fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/requests/" + reviewer_request[0], {
+                method: 'DELETE',
+            })
+                .then((response) => console.log(response))
+                .then((resp) => {
+                    if (resp.status < 200 || resp.status >= 300) {
+                        error = "" + resp.status + ": " + resp.message;
+                        console.log(error);
+                    }
+                })
+                .catch(err => console.log(err))
+
+        } else {
+            reviewers = reviewers.filter(e => e !== reviewer)
+        }
     }
 
     onMount(() => {
@@ -138,23 +187,25 @@
                             <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
                             <TableBodyCell>
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <Button pill class="!p-2" outline color="red"
-                                            on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
-                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                             width="32px" height="32px" viewBox="0 0 64 64"
-                                             xml:space="preserve">
-                                  <g>
-                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
-                                          y1="17.153" x2="45.045"
-                                          y2="43.056"/>
-                                  </g>
-                                            <g>
-                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
-                                          y1="43.153" x2="44.947"
-                                          y2="17.056"/>
-                                  </g>
-                              </svg>
-                                    </Button>
+                                    {#if (pending_reviewer.includes(r))}
+                                        <Button pill class="!p-2" outline color="red"
+                                                on:click={() => retractRequest(r)}>
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                 width="32px" height="32px" viewBox="0 0 64 64"
+                                                 xml:space="preserve">
+                                      <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
+                                              y1="17.153" x2="45.045"
+                                              y2="43.056"/>
+                                      </g>
+                                                <g>
+                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
+                                              y1="43.153" x2="44.947"
+                                              y2="17.056"/>
+                                      </g>
+                                  </svg>
+                                        </Button>
+                                    {/if}
                                 </div>
                             </TableBodyCell>
                         </TableBodyRow>
