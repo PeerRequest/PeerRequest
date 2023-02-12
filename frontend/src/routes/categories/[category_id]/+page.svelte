@@ -240,7 +240,6 @@
                         <Paper
                                 href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
-                                category={category}
                         />
                     {/each}
                 {/if}
