@@ -20,7 +20,6 @@
         /* NOP */
     }
 
-
     let edited_category_year = null;
     let edited_category_name = null;
     let edited_category_deadline = null;
@@ -104,12 +103,12 @@
             edited_min_score = conference.min_score;
             edited_max_score = conference.max_score;
             edited_score_step_size = conference.score_step_size;
-        }
-        else {
+        } else {
             edited_paper_name = paper.name;
-            edited_authors = paper.authors;
+            edited_authors = paper.authors === "undefined" ? "" : paper.authors;
         }
     });
+
 </script>
 
 <Modal bind:open={show} class="h-full w-full" on:hide={() => hide ? hide() : null} permanent={true} size="lg">
@@ -131,7 +130,8 @@
             <div class="grid gap-y-6">
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Name</Heading>
-                    <input bind:value="{edited_category_name}" class="min-w-[27rem] w-full rounded-lg" required type=text>
+                    <input bind:value="{edited_category_name}" class="min-w-[27rem] w-full rounded-lg" required
+                           type=text>
                 </div>
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Year</Heading>
@@ -154,7 +154,7 @@
                     <Heading size="md" tag="h4">Score Step Size</Heading>
                     <input bind:value={edited_score_step_size} class="w-full rounded-lg" required type=number>
                 </div>
-                <Button color="primary"  size="xs" type="submit">
+                <Button color="primary" size="xs" type="submit">
                     Save
                 </Button>
             </div>
@@ -163,14 +163,14 @@
         <form on:submit|preventDefault={() => editPaper()}>
             <div class="grid gap-y-6">
                 <div class="flex flex-row justify-between items-center">
-                    <Heading size="md" tag="h4"> Title </Heading>
+                    <Heading size="md" tag="h4"> Title</Heading>
                     <input bind:value={edited_paper_name} class="w-full rounded-lg" type=text>
                 </div>
                 <div class="flex flex-row justify-between items-center">
-                    <Heading size="md" tag="h4"> Authors </Heading>
+                    <Heading size="md" tag="h4"> Authors</Heading>
                     <input bind:value={edited_authors} class="w-full rounded-lg" type=text>
                 </div>
-                <Button color="primary"  size="xs" type="submit">
+                <Button color="primary" size="xs" type="submit">
                     Save
                 </Button>
             </div>
