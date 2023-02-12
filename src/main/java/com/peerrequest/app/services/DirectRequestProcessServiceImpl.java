@@ -16,6 +16,9 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
     @Autowired
     private DirectRequestProcessRepository repo;
 
+    @Autowired
+    private DirectRequestService directRequestService;
+
     @Override
     public DirectRequestProcess create(DirectRequestProcess.Dto newEntity) {
         return repo.save(DirectRequestProcess.fromDto(newEntity));
@@ -58,6 +61,11 @@ public class DirectRequestProcessServiceImpl implements DirectRequestProcessServ
 
         var directRequestProcess = optional.get();
         repo.delete(directRequestProcess);
+
+        for (var directRequests : this.directRequestService.listByDirectRequestProcessId(cursor)) {
+            this.directRequestService.delete(directRequests.getId());
+        }
+
         return Optional.of(directRequestProcess);
     }
 
