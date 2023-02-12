@@ -5,9 +5,8 @@
         TableBodyRow
     } from "flowbite-svelte";
 
-
     export let request;
-
+    export let entry;
     export let pending = false;
     export let accepted = false;
 
@@ -15,7 +14,7 @@
 
 <TableBodyRow>
     <TableBodyCell>
-        <BreadcrumbItem>this is a request</BreadcrumbItem>
+        <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</BreadcrumbItem>
 
 
     </TableBodyCell>
