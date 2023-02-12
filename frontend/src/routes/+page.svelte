@@ -55,29 +55,33 @@
 
 
     <div class="justify-center flex w-full gap-x-4">
-        <Requests
-                pending=true
-        >
-            {#each pending_requests as pr}
-                <Request
-                        on:requestUpdated={() => loadRequests()}
-                        request={pr.first}
-                        entry={pr.second}
-                        pending=true
-                />
-            {/each}
-        </Requests>
-        <Requests
-                accepted=true
-        >
-            {#each accepted_requests as ar}
-                <Request
-                        request={ar.first}
-                        entry={ar.second}
-                        accepted=true
-                />
-            {/each}
-        </Requests>
+        <div class="flex-1">
+            <Requests
+                    pending=true
+            >
+                {#each pending_requests as pr}
+                    <Request
+                            on:requestUpdated={() => loadRequests()}
+                            request={pr.first}
+                            entry={pr.second}
+                            pending=true
+                    />
+                {/each}
+            </Requests>
+        </div>
+        <div class="flex-1">
+            <Requests
+                    accepted=true
+            >
+                {#each accepted_requests as ar}
+                    <Request
+                            request={ar.first}
+                            entry={ar.second}
+                            accepted=true
+                    />
+                {/each}
+            </Requests>
+        </div>
     </div>
 
 </Container>
