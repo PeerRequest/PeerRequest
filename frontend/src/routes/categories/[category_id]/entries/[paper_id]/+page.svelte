@@ -10,6 +10,7 @@
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
+    import Cookies from "js-cookie";
 
     let show_confirm_deletion_modal = false;
 
@@ -31,6 +32,7 @@
     let currentPage = 1;
     let lastPage = 1;
     let limit = 1;
+    let current_user = null;
 
     function loadEntry() {
         entry = null;
@@ -42,6 +44,10 @@
                     console.log(error);
                 } else {
                     entry = resp;
+                    current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+                    if (entry.researcher_id === current_user.id) {
+                        loadReviews()
+                    }
                 }
             })
             .catch(err => console.log(err))
@@ -95,7 +101,6 @@
         loadEntry()
         loadCategory()
         loadEntryDocument()
-        loadReviews()
     });
 
     let show_edit_modal = false;
@@ -155,22 +160,18 @@
                 </div>
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
-                    <Reviews show_reviewer=true>
-                        {#if reviews === null}
-                            {#each [...Array(loading_lines).keys()] as i}
-                                <Review loading="true"/>
-                            {/each}
-                        {:else }
-                            {#each reviews as r}
-                                <Review
-                                        show_reviewer=true
-                                        bind:review={r}
-                                        category_id={category.id}
-                                        paper={entry}
-                                />
-                            {/each}
-                        {/if}
-                    </Reviews>
+                    {#if reviews !== null}
+                        <Reviews show_reviewer=true>
+                                {#each reviews as r}
+                                    <Review
+                                            show_reviewer=true
+                                            bind:review={r}
+                                            category_id={category.id}
+                                            paper={entry}
+                                    />
+                                {/each}
+                        </Reviews>
+                    {/if}
                 </div>
             </div>
 
