@@ -4,6 +4,7 @@
         Button,
         CloseButton,
         Fileupload,
+        Footer,
         Heading,
         TableBodyRow,
         TableHeadCell,
@@ -175,6 +176,7 @@
             <Fileupload {...fileuploadprops} bind:value={fileInput}
                         inputClass="annotations_file_input"
                         size="lg"
+                        required
             />
         </div>
 
@@ -203,47 +205,46 @@
                 </li>
             {/each}
         </Dropdown>
-    </form>
-
-    <div class="mb-4">
-        <Table divClass="relative">
-            <TableHead>
-                <TableHeadCell>Name</TableHeadCell>
-            </TableHead>
-            <TableBody class="divide-y">
-                {#each reviewers as r }
-                    <TableBodyRow>
-                        <TableBodyCell>{r.name}</TableBodyCell>
-                        <TableBodyCell>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <Button pill class="!p-2" outline color="red"
-                                        on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                         width="32px" height="32px" viewBox="0 0 64 64"
-                                         xml:space="preserve">
+        <div class="mb-4 h-[20vh] overflow-y-auto  max-h-[20vh]">
+            <Table divClass="relative">
+                <TableHead>
+                    <TableHeadCell>Name</TableHeadCell>
+                </TableHead>
+                <TableBody class="divide-y">
+                    {#each reviewers as r }
+                        <TableBodyRow>
+                            <TableBodyCell>{r.name}</TableBodyCell>
+                            <TableBodyCell>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <Button pill class="!p-2" outline color="red"
+                                            on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                             width="32px" height="32px" viewBox="0 0 64 64"
+                                             xml:space="preserve">
                           <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
                                   y1="17.153" x2="45.045"
                                   y2="43.056"/>
                           </g>
-                                        <g>
+                                            <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
                                   y1="43.153" x2="44.947"
                                   y2="17.056"/>
                           </g>
                       </svg>
-                                </Button>
-                            </div>
-                        </TableBodyCell>
-                    </TableBodyRow>
-                {/each}
-            </TableBody>
-        </Table>
-
-    </div>
-    <Button color="primary" on:click={() => processSubmission()} size="sm" type="submit">
-        Finish Submission
-    </Button>
-
+                                    </Button>
+                                </div>
+                            </TableBodyCell>
+                        </TableBodyRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </div>
+        <Footer class="bottom-0 left-0 z-20 w-full">
+            <Button class="w-full" color="primary" size="sm" type="submit">
+                Finish Submission
+            </Button>
+        </Footer>
+    </form>
 
 </Modal>
