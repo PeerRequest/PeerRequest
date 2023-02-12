@@ -63,6 +63,7 @@
                     console.log(error);
                 } else {
                     users = resp.content;
+                    reviewer = users.find(user => user.id === review.reviewer_id)
                 }
             })
             .catch(err => console.log(err))
@@ -70,7 +71,6 @@
 
     function loadReviewer() {
         loadUsers();
-        reviewer = users.find(user => user.id === review.reviewer_id)
     }
 
     function loadReview() {
