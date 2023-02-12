@@ -5,14 +5,10 @@ import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.DirectRequestProcess;
 import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
-import com.peerrequest.app.services.NotificationService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
