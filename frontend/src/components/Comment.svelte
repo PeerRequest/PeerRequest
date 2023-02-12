@@ -1,4 +1,5 @@
 <script>
+    import ConfirmDeletionModal from "./ConfirmDeletionModal.svelte";
     import {Button} from "flowbite-svelte";
     import {onMount} from 'svelte'
 
@@ -8,6 +9,10 @@
     export let review;
     export let category;
 
+    let path = ""
+    let delete_self_path = ""
+
+    export let show_delete = false;
     let text = comment.content;
 
     let editable = false;
@@ -62,7 +67,7 @@
             id: comment.id,
             content: text
         }
-        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/messages", {
+        fetch("/api" + path + "/messages", {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,6 +85,12 @@
             })
             .catch(err => console.log(err))
     }
+
+
+    onMount(() => {
+        path = "/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id
+        delete_self_path = path + "/messages/" + comment.id;
+    })
 
 </script>
 
@@ -104,7 +115,8 @@
                             </path>
                         </svg>
                     </Button>
-                    <Button pill class="!p-2 mx-3 " outline color="red">
+                    <Button pill class="!p-2 mx-3 " outline color="red"
+                            on:click={() => show_delete = true}>
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                              width="32px" height="32px" viewBox="0 0 64 64"
                              xml:space="preserve">
@@ -136,3 +148,6 @@
         <div class="h-1"/>
     </div>
 </main>
+
+<ConfirmDeletionModal hide="{() => show_delete = false}" show="{show_delete}"
+                      to_delete={delete_self_path} delete_name="comment" afterpath= {path}/>
