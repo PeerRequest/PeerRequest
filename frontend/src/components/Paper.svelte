@@ -89,13 +89,20 @@
                 <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             </TableBodyCell>
 
-            {#if category !== null}
-                <TableBodyCell>
-                    <BreadcrumbItem
-                            href="/categories/{category.id}">{category.name}</BreadcrumbItem>
-                </TableBodyCell>
+            {#if show_category}
+                {#if category !== null}
+                    <TableBodyCell>
+                        <BreadcrumbItem
+                                href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                    </TableBodyCell>
+                {/if}
+                <!--
+                {#if rating !== null}
+                    <TableBodyCell>
+                        <StarRating rating={rating}/>
+                    </TableBodyCell>
+                {/if} -->
             {/if}
-
             {#if (slots !== null) && (category.label === "INTERNAL")}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
