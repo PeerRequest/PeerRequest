@@ -10,10 +10,8 @@
     export let error;
 
     let requests = null;
-    let entries = null;
     let pending_requests = [];
     let accepted_requests = [];
-
 
     function loadRequests() {
         requests = null;
@@ -43,37 +41,10 @@
         }
     }
 
-    function loadEntries() {
-        entries = null;
-        fetch("/api/entries")
-            .then(resp => resp.json())
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    entries = resp.content;
-                }
-            })
-            .catch(err => console.log(err))
-    }
-
-    function findEntry(entry_id) {
-        if (entries != null) {
-            return entries.filter(entry => entry.id === entry_id);
-        }
-        console.log("No entries found.")
-
-    }
-
-
     onMount(() => {
-        loadEntries()
         loadRequests()
-        setTimeout(() => {
-        }, 250);
-
     });
+
 </script>
 
 <Container>
@@ -90,7 +61,7 @@
             {#each pending_requests as pr}
                 <Request
                         request={pr.first}
-                        entry={findEntry(pr.first.entry_id)}
+                        entry={pr.second}
                         pending=true
                 />
             {/each}
@@ -101,7 +72,7 @@
             {#each accepted_requests as ar}
                 <Request
                         request={ar.first}
-                        entry={findEntry(ar.first.entry_id)}
+                        entry={ar.second}
                         accepted=true
                 />
             {/each}
