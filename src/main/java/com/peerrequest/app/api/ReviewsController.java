@@ -165,6 +165,10 @@ public class ReviewsController extends ServiceBasedController {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
+        if (review.get().getReviewDocumentId() != null) {
+            this.documentService.delete(review.get().getReviewDocumentId());
+        }
+
         String fileName = file.getOriginalFilename();
         String documentId;
 
@@ -298,11 +302,11 @@ public class ReviewsController extends ServiceBasedController {
         var message = Message.fromDto(dto, reviewId, user.getAttribute("sub"));
 
         if (review.get().getReviewerId().equals(user.getAttribute("sub").toString())) {
-            //this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
-           //     entry.get().getResearcherId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
+            this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
+                entry.get().getResearcherId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
         } else {
-           // this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
-           //     review.get().getReviewerId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
+            this.notificationService.sendReviewNotification(user.getAttribute("sub").toString(),
+                review.get().getReviewerId(), entryId, ReviewMessageTemplates.ADD_MESSAGE);
         }
 
         return this.reviewService.createMessage(message.toDto()).toDto();

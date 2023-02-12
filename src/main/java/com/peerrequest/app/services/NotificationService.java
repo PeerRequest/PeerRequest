@@ -1,5 +1,6 @@
 package com.peerrequest.app.services;
 
+import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import com.peerrequest.app.services.messages.ReviewMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,37 @@ public class NotificationService {
     }
 
     /**
+     * Sends a category notification.
+     *
+     * @param receiverId      userId of the user who receives the notification
+     * @param entryId         entryID of the entry of the review
+     * @param messageTemplate review message
+     */
+    public void sendCategoryNotification(
+                                       String receiverId,
+                                       Long entryId,
+                                       CategoryMessageTemplates messageTemplate) {
+
+        /* TODO: remove comment
+        var receiver = userService.get(receiverId);
+        var entry = entryService.get(entryId);
+
+        if (receiver.isEmpty() || entry.isEmpty()) {
+            return;
+        }
+
+        sendEmail(
+                receiver.get().getEmail(),
+                messageTemplate.getSubject(),
+                messageTemplate.getMessage(
+                        receiver.get().firstName(),
+                        entry.get().getName())
+        );
+        *
+         */
+    }
+
+    /**
      * Sends an entry notification.
      *
      * @param emitterId       userID of the user who caused the notification
@@ -45,6 +77,7 @@ public class NotificationService {
                                        String receiverId,
                                        Long entryId,
                                        EntryMessageTemplates messageTemplate) {
+        /* TODO: remove comment
         var emitter = userService.get(emitterId);
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
@@ -61,6 +94,8 @@ public class NotificationService {
                 emitter.get().firstName() + " " + emitter.get().lastName(),
                 entry.get().getName())
         );
+        *
+         */
     }
 
     /**
@@ -75,6 +110,7 @@ public class NotificationService {
                                        String receiverId,
                                        Long entryId,
                                        ReviewMessageTemplates messageTemplate) {
+        /* TODO: remove comment
         var emitter = userService.get(emitterId);
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
@@ -91,5 +127,7 @@ public class NotificationService {
                 emitter.get().firstName() + " " + emitter.get().lastName(),
                 entry.get().getName())
         );
+
+         */
     }
 }
