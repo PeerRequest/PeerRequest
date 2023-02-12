@@ -240,7 +240,6 @@
                         <Paper
                                 href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
-                                category={category}
                         />
                     {/each}
                 {/if}
@@ -268,7 +267,7 @@
                               to_delete={path} delete_name="{category.name}"/>
 
         <CreateEntryModal category={category} entries={entries} show={show_create_entry_modal}
-                          hide={() => show_create_entry_modal = false}></CreateEntryModal>
+                          hide={() => show_create_entry_modal = false}/>
     {/if}
 {/if}
 
