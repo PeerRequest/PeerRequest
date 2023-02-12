@@ -7,8 +7,14 @@ import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
 import com.peerrequest.app.services.NotificationService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -348,9 +354,11 @@ public class DirectRequestsController extends ServiceBasedController {
     }
 
     @GetMapping("/requests")
-    Paged<List<DirectRequest.Dto>> listRequestsByResearcher(@RequestParam("limit") Optional<Integer> limit,
-                                                    @RequestParam("page") Optional<Integer> page,
-                                                    @AuthenticationPrincipal OAuth2User user) {
+    Paged<List<Pair<DirectRequest.Dto, Entry.Dto>>> listRequestsByResearcher(
+            @RequestParam("limit") Optional<Integer> limit,
+            @RequestParam("page") Optional<Integer> page,
+            @AuthenticationPrincipal OAuth2User user) {
+
         if (limit.isPresent()) {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
@@ -363,11 +371,24 @@ public class DirectRequestsController extends ServiceBasedController {
         var requestPage = this.directRequestService.list(page.orElse(0), limit.orElse(maxPageSize),
                 filterDirectRequest.toDto());
 
+        List<Pair<DirectRequest.Dto, Entry.Dto>> pairList = new ArrayList<>();
+
+        for (var request : requestPage) {
+            var entryId = this.directRequestProcessService.get(request.getDirectRequestProcessId()).get().getEntryId();
+            var entry = this.entryService.get(entryId);
+
+            Pair<DirectRequest.Dto, Entry.Dto> pair = Pair.of(request.toDto(), entry.get().toDto());
+
+            pairList.add(pair);
+        }
+
+        var pairPage = new PageImpl<>(pairList);
+
         return new Paged<>(
-                requestPage.getSize(),
-                requestPage.getNumber() + 1,
-                requestPage.getTotalPages(),
-                requestPage.stream().map(DirectRequest::toDto).toList());
+                pairPage.getSize(),
+                pairPage.getNumber() + 1,
+                pairPage.getTotalPages(),
+                pairList);
     }
 
     /**
