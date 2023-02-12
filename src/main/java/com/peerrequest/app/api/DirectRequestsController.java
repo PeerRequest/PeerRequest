@@ -239,9 +239,9 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only owner may post a request");
         }
 
-        var process = this.directRequestProcessService.getByEntry(entryId);
+        var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
 
-        if (process.isEmpty()) {
+        if (directRequestProcess.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request process does not exist");
         }
 
@@ -261,8 +261,15 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must be set");
         }
 
+        for (var reviewer :
+                this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+            if (reviewer.getReviewerId().equals(user.getAttribute("sub"))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already requested for this entry");
+            }
+        }
+
         var directRequest = new DirectRequest.Dto(Optional.empty(), Optional.of(DirectRequest.RequestState.PENDING),
-                request.reviewerId(), process.get().toDto().id());
+                request.reviewerId(), directRequestProcess.get().toDto().id());
 
         this.notificationService.sendEntryNotification(user.getAttribute("sub").toString(), request.reviewerId().get(),
             entryId, EntryMessageTemplates.DIRECT_REQUEST);
@@ -386,6 +393,13 @@ public class DirectRequestsController extends ServiceBasedController {
         String researcherId = this.entryService.get(entryId).get().getResearcherId();
         if (user.getAttribute("sub").toString().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "researcher of the entry can not be the reviewer");
+        }
+
+        for (var reviewer :
+                this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+            if (reviewer.getReviewerId().equals(user.getAttribute("sub"))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already reviewer for this entry");
+            }
         }
 
         if (directRequestProcess.get().toDto().openSlots().get() <= 0) {
