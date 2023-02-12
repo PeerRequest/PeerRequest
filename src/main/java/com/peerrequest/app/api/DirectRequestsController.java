@@ -246,19 +246,19 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         if (request.id().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "id must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
         }
 
         if (request.state().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "state must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state must not be set");
         }
 
         if (request.directRequestProcessId().isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "process id must not be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "process id must not be set");
         }
 
         if (request.reviewerId().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "reviewer id must be set");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must be set");
         }
 
         var directRequest = new DirectRequest.Dto(Optional.empty(), Optional.of(DirectRequest.RequestState.PENDING),
