@@ -1,40 +1,18 @@
 <script>
     import {BreadcrumbItem, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
-    import {onMount} from "svelte";
 
-    export let review ={
-        reviewer_id: ""
-    };
+    export let review;
     export let category = null;
-    export let error = null;
 
-    export let reviewer = null;
+    //TODO: UserController
+    export let reviewer = "Chihiro Kaori";
     export let paper = null;
     export let loading = false;
 
     export let show_category = false;
     export let show_paper = false;
     export let show_reviewer = false;
-
-    function loadUser() {
-        reviewer = null;
-        fetch("/api/users/" + review.reviewer_id )
-            .then(resp => resp.json())
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    reviewer = resp
-                }
-            })
-            .catch(err => console.log(err))
-    }
-
-    onMount(() => {
-      loadUser()
-    })
 
 </script>
 
@@ -53,9 +31,9 @@
             <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}/reviews/{review.id}" >Review #{review.id}</BreadcrumbItem>
         </TableBodyCell>
 
-        {#if show_reviewer && reviewer !== null}
+        {#if show_reviewer}
             <TableBodyCell>
-                <BreadcrumbItem>{reviewer.firstName + " " + reviewer.lastName}</BreadcrumbItem>
+                <BreadcrumbItem>{reviewer}</BreadcrumbItem>
             </TableBodyCell>
         {/if}
 
