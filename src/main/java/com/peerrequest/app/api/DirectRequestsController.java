@@ -1,11 +1,9 @@
 package com.peerrequest.app.api;
 
-import com.peerrequest.app.data.*;
 import com.peerrequest.app.data.DirectRequest;
 import com.peerrequest.app.data.DirectRequestProcess;
 import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
-import com.peerrequest.app.services.NotificationService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
@@ -278,13 +276,28 @@ public class DirectRequestsController extends ServiceBasedController {
      * @return the updated request
      */
     @PatchMapping(value = "/categories/{category_id}/entries/{entry_id}/process/requests")
-    public DirectRequest.Dto patchDirectRequest(@RequestBody final DirectRequest.Dto updater,
+    public DirectRequest.Dto patchDirectRequest(@PathVariable("entry_id") final Long entryId,
+                                                @RequestBody final DirectRequest.Dto updater,
                                                 @AuthenticationPrincipal OAuth2User user) {
-        if (updater.id().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must be set");
+        if (updater.id().isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id must not be set");
         }
 
-        var request = this.directRequestService.get(updater.id().get());
+        var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
+
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request process does not exist");
+        }
+
+        Optional<DirectRequest> request = Optional.empty();
+
+        for (var potentialRequest :
+                this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+            if (potentialRequest.getReviewerId().equals(user.getAttribute("sub"))) {
+                request = Optional.of(potentialRequest);
+            }
+        }
+
         if (request.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request does not exist");
         }
@@ -314,9 +327,6 @@ public class DirectRequestsController extends ServiceBasedController {
         if (updater.state().get() == DirectRequest.RequestState.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state can not be set to pending");
         }
-
-        Long entryId = this.directRequestProcessService.get(request.get().getDirectRequestProcessId()).get()
-            .getEntryId();
 
         if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
 
