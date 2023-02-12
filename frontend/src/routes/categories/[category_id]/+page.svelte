@@ -164,9 +164,11 @@
                         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
                         <BreadcrumbItem>{category.name}</BreadcrumbItem>
                     </ResponsiveBreadCrumb>
-                    <Heading tag="h2">
-                        {category.name}
-                    </Heading>
+                    <div class="flex flex-row">
+                        <Heading tag="h2">
+                            {category.name} {category.year}
+                        </Heading>
+                    </div>
                     <Heading tag="h6">
                         <Secondary>Review Deadline: {map_deadline(category.deadline)}</Secondary>
                     </Heading>
