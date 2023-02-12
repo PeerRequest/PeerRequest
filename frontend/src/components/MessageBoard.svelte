@@ -1,16 +1,31 @@
 <script>
-    import mock_data from "../mock_data.js";
     import Comment from './Comment.svelte'
     import {Button, Chevron, Dropdown, DropdownItem} from "flowbite-svelte";
-    import {afterUpdate} from "svelte";
+    import {afterUpdate, onMount} from "svelte";
+    import Error from "./Error.svelte";
+    import {page} from '$app/stores';
 
-    let sortedComments = mock_data.comments
-    let amount = sortedComments.length
+
+    let path = $page.url.pathname;
+
+    export let error = null;
+    export let review = {
+        id: "",
+        entry_id:""
+    }
+    export let category = {
+        id: ""
+    }
+    let sortedComments = null
+    let amount = 0
     let order = true, comment
 
-    const handleOrder = (data) => {
-        if (order) return sortedComments = data.sort((a, b) => new Date(a.date) - new Date(b.date))
-        return sortedComments = data.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+
+
+    const handleOrder = (sorting_data) => {
+        if (order) return sortedComments = sorting_data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        return sortedComments = sorting_data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     };
 
     afterUpdate(() => {
@@ -33,42 +48,84 @@
     const submitComment = (e) => {
         e.preventDefault()
         if (!comment) return;
-        let comments = sortedComments
         let newComment = {
-            "id": comments.length,
-            "user": "Kaori Chiriro",
             "content": comment,
-            "date": new Date()
+            "timestamp": new Date()
         }
-        comments = [newComment, ...comments]
-        sortedComments = handleOrder(comments)
+        fetch("/api" + path + "/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newComment)
+        })
+            .then(resp => resp)
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    loadComments()
+                }
+            })
+            .catch(err => {
+                    console.log(err)
+                }
+            )
         comment = ""
-        amount = sortedComments.length
     }
+
+    function loadComments() {
+        sortedComments = null;
+        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/messages")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    sortedComments = handleOrder(resp.content);
+                    amount = sortedComments.length
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    onMount(() => {
+        console.log(path)
+
+        loadComments()
+    })
 </script>
 
+{#if error !== null}
+    <Error error={error}/>
+{:else}
+    {#if (sortedComments === null)}
+        LOADING
+    {:else}
+        <main class="flex grid grid-cols-1 justify-center">
+            <header class="flex">
+                <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
+            </header>
+            <Button class="w-44 h-8">
+                <Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron>
+            </Button>
+            <Dropdown>
+                <DropdownItem on:click={()=>order = !order}
+                              on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
+            </Dropdown>
 
-<main class="flex grid grid-cols-1 justify-center">
-    <header class="flex">
-        <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
-    </header>
-    <Button class="w-44 h-8">
-        <Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron>
-    </Button>
-    <Dropdown>
-        <DropdownItem on:click={()=>order = !order}
-                      on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
-    </Dropdown>
+            <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
 
-    <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
+                {#each sortedComments as data}
+                    <Comment bind:comment={data} category={category.id} review={review}/>
+                {/each}
 
-        {#each sortedComments as data}
-            <Comment data={data}/>
-        {/each}
-
-    </div>
-    <form on:submit={submitComment}>
-        <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment" type="text">
-    </form>
-</main>
-
+            </div>
+            <form on:submit={submitComment}>
+                <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment" type="text">
+            </form>
+        </main>
+    {/if}
+{/if}
