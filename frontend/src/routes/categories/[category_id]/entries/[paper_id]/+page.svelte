@@ -10,6 +10,8 @@
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
+    import AddReviewerModal from "../../../../../components/AddReviewerModal.svelte";
+    import Cookies from "js-cookie";
 
     let show_confirm_deletion_modal = false;
 
@@ -31,6 +33,7 @@
     let currentPage = 1;
     let lastPage = 1;
     let limit = 1;
+    let current_user = null;
 
     function loadEntry() {
         entry = null;
@@ -42,6 +45,10 @@
                     console.log(error);
                 } else {
                     entry = resp;
+                    current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+                    if (entry.researcher_id === current_user.id) {
+                        loadReviews()
+                    }
                 }
             })
             .catch(err => console.log(err))
@@ -95,10 +102,10 @@
         loadEntry()
         loadCategory()
         loadEntryDocument()
-        loadReviews()
     });
 
     let show_edit_modal = false;
+    let show_add_reviewer_modal = false
 
     $: if (!show_edit_modal) {
         loadEntry()
@@ -138,15 +145,22 @@
                 </Badge>
             </Heading>
 
+            <div class="flex w-full justify-between">
+                <div class="justify-start gap-x-4 flex">
+                    <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline on:click={() => show_edit_modal = true}>
+                        Edit Paper
+                    </Button>
+                    <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
+                            on:click={() => show_confirm_deletion_modal = true}>
+                        Delete Paper
+                    </Button>
+                </div>
 
-            <div class="justify-start gap-x-4 flex">
-                <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
-                    Edit Paper
-                </Button>
-                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
-                        on:click={() => show_confirm_deletion_modal = true}>
-                    Delete Paper
-                </Button>
+                <div class="w-full flex justify-end">
+                    <Button class="mx-auto lg:m-0 h-12" size="md" outline on:click={() => show_add_reviewer_modal = true}>
+                        Add additional Reviewer
+                    </Button>
+                </div>
             </div>
 
             <div class="flex h-full align-items-flex-start">
@@ -155,22 +169,18 @@
                 </div>
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
-                    <Reviews show_reviewer=true>
-                        {#if reviews === null}
-                            {#each [...Array(loading_lines).keys()] as i}
-                                <Review loading="true"/>
-                            {/each}
-                        {:else }
-                            {#each reviews as r}
-                                <Review
-                                        show_reviewer=true
-                                        bind:review={r}
-                                        category_id={category.id}
-                                        paper={entry}
-                                />
-                            {/each}
-                        {/if}
-                    </Reviews>
+                    {#if reviews !== null}
+                        <Reviews show_reviewer=true>
+                                {#each reviews as r}
+                                    <Review
+                                            show_reviewer=true
+                                            bind:review={r}
+                                            category_id={category.id}
+                                            paper={entry}
+                                    />
+                                {/each}
+                        </Reviews>
+                    {/if}
                 </div>
             </div>
 
@@ -181,5 +191,7 @@
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
+
+        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}" show="{show_add_reviewer_modal}"/>
     {/if}
 {/if}
