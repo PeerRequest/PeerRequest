@@ -8,13 +8,14 @@
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
     import PaperView from "./PaperView.svelte";
+    import PdfViewer from "./PdfViewer.svelte";
 
     export let review = {
         reviewer_id: "",
         entry_id: ""
     }
     export let category = {
-        id:""
+        id: ""
     }
     export let current_user = {
         id: "",
@@ -97,15 +98,29 @@
     }
 </script>
 
+
+<div class="flex">
+    <a class="mx-auto my-4" href="/lorem_ipsum.pdf" target="_blank">
+        <Button class="lg:hidden" outline>
+            <span class="px-10">View Paper</span>
+        </Button>
+    </a>
+</div>
+
 <div class="flex flex-auto h-full">
-    <div class="p-4 w-[100%] mx-5 overflow-auto">
-        <Tabs style="underline">
-            <TabItem open>
-                <div class="flex items-center gap-2" slot="title">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
-                         style="enable-background:new 0 0 243.317 243.317;" viewBox="0 0 243.317 243.317" x="0px"
-                         xml:space="preserve"
-                         xmlns="http://www.w3.org/2000/svg" y="0px">
+    <div class="max-lg:hidden" id="pdfContainer">
+        <PdfViewer document={document}/>
+    </div>
+
+    <div class="flex flex-auto h-full">
+        <div class="p-4 w-[50%] mx-5 overflow-auto">
+            <Tabs style="underline">
+                <TabItem open>
+                    <div class="flex items-center gap-2" slot="title">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
+                             style="enable-background:new 0 0 243.317 243.317;" viewBox="0 0 243.317 243.317" x="0px"
+                             xml:space="preserve"
+                             xmlns="http://www.w3.org/2000/svg" y="0px">
               <path d="M242.949,93.714c-0.882-2.715-3.229-4.694-6.054-5.104l-74.98-10.9l-33.53-67.941c-1.264-2.56-3.871-4.181-6.725-4.181
                       c-2.855,0-5.462,1.621-6.726,4.181L81.404,77.71L6.422,88.61C3.596,89.021,1.249,91,0.367,93.714
                       c-0.882,2.715-0.147,5.695,1.898,7.688l54.257,52.886L43.715,228.96c-0.482,2.814,0.674,5.658,2.983,7.335
@@ -116,16 +131,16 @@
                       l-46.199-45.031l63.847-9.281c2.443-0.355,4.555-1.889,5.647-4.103l28.55-57.849l28.55,57.849c1.092,2.213,3.204,3.748,5.646,4.103
                       l63.844,9.281L173.504,146.299z"/>
             </svg>
-                    Review form
-                </div>
-                <ReviewForm category="{category}" review="{review}"
-                            reviewerUser="{reviewerUser}"/>
-            </TabItem>
-            <TabItem>
-                <div class="flex items-center gap-2" slot="title">
-                    <svg aria-hidden="true" class="w-5 h-5" style="enable-background:new 0 0 87.881 87.881;"
-                         viewBox="0 0 87.881 87.881" x="0px"
-                         xml:space="preserve" xmlns="http://www.w3.org/2000/svg" y="0px">
+                        Review form
+                    </div>
+                    <ReviewForm category="{category}" review="{review}"
+                                reviewerUser="{reviewerUser}"/>
+                </TabItem>
+                <TabItem>
+                    <div class="flex items-center gap-2" slot="title">
+                        <svg aria-hidden="true" class="w-5 h-5" style="enable-background:new 0 0 87.881 87.881;"
+                             viewBox="0 0 87.881 87.881" x="0px"
+                             xml:space="preserve" xmlns="http://www.w3.org/2000/svg" y="0px">
                         <g>
                           <path d="M70.828,0H33.056C27.535,0,23.044,4.484,23.03,10.001h-2.975c-7.183,0-13.027,5.844-13.027,13.027v51.826
                             c0,7.184,5.844,13.027,13.027,13.027h37.772c7.183,0,13.026-5.844,13.026-13.027v-2.975c5.517-0.015,10.001-4.506,10.001-10.026
@@ -139,84 +154,86 @@
                             <rect height="6" width="36" x="20.941" y="65.935"/>
                         </g>
                       </svg>
-                    {#if reviewerUser}
-                        Upload PDF file
-                    {:else}
-                        Reviewed PDF file
-                    {/if}
-                </div>
-                <Label class="pb-2">Your PDF</Label>
-                <div class="flex flex-row justify-between items-center">
-                    {#if reviewerUser}
-                        <Fileupload {...fileuploadprops} bind:value={fileInput}
-                                    inputClass="my-auto annotations_file_input"
-                                    on:change={() => upload_state = ""}
-                                    size="lg" required
-                        />
-                        <Button disabled={!fileInput}
-                                on:click={() => uploadReviewPdf()} outline
-                                color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
-                            {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
-                        </Button>
-                    {/if}
-                    {#if pdf_document !== null}
-                        <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
-                            Delete
-                        </Button>
-                    {/if}
-
-                </div>
-                {#if pdf_document !== null}
-                    <div class="absolute flex h-full w-[50%] right-1/4 left-1/4 justify-center">
-                        <PaperView document="{pdf_document}"/>
+                        {#if reviewerUser}
+                            Upload PDF file
+                        {:else}
+                            Reviewed PDF file
+                        {/if}
                     </div>
-                {/if}
-            </TabItem>
-            <TabItem>
-                <div class="flex items-center gap-2" slot="title">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <g>
+                    <Label class="pb-2">Your PDF</Label>
+                    <div class="flex flex-row justify-between items-center">
+                        {#if reviewerUser}
+                            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                                        inputClass="my-auto annotations_file_input"
+                                        on:change={() => upload_state = ""}
+                                        size="lg" required
+                            />
+                            <Button disabled={!fileInput}
+                                    on:click={() => uploadReviewPdf()} outline
+                                    color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
+                                {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
+                            </Button>
+                        {/if}
+                        {#if pdf_document !== null}
+                            <Button color="red" outline class="ml-3"
+                                    on:click={() => show_confirm_deletion_modal = true}>
+                                Delete
+                            </Button>
+                        {/if}
+
+                    </div>
+                    {#if pdf_document !== null}
+                        <div class="absolute flex h-full w-[50%] right-1/4 left-1/4 justify-center">
+                            <PaperView document="{pdf_document}"/>
+                        </div>
+                    {/if}
+                </TabItem>
+                <TabItem>
+                    <div class="flex items-center gap-2" slot="title">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
                             <g>
                                 <g>
-                                    <path d="M20,20h-4c-0.6,0-1-0.4-1-1s0.4-1,1-1h4c1.1,0,2-0.9,2-2V4c0-1.1-0.9-2-2-2H4C2.9,2,2,2.9,2,4v12c0,1.1,0.9,2,2,2h4
+                                    <g>
+                                        <path d="M20,20h-4c-0.6,0-1-0.4-1-1s0.4-1,1-1h4c1.1,0,2-0.9,2-2V4c0-1.1-0.9-2-2-2H4C2.9,2,2,2.9,2,4v12c0,1.1,0.9,2,2,2h4
 				c0.6,0,1,0.4,1,1s-0.4,1-1,1H4c-2.2,0-4-1.8-4-4V4c0-2.2,1.8-4,4-4h16c2.2,0,4,1.8,4,4v12C24,18.2,22.2,20,20,20z"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g>
                                 <g>
-                                    <path d="M12,24c-0.3,0-0.5-0.1-0.7-0.3l-4-4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l3.3,3.3l3.3-3.3c0.4-0.4,1-0.4,1.4,0s0.4,1,0,1.4
+                                    <g>
+                                        <path d="M12,24c-0.3,0-0.5-0.1-0.7-0.3l-4-4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l3.3,3.3l3.3-3.3c0.4-0.4,1-0.4,1.4,0s0.4,1,0,1.4
 				l-4,4C12.5,23.9,12.3,24,12,24z"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g>
                                 <g>
-                                    <path d="M18,7H6C5.4,7,5,6.6,5,6s0.4-1,1-1h12c0.6,0,1,0.4,1,1S18.6,7,18,7z"/>
+                                    <g>
+                                        <path d="M18,7H6C5.4,7,5,6.6,5,6s0.4-1,1-1h12c0.6,0,1,0.4,1,1S18.6,7,18,7z"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g>
                                 <g>
-                                    <path d="M13,11H6c-0.6,0-1-0.4-1-1s0.4-1,1-1h7c0.6,0,1,0.4,1,1S13.6,11,13,11z"/>
+                                    <g>
+                                        <path d="M13,11H6c-0.6,0-1-0.4-1-1s0.4-1,1-1h7c0.6,0,1,0.4,1,1S13.6,11,13,11z"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g>
                                 <g>
-                                    <path d="M16,15H6c-0.6,0-1-0.4-1-1s0.4-1,1-1h10c0.6,0,1,0.4,1,1S16.6,15,16,15z"/>
+                                    <g>
+                                        <path d="M16,15H6c-0.6,0-1-0.4-1-1s0.4-1,1-1h10c0.6,0,1,0.4,1,1S16.6,15,16,15z"/>
+                                    </g>
                                 </g>
                             </g>
-                        </g>
-                    </svg>
-                    Message board
-                </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400"><b class="text-3xl font-bold text-gray-900">Message
-                    board:</b>
-                    <MessageBoard review={review} category={category} path={path}/>
-                </p>
-            </TabItem>
-        </Tabs>
+                        </svg>
+                        Message board
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b class="text-3xl font-bold text-gray-900">Message
+                        board:</b>
+                        <MessageBoard category={category} path={path} review={review}/>
+                    </p>
+                </TabItem>
+            </Tabs>
+        </div>
     </div>
 </div>
 
-<ConfirmDeletionModal afterpath="{path}" delete_name="Review Document"
-                      hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
-                      to_delete={path + "/document"}/>
+    <ConfirmDeletionModal afterpath="{path}" delete_name="Review Document"
+                          hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
+                          to_delete={path + "/document"}/>

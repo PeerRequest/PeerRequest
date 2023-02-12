@@ -127,6 +127,7 @@
             .catch(err => console.log(err))
     }
 
+
     onMount(() => {
         loadCategory()
         loadEntries()
@@ -230,6 +231,7 @@
 
             <Papers
                     category_type={map_type(category.label)}
+                    show_slots="true"
             >
                 {#if entries === null}
                     {#each [...Array(loading_lines).keys()] as i}
@@ -238,6 +240,8 @@
                 {:else }
                     {#each entries as e}
                         <Paper
+                                on:claimSlot={() => loadEntries()}
+                                show_slots=true
                                 href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
                         />

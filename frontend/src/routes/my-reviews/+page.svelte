@@ -19,7 +19,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    reviews = resp.content;
+                    reviews = resp;
                 }
             })
             .catch(err => console.log(err))
@@ -34,7 +34,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    entries = resp.content;
+                    entries = resp;
                 }
             })
             .catch(err => console.log(err))
@@ -51,7 +51,6 @@
         }
         return test
     }
-
 
     onMount(() => {
         loadUserReviews();
