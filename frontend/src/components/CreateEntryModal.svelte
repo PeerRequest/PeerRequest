@@ -66,7 +66,8 @@
     }
 
     function createEntry() {
-        file = fileInput.files[0];
+        const input = document.getElementById(fileuploadprops.id);
+        file = input.files[0];
         console.log(file);
         const formData = new FormData();
         formData.append("authors", authors);
