@@ -6,8 +6,10 @@
     export let href;
     export let paper = "";
     // export let rating = null;
+    export let category = null;
     export let slots = null;
     export let loading = false;
+    export let current_user = null;
     export let error = null;
     export let show_category = false;
     export let show_slots = false;
@@ -19,6 +21,7 @@
     let review = null;
 
     const dispatch = createEventDispatcher();
+    let isReviewer = false;
 
     function loadCategory() {
         category = null;
@@ -60,6 +63,16 @@
             },
             body: {}
         })
+    function reviewToEntry (review) {
+
+        if (review.entry_id === paper.id) {
+            isReviewer = true
+        }
+    }
+
+    function loadUserReviews() {
+        reviews = null;
+        fetch("/api/reviews")
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
@@ -76,6 +89,7 @@
 
     onMount(() => {
         loadCategory()
+        loadUserReviews()
         if (show_slots) {
             loadDirectRequestProcess();
         }
@@ -86,7 +100,7 @@
 
 
 <TableBodyRow>
-    {#if loading}
+    {#if loading || category === null || paper === null}
         {#each [...Array(5).keys()] as i}
             <TableBodyCell>
                 <div>
@@ -95,8 +109,15 @@
             </TableBodyCell>
         {/each}
     {:else }
+        <TableBodyCell>
+            {#if (current_user.id === paper.researcher_id) || isReviewer }
+                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+            {:else }
+                <BreadcrumbItem>{paper.name}</BreadcrumbItem>
+            {/if}
+        </TableBodyCell>
 
-        {#if category !== null}
+        {#if show_category && category !== null}
             <TableBodyCell>
                 <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             </TableBodyCell>
@@ -124,16 +145,17 @@
                     <Button disabled={slots<=0} href={href} outline size="xs"
                             on:click={() => claimSlot()}>
                         Claim Review Slot
+
                     </Button>
                 </TableBodyCell>
             {/if}
 
             <!--
+
             {#if rating !== null}
                 <TableBodyCell>
                     <StarRating rating={rating}/>
                 </TableBodyCell>
-
             {/if}
             -->
 
