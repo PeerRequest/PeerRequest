@@ -10,6 +10,7 @@
     import {onMount} from "svelte";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
+    import AddReviewerModal from "../../../../../components/AddReviewerModal.svelte";
     import Cookies from "js-cookie";
 
     let show_confirm_deletion_modal = false;
@@ -104,6 +105,7 @@
     });
 
     let show_edit_modal = false;
+    let show_add_reviewer_modal = false
 
     $: if (!show_edit_modal) {
         loadEntry()
@@ -143,15 +145,22 @@
                 </Badge>
             </Heading>
 
+            <div class="flex w-full justify-between">
+                <div class="justify-start gap-x-4 flex">
+                    <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline on:click={() => show_edit_modal = true}>
+                        Edit Paper
+                    </Button>
+                    <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
+                            on:click={() => show_confirm_deletion_modal = true}>
+                        Delete Paper
+                    </Button>
+                </div>
 
-            <div class="justify-start gap-x-4 flex">
-                <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
-                    Edit Paper
-                </Button>
-                <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
-                        on:click={() => show_confirm_deletion_modal = true}>
-                    Delete Paper
-                </Button>
+                <div class="w-full flex justify-end">
+                    <Button class="mx-auto lg:m-0 h-12" size="md" outline on:click={() => show_add_reviewer_modal = true}>
+                        Add additional Reviewer
+                    </Button>
+                </div>
             </div>
 
             <div class="flex h-full align-items-flex-start">
@@ -182,5 +191,7 @@
 
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
+
+        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}" show="{show_add_reviewer_modal}"/>
     {/if}
 {/if}
