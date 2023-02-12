@@ -71,7 +71,6 @@
     const loading_lines = 5;
     export let error = null;
 
-
     function previous() {
         if (currentPage > 1) {
             currentPage -= 1;
@@ -165,9 +164,11 @@
                         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
                         <BreadcrumbItem>{category.name}</BreadcrumbItem>
                     </ResponsiveBreadCrumb>
-                    <Heading tag="h2">
-                        {category.name}
-                    </Heading>
+                    <div class="flex flex-row">
+                        <Heading tag="h2">
+                            {category.name} {category.year}
+                        </Heading>
+                    </div>
                     <Heading tag="h6">
                         <Secondary>Review Deadline: {map_deadline(category.deadline)}</Secondary>
                     </Heading>
@@ -229,7 +230,6 @@
 
             <Papers
                     category_type={map_type(category.label)}
-                    show_category=true
             >
                 {#if entries === null}
                     {#each [...Array(loading_lines).keys()] as i}
@@ -240,7 +240,6 @@
                         <Paper
                                 href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
-                                category={category}
                         />
                     {/each}
                 {/if}
@@ -268,7 +267,7 @@
                               to_delete={path} delete_name="{category.name}"/>
 
         <CreateEntryModal category={category} entries={entries} show={show_create_entry_modal}
-                          hide={() => show_create_entry_modal = false}></CreateEntryModal>
+                          hide={() => show_create_entry_modal = false}/>
     {/if}
 {/if}
 
