@@ -47,6 +47,7 @@
             {#each entries as p}
                 <Paper
                         href="/categories/{p.category_id}/entries/{p.id}"
+                        show_category="true"
                         bind:paper={p}
                 />
             {/each}

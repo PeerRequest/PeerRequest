@@ -29,7 +29,7 @@
             .catch(err => console.log(err))
     }
 
-    onMount(()=>{
+    onMount(() => {
         loadCategory()
     })
 
@@ -48,15 +48,15 @@
             </TableBodyCell>
         {/each}
     {:else }
+
         {#if category !== null}
             <TableBodyCell>
                 <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             </TableBodyCell>
 
+
             {#if show_category}
-                <TableBodyCell>
-                    <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
-                </TableBodyCell>
+
 
                 {#if category !== null}
                     <TableBodyCell>
@@ -78,8 +78,12 @@
                     <TableBodyCell>
                         <StarRating rating={rating}/>
                     </TableBodyCell>
+
                 {/if}
+
             {/if}
+
         {/if}
+
     {/if}
 </TableBodyRow>
