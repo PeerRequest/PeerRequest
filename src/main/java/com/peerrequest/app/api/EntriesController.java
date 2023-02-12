@@ -1,13 +1,9 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.ReviewRepository;
-import com.peerrequest.app.services.NotificationService;
-import com.peerrequest.app.services.ReviewService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -140,7 +136,7 @@ public class EntriesController extends ServiceBasedController {
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "document upload went wrong");
         }
 
         var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId, documentId);
