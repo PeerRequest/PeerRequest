@@ -165,7 +165,7 @@
                                 <Review
                                         show_reviewer=true
                                         bind:review={r}
-                                        category={category}
+                                        category_id={category.id}
                                         paper={entry}
                                 />
                             {/each}

@@ -59,8 +59,9 @@
     }
 
     onMount(() => {
-        loadCategory();
         loadReviewer();
+        loadCategory();
+
     });
 
 </script>

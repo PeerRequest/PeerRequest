@@ -6,7 +6,7 @@
 
 
     export let href;
-    export let paper;
+    export let paper = "";
     export let rating = null;
     export let slots = null;
     export let loading = false;
@@ -48,35 +48,37 @@
             </TableBodyCell>
         {/each}
     {:else }
-        <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
-        </TableBodyCell>
-
-        {#if show_category && category !== null}
+        {#if category !== null}
             <TableBodyCell>
                 <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             </TableBodyCell>
 
-            {#if category !== null}
+            {#if show_category}
                 <TableBodyCell>
-                    <BreadcrumbItem
-                            href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                    <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
                 </TableBodyCell>
-            {/if}
 
-            {#if (slots !== null) && (category.label === "INTERNAL")}
-                <TableBodyCell>{slots}</TableBodyCell>
-                <TableBodyCell>
-                    <Button disabled={slots<=0} href={href} outline size="xs">
-                        Start Review
-                    </Button>
-                </TableBodyCell>
-            {/if}
+                {#if category !== null}
+                    <TableBodyCell>
+                        <BreadcrumbItem
+                                href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                    </TableBodyCell>
+                {/if}
 
-            {#if rating !== null}
-                <TableBodyCell>
-                    <StarRating rating={rating}/>
-                </TableBodyCell>
+                {#if (slots !== null) && (category.label === "INTERNAL")}
+                    <TableBodyCell>{slots}</TableBodyCell>
+                    <TableBodyCell>
+                        <Button disabled={slots<=0} href={href} outline size="xs">
+                            Start Review
+                        </Button>
+                    </TableBodyCell>
+                {/if}
+
+                {#if rating !== null}
+                    <TableBodyCell>
+                        <StarRating rating={rating}/>
+                    </TableBodyCell>
+                {/if}
             {/if}
         {/if}
     {/if}
