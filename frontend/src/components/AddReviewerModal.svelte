@@ -1,0 +1,173 @@
+<script>
+    import {
+        Modal,
+        Button,
+        CloseButton,
+        Footer,
+        TableBodyRow,
+        TableHeadCell,
+        TableHead,
+        Table,
+        TableBody,
+        TableBodyCell,
+        Chevron,
+        Dropdown,
+        Search
+    } from "flowbite-svelte" ;
+    import {onMount} from "svelte";
+    import Cookies from "js-cookie";
+
+    export let show = false;
+    export let paper;
+    export let hide = () => {
+        /* NOP */
+    };
+    export let result = () => {
+        /* NOP */
+    }
+
+    export let error = null;
+
+    let query = "";
+    let users = null;
+    let reviewers = [];
+    let current_user;
+    let requestPath;
+
+
+    function addReviewer(u) {
+        reviewers = reviewers.concat([u])
+    }
+
+    function apply_query(q) {
+        query = q;
+    }
+
+    function loadUsers() {
+        users = null;
+        fetch("/api/users")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    users = resp.content;
+                    users = users.filter(e => e.id !== current_user.id)
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function createDirectRequest(reviewer) {
+        let data = {
+            reviewer_id: reviewer.id
+        }
+        requestPath = "/api/categories/" + paper.category_id + "/entries/"+ paper.id +"/process/requests"
+        return fetch(requestPath, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    reviewers = reviewers.filter(r => r !== reviewer)
+                    console.log(error);
+                } else {
+
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
+    onMount(() => {
+        loadUsers()
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+        console.log(current_user)
+    });
+
+    function sendRequests() {
+        reviewers.map(reviewer => createDirectRequest(reviewer))
+        hide()
+    }
+
+</script>
+
+<Modal class="w-full" bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="md">
+    <svelte:fragment slot="header">
+        <div class="text-4xl font-extrabold text-gray-900">
+            Add additional Reviewers
+        </div>
+        <CloseButton class="absolute top-3 right-5"
+                     on:click={hide}/>
+    </svelte:fragment>
+
+    <div class="flex grid gap-y-6 w-full">
+        <Button color="primary">
+            <Chevron>Add Reviewer</Chevron>
+        </Button>
+        <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" on:show={() => apply_query("")}>
+            <div class="p-3" slot="header">
+                <Search on:input={(e) => apply_query(e.target.value)} on:keyup={(e) => apply_query(e.target.value)}
+                        size="md"/>
+            </div>
+            {#if users !== null}
+                {#each users.filter(u => !reviewers.includes(u) &&
+                    (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
+                    <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
+                        <span class="cursor-pointer" on:click={() => addReviewer(u) }>
+                          {u.firstName + " " + u.lastName}
+                        </span>
+                    </li>
+                {/each}
+            {:else }
+                LOADING USERS
+            {/if}
+        </Dropdown>
+
+        <div class="flex mb-4 overflow-y-auto h-56 max-h-[50vh]">
+            <Table divClass="relative">
+                <TableHead>
+                    <TableHeadCell>Name</TableHeadCell>
+                </TableHead>
+                <TableBody class="divide-y">
+                    {#each reviewers as r }
+                        <TableBodyRow>
+                            <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
+                            <TableBodyCell>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <Button pill class="!p-2" outline color="red"
+                                            on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                             width="32px" height="32px" viewBox="0 0 64 64"
+                                             xml:space="preserve">
+                                  <g>
+                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
+                                          y1="17.153" x2="45.045"
+                                          y2="43.056"/>
+                                  </g>
+                                            <g>
+                                    <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
+                                          y1="43.153" x2="44.947"
+                                          y2="17.056"/>
+                                  </g>
+                              </svg>
+                                    </Button>
+                                </div>
+                            </TableBodyCell>
+                        </TableBodyRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </div>
+        <Footer class="bottom-0 left-0 z-20 w-full">
+            <Button class="w-full" color="primary" size="sm" type="submit" on:click={() => sendRequests()}>
+                Send Requests
+            </Button>
+        </Footer>
+    </div>
+</Modal>

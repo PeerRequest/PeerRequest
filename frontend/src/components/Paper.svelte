@@ -54,31 +54,26 @@
             </TableBodyCell>
 
             {#if show_category}
-                <TableBodyCell>
-                    <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
-                </TableBodyCell>
-
                 {#if category !== null}
                     <TableBodyCell>
                         <BreadcrumbItem
                                 href="/categories/{category.id}">{category.name}</BreadcrumbItem>
                     </TableBodyCell>
                 {/if}
-
-                {#if (slots !== null) && (category.label === "INTERNAL")}
-                    <TableBodyCell>{slots}</TableBodyCell>
-                    <TableBodyCell>
-                        <Button disabled={slots<=0} href={href} outline size="xs">
-                            Start Review
-                        </Button>
-                    </TableBodyCell>
-                {/if}
-
+                <!--
                 {#if rating !== null}
                     <TableBodyCell>
                         <StarRating rating={rating}/>
                     </TableBodyCell>
-                {/if}
+                {/if} -->
+            {/if}
+            {#if (slots !== null) && (category.label === "INTERNAL")}
+                <TableBodyCell>{slots}</TableBodyCell>
+                <TableBodyCell>
+                    <Button disabled={slots<=0} href={href} outline size="xs">
+                        Start Review
+                    </Button>
+                </TableBodyCell>
             {/if}
         {/if}
     {/if}
