@@ -8,8 +8,10 @@
     export let paper;
     export let rating = null;
     export let category = null;
+    //TODO RequestController OpenSlots
     export let slots = null;
     export let loading = false;
+    export let current_user = null;
 
     export let show_category = false;
 
@@ -27,7 +29,11 @@
         {/each}
     {:else }
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+            {#if current_user.id === paper.researcher_id}
+                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+            {:else }
+                <BreadcrumbItem>{paper.name}</BreadcrumbItem>
+            {/if}
         </TableBodyCell>
 
         {#if show_category && category !== null}
@@ -40,7 +46,7 @@
         {#if (slots !== null) && (category.label === "INTERNAL")}
             <TableBodyCell>{slots}</TableBodyCell>
             <TableBodyCell>
-                <Button disabled={slots<=0} href={href} outline size="xs">
+                <Button disabled={slots<=0} outline size="xs"> <!--href={href}-->
                     Start Review
                 </Button>
             </TableBodyCell>
