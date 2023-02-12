@@ -4,7 +4,9 @@
     import {onMount} from "svelte";
 
     export let error;
-    export let review;
+    export let review = {
+        reviewer_id:""
+    };
     export let category_id = "";
     let category = null;
 
@@ -15,32 +17,23 @@
     export let show_paper = false;
     export let show_reviewer = false;
 
-    let users = null;
     let reviewer = null;
 
     function loadReviewer() {
-        loadUsers();
-        if (users !== null) {
-            reviewer = users.find(user => user.id === review.reviewer_id)
-        } else {
-            console.log("No users could be found.")
-        }
-
-    }
-
-    function loadUsers() {
-        users = null;
-        fetch("/api/users")
+        reviewer = null
+        fetch("/api/users/" + review.reviewer_id)
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    users = resp.content;
+                    reviewer = resp;
+
                 }
             })
             .catch(err => console.log(err))
+
     }
 
     function loadCategory() {
@@ -59,9 +52,8 @@
     }
 
     onMount(() => {
-        loadReviewer();
         loadCategory();
-
+        loadReviewer();
     });
 
 </script>
@@ -84,10 +76,10 @@
                     #{review.id}</BreadcrumbItem>
             </TableBodyCell>
 
-            {#if show_reviewer}
+            {#if show_reviewer && reviewer != null}
                 <TableBodyCell>
                     <BreadcrumbItem>
-                        {reviewer === !null ? ((reviewer.name !== null) ? reviewer.name : "undefined") : "no reviewer"}
+                        {reviewer.firstName + " " + reviewer.lastName}
                     </BreadcrumbItem>
                 </TableBodyCell>
             {/if}
