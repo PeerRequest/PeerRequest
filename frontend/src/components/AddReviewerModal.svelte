@@ -77,9 +77,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     reviewers = reviewers.filter(r => r !== reviewer)
                     console.log(error);
-                } else {
-
-                }
+                } else {}
             })
             .catch(err => console.log(err));
     }
