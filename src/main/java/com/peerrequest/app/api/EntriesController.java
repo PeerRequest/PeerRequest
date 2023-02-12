@@ -1,13 +1,9 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.ReviewRepository;
-import com.peerrequest.app.services.NotificationService;
-import com.peerrequest.app.services.ReviewService;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -76,10 +72,23 @@ public class EntriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
 
-        // TODO: Allow request if user is reviewing the paper
         if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "only the reviewer and the researcher may view the paper");
+            boolean isReviewer = false;
+            var directRequestProcess = this.directRequestProcessService.getByEntry(option.get().getId());
+
+            if (directRequestProcess.isPresent()) {
+                for (var requests :
+                        this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+                    if (requests.getReviewerId().equals(user.getAttribute("sub").toString())) {
+                        isReviewer = true;
+                        break;
+                    }
+                }
+            }
+            if (!isReviewer) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "only the reviewer and the researcher may view the paper");
+            }
         }
 
         var document = this.documentService.get(option.get().getDocumentId());
@@ -127,7 +136,7 @@ public class EntriesController extends ServiceBasedController {
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "document upload went wrong");
         }
 
         var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId, documentId);

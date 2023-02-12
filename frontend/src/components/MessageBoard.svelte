@@ -20,8 +20,7 @@
     let amount = 0
     let order = true, comment
 
-
-
+    let show_confirm_deletion_modal = false;
 
     const handleOrder = (sorting_data) => {
         if (order) return sortedComments = sorting_data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -85,6 +84,7 @@
                     console.log(error);
                 } else {
                     sortedComments = handleOrder(resp.content);
+                    console.log(sortedComments)
                     amount = sortedComments.length
                 }
             })
@@ -92,10 +92,12 @@
     }
 
     onMount(() => {
-        console.log(path)
-
         loadComments()
     })
+
+    $: if (!show_confirm_deletion_modal) {
+        loadComments()
+    }
 </script>
 
 {#if error !== null}
@@ -119,7 +121,7 @@
             <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
 
                 {#each sortedComments as data}
-                    <Comment bind:comment={data} category={category.id} review={review}/>
+                    <Comment bind:comment={data} category={category.id} review={review} bind:show_delete={show_confirm_deletion_modal}/>
                 {/each}
 
             </div>

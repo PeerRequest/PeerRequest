@@ -10,7 +10,7 @@
     export let show = false;
     export let to_delete;
     export let delete_name;
-    export let afterpath;
+    export let afterpath = null;
     export let hide = () => {
         /* NOP */
     };
@@ -23,10 +23,14 @@
             method: 'DELETE',
         })
             .then((response) => console.log(response))
-            .then((response_data) => (response_data))
+            .then((response_data) => {
+                if (afterpath !==  null) {
+                    goto(afterpath)
+                }
+                hide()
+            })
             .catch(err => console.log(err))
-        goto(afterpath)
-        hide()
+
     }
 </script>
 
