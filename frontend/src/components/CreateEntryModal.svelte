@@ -3,6 +3,7 @@
         Modal,
         Button,
         CloseButton,
+        Fileupload,
         Heading,
         TableBodyRow,
         TableHeadCell,
@@ -40,6 +41,11 @@
     let categoryPath = `/api/categories/${category_id}/entries`;
     let entryPath;
     let requestPath;
+
+    let fileuploadprops = {
+        id: "annotations_file_input",
+        accept: ".pdf,application/pdf"
+    };
 
     function updatePaths() {
         entryPath = `/api/categories/${category_id}/entries/${new_entry_id}/process`;
@@ -165,7 +171,10 @@
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <input bind:this={fileInput} type="file"/>
+            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                        inputClass="annotations_file_input"
+                        size="lg"
+            />
         </div>
 
         <div class="flex flex-row justify-between items-center">
