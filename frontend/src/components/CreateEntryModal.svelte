@@ -58,12 +58,7 @@
     }
 
     function addReviewer(u) {
-        let inputValOpenSlots = document.getElementById("selected_open_slots").value;
-        if (reviewers.length + 1 <= inputValOpenSlots) {
-            reviewers = reviewers.concat([u])
-        } else {
-            alert("Warning! Not enough open slots!")
-        }
+        reviewers = reviewers.concat([u])
     }
 
     function createEntry() {
@@ -162,12 +157,12 @@
 
     <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => processSubmission()}>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="sm" tag="h4"> Enter paper title</Heading>
+            <Heading size="sm" tag="h4"> Enter Paper Title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
                    type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="sm" tag="h4">Enter paper authors</Heading>
+            <Heading size="sm" tag="h4">Enter Paper Authors</Heading>
             <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
@@ -181,7 +176,7 @@
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <Heading class="mr-3" size="sm" tag="h4">Choose number of review slots</Heading>
+            <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
             <input class="justify-end rounded-lg"
                    id=selected_open_slots
                    min={reviewers.length > 0 ? reviewers.length : 1}
