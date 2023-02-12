@@ -94,7 +94,9 @@ public class ReviewServiceImpl implements ReviewService {
         var review = optional.get();
         repo.delete(review);
 
-        this.documentService.delete(review.getReviewDocumentId());
+        if (review.getReviewDocumentId() != null) {
+            this.documentService.delete(review.getReviewDocumentId());
+        }
 
         for (var message : this.messageRepo.findByReviewId(cursor)) {
             deleteMessage(message.getId());
