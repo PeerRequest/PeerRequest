@@ -58,6 +58,9 @@ class CategoryServiceImpl implements CategoryService {
         if (newProps.minScore() != null) {
             category.setMinScore(newProps.minScore());
         }
+        if (newProps.scoreStepSize() != null) {
+            category.setScoreStepSize(newProps.scoreStepSize());
+        }
 
         return Optional.of(repo.save(category));
     }
