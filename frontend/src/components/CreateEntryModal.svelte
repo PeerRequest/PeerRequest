@@ -1,21 +1,21 @@
 <script>
     import {
-        Modal,
         Button,
+        Chevron,
         CloseButton,
+        Dropdown,
         Fileupload,
         Footer,
         Heading,
-        TableBodyRow,
-        TableHeadCell,
-        TableHead,
+        Modal,
+        Search,
         Table,
         TableBody,
         TableBodyCell,
-        Chevron,
-        Dropdown,
-        Search
-    } from "flowbite-svelte" ;
+        TableBodyRow,
+        TableHead,
+        TableHeadCell
+    } from "flowbite-svelte";
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
     import {page} from "$app/stores";
@@ -143,7 +143,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    users = resp.content;
+                    users = resp;
                     users = users.filter(e => e.id !== current_user.id)
                 }
             })
@@ -182,8 +182,8 @@
         <div class="flex flex-row justify-between items-center">
             <Fileupload {...fileuploadprops} bind:value={fileInput}
                         inputClass="annotations_file_input"
-                        size="lg"
                         required
+                        size="lg"
             />
         </div>
 
@@ -224,7 +224,7 @@
                 <TableBody class="divide-y">
                     {#each reviewers as r }
                         <TableBodyRow>
-                            <TableBodyCell>{r.name}</TableBodyCell>
+                            <TableBodyCell>{r.first_name + " " + r.last_name}</TableBodyCell>
                             <TableBodyCell>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <Button pill class="!p-2" outline color="red"
