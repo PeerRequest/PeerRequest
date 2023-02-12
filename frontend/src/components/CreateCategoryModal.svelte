@@ -83,7 +83,7 @@
             year: new_category_year,
             label: new_category_type,
             name: new_category_name,
-            deadline: new_category_deadline + "T00:00:00+01:00",
+            deadline: (new_category_deadline === undefined? "" : new_category_deadline + "T00:00:00+01:00"),
             min_score: minScore,
             max_score: maxScore,
             score_step_size: scoreStepSize

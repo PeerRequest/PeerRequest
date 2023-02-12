@@ -26,7 +26,11 @@
     }
 
     function map_deadline(deadline) {
-        return new Date(Date.parse(deadline)).toLocaleDateString();
+        if (deadline != null) {
+            return new Date(Date.parse(deadline)).toLocaleDateString();
+        } else {
+            return "not specified"
+        }
     }
 
     /** @type {import("./$types").PageData} */

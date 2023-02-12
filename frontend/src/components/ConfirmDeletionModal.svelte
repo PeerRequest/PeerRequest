@@ -22,10 +22,11 @@
         fetch("/api" + to_delete, {
             method: 'DELETE',
         })
-            .then((response) => response.json())
+            .then((response) => console.log(response))
             .then((response_data) => (response_data))
             .catch(err => console.log(err))
         goto(afterpath)
+        hide()
     }
 </script>
 
