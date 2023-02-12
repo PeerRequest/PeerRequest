@@ -8,6 +8,7 @@
 
     export let error;
     let reviews = null;
+    let entries = null;
 
     function loadUserReviews() {
         reviews = null;
@@ -24,8 +25,37 @@
             .catch(err => console.log(err))
     }
 
+    function loadUserEntries() {
+        entries = null;
+        fetch("/api/entries")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    entries = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+    function findEntry(entry_id) {
+        let test = null
+        if (entries !== null) {
+            entries.forEach( function (item) {
+                if (item.id === entry_id) {
+                    test = item
+                    return item
+                }
+            })
+        }
+        return test
+    }
+
+
     onMount(() => {
         loadUserReviews();
+        loadUserEntries();
     });
 
 </script>
@@ -35,7 +65,7 @@
 </svelte:head>
 
 
-{#if reviews === null}
+{#if reviews === null || entries===null}
     LOADING
 {:else}
     <Container>
@@ -49,12 +79,14 @@
         <Reviews
                 show_category=true
                 show_paper=true>
-            {#each reviews !== null as r}
+            {#each reviews as r}
                 <Review
-                        href="/categories/{r.paper.category.id}/entries/{r.paper.id}/reviews/{r.id}"
-                        id={r.id}
-                        paper={r.paper}
-                        category={r.paper.category}
+                        href="/categories/{findEntry(r.entry_id).category_id}/entries/{r.entry_id}/reviews/{r.id}"
+                        bind:review={r}
+                        paper={findEntry(r.entry_id)}
+                        show_paper={true}
+                        show_category={true}
+                        category_id={findEntry(r.entry_id).category_id}
                 />
             {/each}
         </Reviews>
