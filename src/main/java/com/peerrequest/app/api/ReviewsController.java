@@ -179,7 +179,7 @@ public class ReviewsController extends ServiceBasedController {
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
         } catch (Exception e) {
-            throw new RuntimeException("Something went wrong");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "document upload went wrong");
         }
 
         var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
