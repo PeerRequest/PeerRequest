@@ -16,7 +16,7 @@
             <TableHeadCell>Conference</TableHeadCell>
         {/if}
 
-        {#if (show_slots) && (category_type === "Internal")}
+        {#if show_slots}
             <TableHeadCell>Open Review Slots</TableHeadCell>
             <TableHeadCell></TableHeadCell>
         {/if}
