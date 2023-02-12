@@ -3,6 +3,8 @@
         Modal,
         Button,
         CloseButton,
+        Fileupload,
+        Footer,
         Heading,
         TableBodyRow,
         TableHeadCell,
@@ -43,6 +45,11 @@
     let entryPath;
     let requestPath;
 
+    let fileuploadprops = {
+        id: "annotations_file_input",
+        accept: ".pdf,application/pdf"
+    };
+
     function updatePaths() {
         entryPath = `/api/categories/${category_id}/entries/${new_entry_id}/process`;
         requestPath = `/api/categories/${category_id}/entries/${new_entry_id}/process/requests`;
@@ -53,16 +60,12 @@
     }
 
     function addReviewer(u) {
-        let inputValOpenSlots = document.getElementById("selected_open_slots").value;
-        if (reviewers.length + 1 <= inputValOpenSlots) {
-            reviewers = reviewers.concat([u])
-        } else {
-            alert("Warning! Not enough open slots!")
-        }
+        reviewers = reviewers.concat([u])
     }
 
     function createEntry() {
-        file = fileInput.files[0];
+        const input = document.getElementById(fileuploadprops.id);
+        file = input.files[0];
         console.log(file);
         const formData = new FormData();
         formData.append("authors", authors);
@@ -178,22 +181,26 @@
 
     <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => processSubmission()}>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="sm" tag="h4"> Enter paper title</Heading>
+            <Heading size="sm" tag="h4"> Enter Paper Title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
                    type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
-            <Heading size="sm" tag="h4">Enter paper authors</Heading>
+            <Heading size="sm" tag="h4">Enter Paper Authors</Heading>
             <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <input bind:this={fileInput} type="file"/>
+            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                        inputClass="annotations_file_input"
+                        size="lg"
+                        required
+            />
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <Heading class="mr-3" size="sm" tag="h4">Choose number of review slots</Heading>
+            <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
             <input class="justify-end rounded-lg"
                    id=selected_open_slots
                    min={reviewers.length > 0 ? reviewers.length : 1}
@@ -221,47 +228,46 @@
                 LOADING USERS
             {/if}
         </Dropdown>
-    </form>
-
-    <div class="mb-4">
-        <Table divClass="relative">
-            <TableHead>
-                <TableHeadCell>Name</TableHeadCell>
-            </TableHead>
-            <TableBody class="divide-y">
-                {#each reviewers as r }
-                    <TableBodyRow>
-                        <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
-                        <TableBodyCell>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <Button pill class="!p-2" outline color="red"
-                                        on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                         width="32px" height="32px" viewBox="0 0 64 64"
-                                         xml:space="preserve">
+        <div class="mb-4 h-[20vh] overflow-y-auto  max-h-[20vh]">
+            <Table divClass="relative">
+                <TableHead>
+                    <TableHeadCell>Name</TableHeadCell>
+                </TableHead>
+                <TableBody class="divide-y">
+                    {#each reviewers as r }
+                        <TableBodyRow>
+                            <TableBodyCell>{r.name}</TableBodyCell>
+                            <TableBodyCell>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <Button pill class="!p-2" outline color="red"
+                                            on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                             width="32px" height="32px" viewBox="0 0 64 64"
+                                             xml:space="preserve">
                           <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
                                   y1="17.153" x2="45.045"
                                   y2="43.056"/>
                           </g>
-                                        <g>
+                                            <g>
                             <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
                                   y1="43.153" x2="44.947"
                                   y2="17.056"/>
                           </g>
                       </svg>
-                                </Button>
-                            </div>
-                        </TableBodyCell>
-                    </TableBodyRow>
-                {/each}
-            </TableBody>
-        </Table>
-
-    </div>
-    <Button color="primary" on:click={() => processSubmission()} size="sm" type="submit">
-        Finish Submission
-    </Button>
-
+                                    </Button>
+                                </div>
+                            </TableBodyCell>
+                        </TableBodyRow>
+                    {/each}
+                </TableBody>
+            </Table>
+        </div>
+        <Footer class="bottom-0 left-0 z-20 w-full">
+            <Button class="w-full" color="primary" size="sm" type="submit">
+                Finish Submission
+            </Button>
+        </Footer>
+    </form>
 
 </Modal>
