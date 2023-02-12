@@ -110,6 +110,8 @@
                     <StarRating rating={rating}/>
                 </TableBodyCell>
             {/if}
+
         {/if}
+
     {/if}
 </TableBodyRow>
