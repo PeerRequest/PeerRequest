@@ -78,7 +78,7 @@
                 } else {
                     try {
                         hide();
-                        new_entry_id = resp.content.id;
+                        new_entry_id = resp.id;
                         updatePaths();
                     } catch (error) {
                         console.log(error);
@@ -91,7 +91,7 @@
     function processSubmission() {
         createEntry();
         createDirectRequestProcess();
-        reviewers.map(reviewer => createDirectRequest(reviewer.id()))
+        reviewers.map(reviewer => createDirectRequest(reviewer.id))
     }
 
     function createDirectRequestProcess() {
@@ -112,7 +112,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-
+                    console.log("createDirectRequestProcess", resp)
                 }
             })
             .catch(err => console.log(err));
@@ -135,7 +135,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-
+                    console.log("createDirectRequest", resp)
                 }
             })
             .catch(err => console.log(err));
