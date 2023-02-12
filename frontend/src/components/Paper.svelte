@@ -15,9 +15,6 @@
     export let show_slots = false;
 
     let process = null;
-    let reviewer_id = null;
-    let category = null;
-    let reviews = null;
     let review = null;
 
     const dispatch = createEventDispatcher();
@@ -63,33 +60,22 @@
             },
             body: {}
         })
-    function reviewToEntry (review) {
-
-        if (review.entry_id === paper.id) {
-            isReviewer = true
-        }
-    }
-
-    function loadUserReviews() {
-        reviews = null;
-        fetch("/api/reviews")
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
-                    console.log("claimsloterror!", error);
+                    console.log(error);
                 } else {
                     console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
                     dispatch("claimSlot");
                 }
             })
-            .catch(err => console.log(err));
     }
+
 
     onMount(() => {
         loadCategory()
-        loadUserReviews()
         if (show_slots) {
             loadDirectRequestProcess();
         }
@@ -130,24 +116,20 @@
                 </TableBodyCell>
             {/if}
 
-            {#if show_slots && slots !== null}
+            {#if show_slots}
                 {#if slots === null}
                     <TableBodyCell>0</TableBodyCell>
                     <Button disabled outline size="xs">Claim Review Slot</Button>
+                {:else}
+                    <TableBodyCell>{slots}</TableBodyCell>
+                    <TableBodyCell>
+                        <Button disabled={slots<=0} href={href} outline size="xs"
+                                on:click={() => claimSlot()}>
+                            Claim Review Slot
+                        </Button>
+                    </TableBodyCell>
                 {/if}
-                <TableBodyCell>{slots}</TableBodyCell>
-                <TableBodyCell>
-                    <!--
-                    <Button disabled={slots<=0} href={href} outline size="xs" on:click={() => claimSlot()}>
-                        Claim Review Slot
-                    </Button>
-                    -->
-                    <Button disabled={slots<=0} href={href} outline size="xs"
-                            on:click={() => claimSlot()}>
-                        Claim Review Slot
 
-                    </Button>
-                </TableBodyCell>
             {/if}
 
             <!--
