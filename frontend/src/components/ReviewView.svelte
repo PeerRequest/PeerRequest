@@ -151,7 +151,7 @@
                         <Fileupload {...fileuploadprops} bind:value={fileInput}
                                     inputClass="my-auto annotations_file_input"
                                     on:change={() => upload_state = ""}
-                                    size="lg"
+                                    size="lg" required
                         />
                         <Button disabled={!fileInput}
                                 on:click={() => uploadReviewPdf()} outline
