@@ -8,7 +8,6 @@
 
     export let error;
     let entries = null;
-
     function loadUserEntries() {
         entries = null;
         fetch("/api/entries")
@@ -33,23 +32,26 @@
     <title>My Papers | PeerRequest</title>
 </svelte:head>
 
-<Container>
-    <ResponsiveBreadCrumb>
-        <BreadcrumbItem home href="/">Home</BreadcrumbItem>
-        <BreadcrumbItem href="/my-papers">My Papers</BreadcrumbItem>
-    </ResponsiveBreadCrumb>
-    <Heading class="mb-4" tag="h2">My Papers</Heading>
+{#if entries === null}
+    LOADING
+{:else}
+    <Container>
+        <ResponsiveBreadCrumb>
+            <BreadcrumbItem home href="/">Home</BreadcrumbItem>
+            <BreadcrumbItem href="/my-papers">My Papers</BreadcrumbItem>
+        </ResponsiveBreadCrumb>
+        <Heading class="mb-4" tag="h2">My Papers</Heading>
 
-    <Papers show_category=true>
+        <Papers show_category=true>
 
-        {#each entries !== null as p}
-            <Paper
-                    href="/categories/{p.category.id}/{p.id}"
-                    paper={p}
-                    category={p.category}
-            />
-        {/each}
-    </Papers>
+            {#each entries as p}
+                <Paper
+                        href="/categories/{p.category_id}/entries/{p.id}"
+                        bind:paper={p}
+                />
+            {/each}
+        </Papers>
 
 
-</Container>
+    </Container>
+{/if}
