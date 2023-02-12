@@ -33,6 +33,8 @@
         loadCategory()
     })
 
+    export let show_category = false;
+
 </script>
 
 
@@ -46,7 +48,11 @@
             </TableBodyCell>
         {/each}
     {:else }
-        {#if category !== null}
+        <TableBodyCell>
+            <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+        </TableBodyCell>
+
+        {#if show_category && category !== null}
             <TableBodyCell>
                 <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             </TableBodyCell>
