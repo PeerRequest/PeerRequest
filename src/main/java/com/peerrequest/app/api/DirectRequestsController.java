@@ -259,6 +259,13 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must be set");
         }
 
+        /*
+        // TODO: Comment in commented out code
+        if (request.reviewerId().get().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "user can not review their own entry");
+        }
+         */
+
         for (var reviewer :
                 this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
             if (reviewer.getReviewerId().equals(user.getAttribute("sub"))) {
