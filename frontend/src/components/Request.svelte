@@ -75,12 +75,6 @@
                       </svg>
                 </Button>
 
-
-                <!--
-                <Button outline size="sm" on:click={() => updateRequest("ACCEPTED")}>Accept</Button>
-                <Button outline color="red" size="sm" on:click={() => updateRequest("DECLINED")}>Decline</Button>
-                -->
-
             </div>
         </TableBodyCell>
     {/if}
