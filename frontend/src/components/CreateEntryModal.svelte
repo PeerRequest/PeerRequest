@@ -16,6 +16,7 @@
     } from "flowbite-svelte" ;
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
+    import {page} from "$app/stores";
 
     export let error = null;
     export let category;
@@ -38,15 +39,8 @@
     let file;
     let new_entry_id;
     let current_user;
+    let path = $page.url.pathname;
 
-    let categoryPath = `/api/categories/${category_id}/entries`;
-    let entryPath;
-    let requestPath;
-
-    function updatePaths() {
-        entryPath = `/api/categories/${category_id}/entries/${new_entry_id}/process`;
-        requestPath = `/api/categories/${category_id}/entries/${new_entry_id}/process/requests`;
-    }
 
     function apply_query(q) {
         query = q;
@@ -68,7 +62,7 @@
         formData.append("authors", authors);
         formData.append("name", name);
         formData.append("file", file);
-        return fetch(categoryPath, {
+        return fetch("/api/categories/" + category.id + "/entries", {
             method: "POST",
             body: formData
         })
@@ -81,7 +75,8 @@
                     try {
                         hide();
                         new_entry_id = resp.id;
-                        updatePaths();
+                        console.log(new_entry_id)
+                        createDirectRequestProcess();
                     } catch (error) {
                         console.log(error);
                     }
@@ -90,18 +85,13 @@
             .catch(err => console.log(err));
     }
 
-    function processSubmission() {
-        createEntry();
-        createDirectRequestProcess();
-        reviewers.map(reviewer => createDirectRequest(reviewer.id))
-    }
 
     function createDirectRequestProcess() {
         let data = {
             open_slots: reviewers.length
         }
 
-        return fetch(entryPath, {
+        return fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -114,7 +104,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    console.log("createDirectRequestProcess", resp)
+                    reviewers.map(reviewer => createDirectRequest(reviewer.id))
                 }
             })
             .catch(err => console.log(err));
@@ -124,7 +114,7 @@
         let data = {
             reviewer_id: reviewer_id
         }
-        return fetch(requestPath, {
+        return fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/requests", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -137,7 +127,6 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    console.log("createDirectRequest", resp)
                 }
             })
             .catch(err => console.log(err));
@@ -176,7 +165,7 @@
                      on:click={hide}/>
     </svelte:fragment>
 
-    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => processSubmission()}>
+    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => createEntry()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4"> Enter paper title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
@@ -259,7 +248,7 @@
         </Table>
 
     </div>
-    <Button color="primary" on:click={() => processSubmission()} size="sm" type="submit">
+    <Button color="primary" on:click={() => createEntry()} size="sm" type="submit">
         Finish Submission
     </Button>
 
