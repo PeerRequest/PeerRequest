@@ -11,6 +11,8 @@
     export let slots = null;
     export let loading = false;
 
+    export let show_category = false;
+
 </script>
 
 
@@ -28,7 +30,7 @@
             <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
         </TableBodyCell>
 
-        {#if category !== null}
+        {#if show_category && category !== null}
             <TableBodyCell>
                 <BreadcrumbItem
                         href="/categories/{category.id}">{category.name}</BreadcrumbItem>
