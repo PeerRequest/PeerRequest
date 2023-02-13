@@ -35,18 +35,17 @@ spring:
     multipart:
       max-file-size: 64MB
       max-request-size: 64MB
-  # todo: remove #
-  #mail:
-    #host: ${PR_SMTP_SERVER}
-   # port: ${PR_SMTP_PORT}
-   # username: ${PR_SMTP_EMAIL}
-   # password: ${PR_SMTP_APP_PW}
-   # protocol: smtp
-   # tls: true
-   # properties.mail.smtp:
-   #   auth: true
-   #   starttls.enable: true
-   #   ssl.trust: ${PR_SMTP_SERVER}
+  mail:
+    host: ${PR_SMTP_SERVER}
+    port: ${PR_SMTP_PORT}
+    username: ${PR_SMTP_EMAIL}
+    password: ${PR_SMTP_APP_PW}
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      ssl.trust: ${PR_SMTP_SERVER}
 server:
   port: ${PORT:8080}
 keycloak:

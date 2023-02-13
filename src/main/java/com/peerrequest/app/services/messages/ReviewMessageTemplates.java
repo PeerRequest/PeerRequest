@@ -35,7 +35,7 @@ public enum ReviewMessageTemplates {
     );
 
     public String getMessage(String receiver, String emitter, String entryName) {
-        return String.format(receiver, message, emitter, entryName);
+        return String.format(message, receiver, emitter, entryName);
     }
 
     @Getter

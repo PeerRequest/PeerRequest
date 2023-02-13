@@ -11,7 +11,7 @@ public enum CategoryMessageTemplates {
             "Category was deleted, therefore your review is no longer needed.");
 
     public String getMessage(String receiver, String entryName) {
-        return String.format(receiver, message, entryName);
+        return String.format(message, receiver, entryName);
     }
 
     @Getter
