@@ -402,6 +402,21 @@ public class DirectRequestsController extends ServiceBasedController {
                 pairList);
     }
 
+    @PostMapping("/requests")
+    public List<DirectRequest.Dto> getSpecificRequests(@RequestBody List<Long> entryIds,
+                                                       @AuthenticationPrincipal OAuth2User user) {
+        return entryIds.stream()
+                .map(this.directRequestProcessService::getByEntry)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .flatMap(process -> this.directRequestService
+                        .listByDirectRequestProcessId(process.getId()).stream()
+                        .filter(r -> r.getState() != DirectRequest.RequestState.DECLINED
+                                && r.getReviewerId().equals(user.getAttribute("sub"))))
+                .map(DirectRequest::toDto)
+                .toList();
+    }
+
     /**
      * Claims an open slot.
      *
