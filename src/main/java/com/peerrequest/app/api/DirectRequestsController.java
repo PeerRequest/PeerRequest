@@ -403,7 +403,7 @@ public class DirectRequestsController extends ServiceBasedController {
     }
 
     @PostMapping("/requests")
-    public List<DirectRequest.Dto> getSpecificRequests(@RequestBody List<Long> entryIds,
+    List<DirectRequest.Dto> getSpecificRequests(@RequestBody List<Long> entryIds,
                                                        @AuthenticationPrincipal OAuth2User user) {
         return entryIds.stream()
                 .map(this.directRequestProcessService::getByEntry)
