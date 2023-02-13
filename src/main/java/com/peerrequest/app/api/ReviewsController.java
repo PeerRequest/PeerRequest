@@ -5,9 +5,13 @@ import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.data.Message;
 import com.peerrequest.app.data.Paged;
 import com.peerrequest.app.data.Review;
+import com.peerrequest.app.data.repos.EntryRepository;
 import com.peerrequest.app.services.messages.ReviewMessageTemplates;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +38,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewsController extends ServiceBasedController {
 
     private final int maxPageSize = 100;
+    private final EntryRepository entryRepository;
+
+    public ReviewsController(EntryRepository entryRepository) {
+        this.entryRepository = entryRepository;
+    }
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews")
     Paged<List<Review.Dto>> listReviews(@AuthenticationPrincipal OAuth2User user,
@@ -338,7 +347,7 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @GetMapping("/reviews")
-    Paged<List<Review.Dto>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
+    Paged<List<Pair<Review.Dto, Entry.Dto>>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
                                                     @RequestParam("page") Optional<Integer> page,
                                                     @AuthenticationPrincipal OAuth2User user) {
         if (limit.isPresent()) {
@@ -351,11 +360,25 @@ public class ReviewsController extends ServiceBasedController {
         var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
             Math.min(limit.orElse(maxPageSize), maxPageSize),
             user.getAttribute("sub"));
+
+        List<Pair<Review.Dto, Entry.Dto>> pairList = new ArrayList<>();
+
+        for (var review : reviewPage) {
+            var entryId = review.getEntryId();
+            var entry = this.entryService.get(entryId);
+
+            Pair<Review.Dto, Entry.Dto> pair = Pair.of(review.toDto(), entry.get().toDto());
+
+            pairList.add(pair);
+        }
+
+        var pairPage = new PageImpl<>(pairList);
+
         return new Paged<>(
-            reviewPage.getSize(),
-            reviewPage.getNumber() + 1,
-            reviewPage.getTotalPages(),
-            reviewPage.stream().map(Review::toDto).toList());
+            pairPage.getSize(),
+            pairPage.getNumber() + 1,
+            pairPage.getTotalPages(),
+            pairList);
     }
 
     private void checkAuthReviewer(Optional<Review> review, OAuth2User user) {
