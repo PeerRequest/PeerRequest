@@ -132,7 +132,7 @@
             <Heading tag="h6">
                 <Secondary>
                     {#if reviewer !== null}
-                        Reviewer: {reviewer.first_name +" "+ reviewer.last_name}
+                        Reviewer: {reviewer.firstName +" "+ reviewer.lastName}
                     {:else}
                         Loading Reviewer
                     {/if}
