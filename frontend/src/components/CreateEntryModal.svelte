@@ -143,7 +143,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    users = resp;
+                    users = resp.content;
                     users = users.filter(e => e.id !== current_user.id)
                 }
             })
@@ -224,7 +224,7 @@
                 <TableBody class="divide-y">
                     {#each reviewers as r }
                         <TableBodyRow>
-                            <TableBodyCell>{r.first_name + " " + r.last_name}</TableBodyCell>
+                            <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
                             <TableBodyCell>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <Button pill class="!p-2" outline color="red"

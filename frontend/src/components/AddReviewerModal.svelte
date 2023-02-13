@@ -16,7 +16,6 @@
     } from "flowbite-svelte" ;
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
-    import {afterpath, to_delete} from "./ConfirmDeletionModal.svelte";
 
     export let show = false;
     export let paper;
