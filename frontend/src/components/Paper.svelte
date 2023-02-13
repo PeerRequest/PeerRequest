@@ -2,6 +2,7 @@
     import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
     import {createEventDispatcher, onMount} from "svelte";
+    import Cookies from "js-cookie";
 
     export let href;
     export let paper = "";
@@ -15,9 +16,6 @@
     export let show_slots = false;
 
     let process = null;
-    let reviewer_id = null;
-    let category = null;
-    let reviews = null;
     let review = null;
 
     const dispatch = createEventDispatcher();
@@ -63,39 +61,27 @@
             },
             body: {}
         })
-    function reviewToEntry (review) {
-
-        if (review.entry_id === paper.id) {
-            isReviewer = true
-        }
-    }
-
-    function loadUserReviews() {
-        reviews = null;
-        fetch("/api/reviews")
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
-                    console.log("claimsloterror!", error);
+                    console.log(error);
                 } else {
                     console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
                     dispatch("claimSlot");
                 }
             })
-            .catch(err => console.log(err));
     }
+
 
     onMount(() => {
         loadCategory()
-        loadUserReviews()
         if (show_slots) {
             loadDirectRequestProcess();
         }
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     })
-
-
 </script>
 
 
@@ -110,8 +96,8 @@
         {/each}
     {:else }
         <TableBodyCell>
-            {#if (current_user.id === paper.researcher_id) || isReviewer }
-                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+            {#if current_user !== null && (current_user.id === paper.researcher_id) || isReviewer }
+                <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             {:else }
                 <BreadcrumbItem>{paper.name}</BreadcrumbItem>
             {/if}
@@ -119,48 +105,39 @@
 
         {#if show_category && category !== null}
             <TableBodyCell>
-                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+                <BreadcrumbItem
+                        href="/categories/{category.id}">{category.name}</BreadcrumbItem>
             </TableBodyCell>
+        {/if}
 
-
-            {#if show_category && category !== null}
+        {#if show_slots}
+            {#if slots === null}
+                <TableBodyCell>0</TableBodyCell>
                 <TableBodyCell>
-                    <BreadcrumbItem
-                            href="/categories/{category.id}">{category.name}</BreadcrumbItem>
-                </TableBodyCell>
-            {/if}
-
-            {#if show_slots && slots !== null}
-                {#if slots === null}
-                    <TableBodyCell>0</TableBodyCell>
                     <Button disabled outline size="xs">Claim Review Slot</Button>
-                {/if}
+                </TableBodyCell>
+            {:else}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <!--
-                    <Button disabled={slots<=0} href={href} outline size="xs" on:click={() => claimSlot()}>
-                        Claim Review Slot
-                    </Button>
-                    -->
                     <Button disabled={slots<=0} href={href} outline size="xs"
                             on:click={() => claimSlot()}>
                         Claim Review Slot
-
                     </Button>
                 </TableBodyCell>
             {/if}
 
-            <!--
-
-            {#if rating !== null}
-                <TableBodyCell>
-                    <StarRating rating={rating}/>
-                </TableBodyCell>
-            {/if}
-            -->
-
-
         {/if}
 
+        <!--
+
+        {#if rating !== null}
+            <TableBodyCell>
+                <StarRating rating={rating}/>
+            </TableBodyCell>
+        {/if}
+        -->
+
+
     {/if}
+
 </TableBodyRow>
