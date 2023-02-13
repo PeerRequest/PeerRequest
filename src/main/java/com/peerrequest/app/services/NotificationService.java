@@ -20,9 +20,9 @@ public class NotificationService {
     @Autowired
     private EntryService entryService;
 
-    //TODO: remove //!
-    //@Autowired
-    //private JavaMailSender mailSender;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
 
     private void sendEmail(String toEmail, String subject, String message) {
@@ -30,8 +30,7 @@ public class NotificationService {
         mail.setTo(toEmail);
         mail.setText(message);
         mail.setSubject(subject);
-        // TODO: remove //!
-        //  mailSender.send(mail);
+        mailSender.send(mail);
     }
 
     /**
@@ -46,7 +45,7 @@ public class NotificationService {
                                        Long entryId,
                                        CategoryMessageTemplates messageTemplate) {
 
-        /* TODO: remove comment
+
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
 
@@ -61,8 +60,6 @@ public class NotificationService {
                         receiver.get().firstName(),
                         entry.get().getName())
         );
-        *
-         */
     }
 
     /**
@@ -77,7 +74,6 @@ public class NotificationService {
                                        String receiverId,
                                        Long entryId,
                                        EntryMessageTemplates messageTemplate) {
-        /* TODO: remove comment
         var emitter = userService.get(emitterId);
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
@@ -94,8 +90,7 @@ public class NotificationService {
                 emitter.get().firstName() + " " + emitter.get().lastName(),
                 entry.get().getName())
         );
-        *
-         */
+
     }
 
     /**
@@ -110,7 +105,6 @@ public class NotificationService {
                                        String receiverId,
                                        Long entryId,
                                        ReviewMessageTemplates messageTemplate) {
-        /* TODO: remove comment
         var emitter = userService.get(emitterId);
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
@@ -127,7 +121,5 @@ public class NotificationService {
                 emitter.get().firstName() + " " + emitter.get().lastName(),
                 entry.get().getName())
         );
-
-         */
     }
 }
