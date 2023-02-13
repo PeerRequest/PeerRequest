@@ -97,7 +97,7 @@
     {:else }
         <TableBodyCell>
             {#if (current_user.id === paper.researcher_id) || isReviewer }
-                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+                <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             {:else }
                 <BreadcrumbItem>{paper.name}</BreadcrumbItem>
             {/if}
@@ -105,44 +105,39 @@
 
         {#if show_category && category !== null}
             <TableBodyCell>
-                <BreadcrumbItem href="/categories/{category.id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+                <BreadcrumbItem
+                        href="/categories/{category.id}">{category.name}</BreadcrumbItem>
             </TableBodyCell>
+        {/if}
 
-
-            {#if show_category && category !== null}
+        {#if show_slots}
+            {#if slots === null}
+                <TableBodyCell>0</TableBodyCell>
                 <TableBodyCell>
-                    <BreadcrumbItem
-                            href="/categories/{category.id}">{category.name}</BreadcrumbItem>
-                </TableBodyCell>
-            {/if}
-
-            {#if show_slots}
-                {#if slots === null}
-                    <TableBodyCell>0</TableBodyCell>
                     <Button disabled outline size="xs">Claim Review Slot</Button>
-                {:else}
-                    <TableBodyCell>{slots}</TableBodyCell>
-                    <TableBodyCell>
-                        <Button disabled={slots<=0} href={href} outline size="xs"
-                                on:click={() => claimSlot()}>
-                            Claim Review Slot
-                        </Button>
-                    </TableBodyCell>
-                {/if}
-
-            {/if}
-
-            <!--
-
-            {#if rating !== null}
+                </TableBodyCell>
+            {:else}
+                <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <StarRating rating={rating}/>
+                    <Button disabled={slots<=0} href={href} outline size="xs"
+                            on:click={() => claimSlot()}>
+                        Claim Review Slot
+                    </Button>
                 </TableBodyCell>
             {/if}
-            -->
-
 
         {/if}
 
+        <!--
+
+        {#if rating !== null}
+            <TableBodyCell>
+                <StarRating rating={rating}/>
+            </TableBodyCell>
+        {/if}
+        -->
+
+
     {/if}
+
 </TableBodyRow>
