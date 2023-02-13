@@ -133,8 +133,8 @@
                         .then(resp => {
                             for (let i = 0; i < entries.length; i++) {
                                 for (const e of resp) {
-                                    if (entries[i].id === e.id) {
-                                        entries[i].claimable = true;
+                                    if (entries[i].id === e.direct_request_process_id) {
+                                        entries[i].isReviewer = true;
                                         break;
                                     }
                                 }
@@ -264,7 +264,7 @@
                                 bind:paper={e}
                                 category={category}
                                 current_user={current_user}
-                                claimable={e.claimable}
+                                isReviewer={e.isReviewer}
                         />
                     {/each}
                 {/if}
