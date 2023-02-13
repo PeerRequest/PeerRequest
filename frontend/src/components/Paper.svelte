@@ -82,8 +82,6 @@
         }
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     })
-
-
 </script>
 
 

@@ -145,23 +145,28 @@
                 </Badge>
             </Heading>
 
-            <div class="flex w-full justify-between">
-                <div class="justify-start gap-x-4 flex">
-                    <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline on:click={() => show_edit_modal = true}>
-                        Edit Paper
-                    </Button>
-                    <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
-                            on:click={() => show_confirm_deletion_modal = true}>
-                        Delete Paper
-                    </Button>
-                </div>
 
-                <div class="w-full flex justify-end">
-                    <Button class="mx-auto lg:m-0 h-12" size="md" outline on:click={() => show_add_reviewer_modal = true}>
-                        Add additional Reviewer
-                    </Button>
+            {#if current_user !== null && current_user.id === entry.researcher_id}
+                <div class="flex w-full justify-between">
+                    <div class="justify-start gap-x-4 flex">
+                        <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline
+                                on:click={() => show_edit_modal = true}>
+                            >Edit Paper
+                        </Button>
+                        <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
+                                on:click={() => show_confirm_deletion_modal = true}>
+                            Delete Paper
+                        </Button>
+                    </div>
+
+                    <div class="w-full flex justify-end">
+                        <Button class="mx-auto lg:m-0 h-12" size="md" outline
+                                on:click={() => show_add_reviewer_modal = true}>
+                            Add additional Reviewer
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            {/if}
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
@@ -171,14 +176,14 @@
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
                     {#if reviews !== null}
                         <Reviews show_reviewer=true>
-                                {#each reviews as r}
-                                    <Review
-                                            show_reviewer=true
-                                            bind:review={r}
-                                            category_id={category.id}
-                                            paper={entry}
-                                    />
-                                {/each}
+                            {#each reviews as r}
+                                <Review
+                                        show_reviewer=true
+                                        bind:review={r}
+                                        category_id={category.id}
+                                        paper={entry}
+                                />
+                            {/each}
                         </Reviews>
                     {/if}
                 </div>
@@ -192,6 +197,7 @@
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
 
-        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}" show="{show_add_reviewer_modal}"/>
+        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}"
+                          show="{show_add_reviewer_modal}"/>
     {/if}
 {/if}
