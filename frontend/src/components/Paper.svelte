@@ -2,6 +2,7 @@
     import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
     import {createEventDispatcher, onMount} from "svelte";
+    import Cookies from "js-cookie";
 
     export let href;
     export let paper = "";
@@ -79,6 +80,7 @@
         if (show_slots) {
             loadDirectRequestProcess();
         }
+        current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     })
 
 
@@ -96,7 +98,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            {#if (current_user.id === paper.researcher_id) || isReviewer }
+            {#if current_user !== null && (current_user.id === paper.researcher_id) || isReviewer }
                 <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             {:else }
                 <BreadcrumbItem>{paper.name}</BreadcrumbItem>

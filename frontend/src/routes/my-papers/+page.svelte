@@ -18,6 +18,7 @@
                     console.log(error);
                 } else {
                     entries = resp.content;
+                    console.log(entries);
                 }
             })
             .catch(err => console.log(err))
