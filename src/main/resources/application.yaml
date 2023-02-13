@@ -13,7 +13,7 @@ spring:
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${PR_KEYCLOAK_URL}/realms/PeerRequest
+            issuer-uri: ${PR_KEYCLOAK_URL}/realms/${PR_KEYCLOAK_REALM}
             user-name-attribute: preferred_username
   datasource:
     url: ${PR_DATABASE_URL}
