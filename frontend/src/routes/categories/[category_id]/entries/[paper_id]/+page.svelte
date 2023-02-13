@@ -151,7 +151,7 @@
                     <div class="justify-start gap-x-4 flex">
                         <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline
                                 on:click={() => show_edit_modal = true}>
-                            >Edit Paper
+                            Edit Paper
                         </Button>
                         <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
                                 on:click={() => show_confirm_deletion_modal = true}>
