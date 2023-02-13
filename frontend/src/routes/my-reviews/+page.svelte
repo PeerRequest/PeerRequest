@@ -18,7 +18,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    reviews = resp;
+                    reviews = resp.content;
                 }
             })
             .catch(err => console.log(err))

@@ -17,7 +17,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    entries = resp;
+                    entries = resp.content;
                 }
             })
             .catch(err => console.log(err))
