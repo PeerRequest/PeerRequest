@@ -122,6 +122,24 @@
                 } else {
                     lastPage = resp.last_page;
                     entries = resp.content;
+
+                    return fetch("/api/requests", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(entries.map(e => e.id))
+                    }).then(resp => resp.json())
+                        .then(resp => {
+                            for (let i = 0; i < entries.length; i++) {
+                                for (const e of resp) {
+                                    if (entries[i].id === e.id) {
+                                        entries[i].claimable = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        })
                 }
             })
             .catch(err => console.log(err))
@@ -245,8 +263,8 @@
                                 href="/categories/{category.id}/entries/{e.id}"
                                 bind:paper={e}
                                 category={category}
-                                current_user ={current_user}
-
+                                current_user={current_user}
+                                claimable={e.claimable}
                         />
                     {/each}
                 {/if}

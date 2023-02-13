@@ -3,6 +3,7 @@
     import Skeleton from "svelte-skeleton-loader"
     import {createEventDispatcher, onMount} from "svelte";
     import Cookies from "js-cookie";
+    import {goto} from "$app/navigation";
 
     export let href;
     export let paper = "";
@@ -14,6 +15,7 @@
     export let error = null;
     export let show_category = false;
     export let show_slots = false;
+    export let claimable = false;
 
     let process = null;
     let review = null;
@@ -119,8 +121,13 @@
             {:else}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled={slots<=0} href={href} outline size="xs"
-                            on:click={() => claimSlot()}>
+                    <Button disabled={slots<=0 || !claimable} outline size="xs"
+                            on:click={slots > 0 && claimable
+                            ? () => {
+                                claimSlot();
+                                goto(href);
+                            }
+                            : null}>
                         Claim Review Slot
                     </Button>
                 </TableBodyCell>
