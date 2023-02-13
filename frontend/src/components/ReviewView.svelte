@@ -86,7 +86,7 @@
     onMount(() => {
         // get current user data from cookie
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
-        if (current_user.id === review.reviewer_id) {
+        if (current_user.id !== review.reviewer_id) {
             reviewerUser = true;
         }
         loadReviewDocument()
