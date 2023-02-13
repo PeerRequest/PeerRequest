@@ -3,6 +3,7 @@
     import Skeleton from "svelte-skeleton-loader"
     import {createEventDispatcher, onMount} from "svelte";
     import Cookies from "js-cookie";
+    import {goto} from "$app/navigation";
 
     export let href;
     export let paper = "";
@@ -14,12 +15,12 @@
     export let error = null;
     export let show_category = false;
     export let show_slots = false;
+    export let isReviewer = false;
 
     let process = null;
     let review = null;
 
     const dispatch = createEventDispatcher();
-    let isReviewer = false;
 
     function loadCategory() {
         category = null;
@@ -96,7 +97,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            {#if current_user !== null && (current_user.id === paper.researcher_id) || isReviewer }
+            {#if current_user !== null && (current_user.id === paper.researcher_id || isReviewer) }
                 <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
             {:else }
                 <BreadcrumbItem>{paper.name}</BreadcrumbItem>
@@ -119,8 +120,13 @@
             {:else}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled={slots<=0} href={href} outline size="xs"
-                            on:click={() => claimSlot()}>
+                    <Button disabled={slots<=0} outline size="xs"
+                            on:click={slots > 0
+                            ? () => {
+                                claimSlot();
+                                goto(href);
+                            }
+                            : null}>
                         Claim Review Slot
                     </Button>
                 </TableBodyCell>
