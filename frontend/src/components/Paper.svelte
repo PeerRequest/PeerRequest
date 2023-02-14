@@ -6,7 +6,7 @@
     import {goto} from "$app/navigation";
 
     export let href;
-    export let paper = "";
+    export let paper = null;
     // export let rating = null;
     export let category = null;
     export let slots = null;
@@ -19,6 +19,7 @@
 
     let process = null;
     let review = null;
+    let authors = "";
 
     const dispatch = createEventDispatcher();
 
@@ -111,8 +112,12 @@
             </TableBodyCell>
         {/if}
 
-        <TableBodyCell>
-            {paper.authors}
+        <TableBodyCell class="max-w-[5vw] overflow-x-hidden">
+            {#if paper.authors === "undefined"}
+                Anonymous
+            {:else }
+                {paper.authors}
+            {/if}
         </TableBodyCell>
 
         {#if show_slots}
