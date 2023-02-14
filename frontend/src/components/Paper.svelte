@@ -111,6 +111,10 @@
             </TableBodyCell>
         {/if}
 
+        <TableBodyCell>
+            {paper.authors}
+        </TableBodyCell>
+
         {#if show_slots}
             {#if slots === null}
                 <TableBodyCell>0</TableBodyCell>
