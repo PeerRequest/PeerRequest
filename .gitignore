@@ -38,3 +38,4 @@ out/
 
 # generated
 /public
+/frontend/cypress.config.ts
