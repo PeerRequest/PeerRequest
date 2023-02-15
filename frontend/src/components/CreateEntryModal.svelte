@@ -42,6 +42,7 @@
     let new_entry_id;
     let current_user;
     let path = $page.url.pathname;
+    let open_slots = 0;
 
     let fileuploadprops = {
         id: "annotations_file_input",
@@ -90,7 +91,7 @@
 
     function createDirectRequestProcess() {
         let data = {
-            open_slots: reviewers.length
+            open_slots: open_slots
         }
 
         return fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process", {
@@ -191,7 +192,8 @@
             <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
             <input class="justify-end rounded-lg"
                    id=selected_open_slots
-                   min={reviewers.length > 0 ? reviewers.length : 1}
+                   min=0
+                   bind:value={open_slots}
                    type=number>
         </div>
 
