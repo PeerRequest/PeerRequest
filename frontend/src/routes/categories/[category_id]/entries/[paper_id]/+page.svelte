@@ -151,7 +151,7 @@
                 <Heading tag="h2">
                     {entry.name}
                     <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
-                                                                             target="_blank">Download</a>
+                                                                             target="_blank" download>Download</a>
                 </Badge>
                 </Heading>
             </div>
