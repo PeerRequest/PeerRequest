@@ -112,7 +112,7 @@
             </TableBodyCell>
         {/if}
 
-        <TableBodyCell class="max-w-[5vw] overflow-x-hidden">
+        <TableBodyCell class="max-w-[5vw] overflow-x-hidden text-ellipsis">
             {#if paper.authors === "undefined"}
             {:else }
                 {paper.authors}
