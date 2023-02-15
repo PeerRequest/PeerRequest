@@ -168,7 +168,7 @@
                      on:click={hide}/>
     </svelte:fragment>
 
-    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => createEntry()}>
+    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault|once={() => createEntry()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4"> Enter Paper Title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
