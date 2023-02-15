@@ -67,7 +67,7 @@
                     error = "" + response.status + ": " + response.message;
                     console.log(error);
                 } else {
-                    console.log("Save success")
+                    alert("Save success")
                 }
             })
             .catch(err => console.log(err))
