@@ -164,6 +164,14 @@
                         LOADING
                     {/if}
                 </Secondary>
+                <Secondary>
+                    <div class="w-[50%] overflow-x-auto">
+                        {#if entry.authors === "undefined"}
+                        {:else }
+                            <h1 class="font-extrabold">Authors:</h1> {entry.authors}
+                        {/if}
+                    </div>
+                </Secondary>
             </Heading>
 
 
@@ -188,6 +196,7 @@
                     </div>
                 </div>
             {/if}
+
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
