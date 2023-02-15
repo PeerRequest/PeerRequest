@@ -114,7 +114,6 @@
 
         <TableBodyCell class="max-w-[5vw] overflow-x-hidden">
             {#if paper.authors === "undefined"}
-                Anonymous
             {:else }
                 {paper.authors}
             {/if}
