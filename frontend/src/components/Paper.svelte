@@ -6,7 +6,7 @@
     import {goto} from "$app/navigation";
 
     export let href;
-    export let paper = "";
+    export let paper = null;
     // export let rating = null;
     export let category = null;
     export let slots = null;
@@ -19,6 +19,7 @@
 
     let process = null;
     let review = null;
+    let authors = "";
 
     const dispatch = createEventDispatcher();
 
@@ -110,6 +111,13 @@
                         href="/categories/{category.id}">{category.name}</BreadcrumbItem>
             </TableBodyCell>
         {/if}
+
+        <TableBodyCell class="max-w-[5vw] overflow-x-hidden text-ellipsis">
+            {#if paper.authors === "undefined"}
+            {:else }
+                {paper.authors}
+            {/if}
+        </TableBodyCell>
 
         {#if show_slots}
             {#if slots === null}
