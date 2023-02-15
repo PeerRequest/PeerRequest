@@ -17,7 +17,9 @@ import org.hibernate.Hibernate;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "review")
+@Table(name = "review", uniqueConstraints = {
+    @UniqueConstraint(name = "uc_entry-id_reviewer-id", columnNames = {"entry_id", "reviewer_id"})
+})
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
