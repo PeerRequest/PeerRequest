@@ -176,7 +176,7 @@
 
 
             {#if current_user !== null && current_user.id === entry.researcher_id}
-                <div class="flex w-full justify-between">
+                <div class="flex w-full justify-between mt-4">
                     <div class="justify-start gap-x-4 flex">
                         <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline
                                 on:click={() => show_edit_modal = true}>
