@@ -72,6 +72,9 @@
             })
             .catch(err => console.log(err))
 
+    }
+
+    function notifyOtherParty() {
         fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/notify", {
             method: "POST"
         })
@@ -128,3 +131,5 @@
 <Textarea bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
           disabled={reviewerUser}/>
 <Button class="w-full m-auto" on:click={() => editReviewForm()}> Save Changes </Button>
+<Button class="w-full m-auto" on:click={() => notifyOtherParty()}> Submit Review </Button>
+
