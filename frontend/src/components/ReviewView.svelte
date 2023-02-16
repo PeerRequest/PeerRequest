@@ -7,7 +7,6 @@
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
-    import PaperView from "./PaperView.svelte";
     import PdfViewer from "./PdfViewer.svelte";
 
     export let review = {
@@ -188,11 +187,6 @@
                             </Button>
                         {/if}
                     </div>
-                    {#if pdf_document !== null}
-                        <div class="flex w-full h-[50vh]">
-                            <PaperView document="{pdf_document}"/>
-                        </div>
-                    {/if}
                 </div>
             </TabItem>
             <TabItem>
