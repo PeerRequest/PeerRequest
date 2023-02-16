@@ -207,7 +207,8 @@
             </div>
             {#if users !== null}
                 {#each users.filter(u => !reviewers.includes(u) &&
-                    (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
+                    // TODO: also allow searching after lastName
+                    (query === "" || u.firstName.toLowerCase().includes(query.toLowerCase()))) as u }
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
                     <span class="cursor-pointer" on:click={() => addReviewer(u) }>
                       {u.firstName + " " + u.lastName}
