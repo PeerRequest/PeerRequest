@@ -2,9 +2,12 @@ package com.peerrequest.app;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -23,6 +26,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+    @Autowired
+    Environment env;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // @formatter:off
@@ -36,11 +42,16 @@ public class SecurityConfiguration {
             .disable();
 
         http
-            .authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/error").permitAll()
-                .requestMatchers(LogoutController.LOGOUT_URL).permitAll()
-                .anyRequest().authenticated()
-            )
+            .authorizeHttpRequests((authorize) -> {
+                if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+                    authorize.requestMatchers("/test/**").permitAll();
+                }
+
+                authorize
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers(LogoutController.LOGOUT_URL).permitAll()
+                    .anyRequest().authenticated();
+            })
             .oauth2Login((login) -> login
                 .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
             )
