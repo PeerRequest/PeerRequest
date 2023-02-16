@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: "default"
   application:
     name: PeerRequest
   security:
@@ -24,7 +27,6 @@ spring:
       matching-strategy: ant_path_matcher
   jpa:
     hibernate.ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -56,3 +58,30 @@ keycloak:
     username: ${PR_KEYCLOAK_ADMIN_USER:admin}
     password: ${PR_KEYCLOAK_ADMIN_PASSWORD}
     clientId: ${PR_KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "test"
+  application:
+    name: PeerRequestTest
+  datasource:
+    url: jdbc:tc:postgresql:14.1:///integration-tests-db?TC_TMPFS=/var/lib/postgresql/data:rw
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: ${$SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  servlet:
+    multipart:
+      max-file-size: 64MB
+      max-request-size: 64MB
