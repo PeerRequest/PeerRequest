@@ -35,10 +35,12 @@
     let requestPath;
     let requests = null;
     let pending_reviewer = [];
+    let new_reviewer = [];
 
 
     function addReviewer(u) {
         reviewers = reviewers.concat([u])
+        new_reviewer = new_reviewer.concat([u])
     }
 
     function apply_query(q) {
@@ -80,7 +82,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     reviewers = reviewers.filter(r => r !== reviewer)
                     console.log(error);
-                } else {}
+                }
             })
             .catch(err => console.log(err));
     }
@@ -95,6 +97,7 @@
                     console.log(error);
                 } else {
                     requests = resp.content;
+                    console.log(requests)
                     requests.forEach(filterUsers)
                 }
             })
@@ -102,7 +105,7 @@
     }
 
     function filterUsers(r) {
-        reviewers = users.filter( u => u.id === r.reviewer_id)
+        reviewers = reviewers.concat(users.filter( u => u.id === r.reviewer_id))
         requests.filter(request => {
             if(request.state === "PENDING") {
                 pending_reviewer = pending_reviewer.concat(request.reviewer_id)
@@ -111,12 +114,12 @@
     }
 
     function retractRequest(reviewer) {
-        if(pending_reviewer.includes(reviewer)) {
-            let reviewer_request = requests.filter(request => request.reviewer_id)
-            fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/requests/" + reviewer_request[0], {
+        if(pending_reviewer.includes(reviewer.id)) {
+            let reviewer_request = requests.filter(request => request.reviewer_id === reviewer.id)
+            fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/requests/" + reviewer_request[0].id, {
                 method: 'DELETE',
             })
-                .then((response) => console.log(response))
+                .then((response) => response.json())
                 .then((resp) => {
                     if (resp.status < 200 || resp.status >= 300) {
                         error = "" + resp.status + ": " + resp.message;
@@ -126,8 +129,9 @@
                 .catch(err => console.log(err))
 
         } else {
-            reviewers = reviewers.filter(e => e !== reviewer)
+            new_reviewer = new_reviewer.filter(e => e !== reviewer)
         }
+        reviewers = reviewers.filter(e => e !== reviewer)
     }
 
     onMount(() => {
@@ -184,29 +188,32 @@
                     {#each reviewers as r }
                         <TableBodyRow>
                             <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
-                            <TableBodyCell>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    {#if (pending_reviewer.includes(r))}
-                                        <Button pill class="!p-2" outline color="red"
-                                                on:click={() => retractRequest(r)}>
-                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                                 width="32px" height="32px" viewBox="0 0 64 64"
-                                                 xml:space="preserve">
-                                      <g>
-                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
-                                              y1="17.153" x2="45.045"
-                                              y2="43.056"/>
-                                      </g>
-                                                <g>
-                                        <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
-                                              y1="43.153" x2="44.947"
-                                              y2="17.056"/>
-                                      </g>
-                                  </svg>
-                                        </Button>
-                                    {/if}
-                                </div>
-                            </TableBodyCell>
+                            {#if (pending_reviewer.includes(r.id) || new_reviewer.includes(r))}
+                                <TableBodyCell>
+                                    PENDING
+                                </TableBodyCell>
+                                <TableBodyCell>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                            <Button pill class="!p-2" outline color="red"
+                                                    on:click={() => retractRequest(r)}>
+                                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                     width="32px" height="32px" viewBox="0 0 64 64"
+                                                     xml:space="preserve">
+                                          <g>
+                                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
+                                                  y1="17.153" x2="45.045"
+                                                  y2="43.056"/>
+                                          </g>
+                                                    <g>
+                                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
+                                                  y1="43.153" x2="44.947"
+                                                  y2="17.056"/>
+                                          </g>
+                                      </svg>
+                                            </Button>
+                                    </div>
+                                </TableBodyCell>
+                            {/if}
                         </TableBodyRow>
                     {/each}
                 </TableBody>
