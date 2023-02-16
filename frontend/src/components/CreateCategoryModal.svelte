@@ -122,7 +122,7 @@
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
     </svelte:fragment>
-    <form class="grid gap-y-6" on:submit|preventDefault={() => finishCreation()}>
+    <form class="grid gap-y-6" on:submit|preventDefault|once={() => finishCreation()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name</Heading>
             <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required

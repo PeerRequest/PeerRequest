@@ -321,8 +321,7 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the reviewer may change the state");
         }
 
-        if (request.get().getState() == DirectRequest.RequestState.DECLINED
-            || request.get().getState() == DirectRequest.RequestState.ACCEPTED) {
+        if (request.get().getState() != DirectRequest.RequestState.PENDING) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "request answer is already set");
         }
 
@@ -342,20 +341,23 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "state can not be set to pending");
         }
 
+        var researcherId = this.entryService.get(entryId).get().getResearcherId();
+
         if (updater.state().get() == DirectRequest.RequestState.ACCEPTED) {
 
             Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
                     Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
 
+
             this.reviewService.create(review);
 
-            this.notificationService.sendEntryNotification(reviewerId, user.getAttribute("sub").toString(),
-                entryId, EntryMessageTemplates.REQUEST_ACCEPTED);
+            this.notificationService.sendEntryNotification(reviewerId, researcherId, entryId,
+                EntryMessageTemplates.REQUEST_ACCEPTED);
         }
 
         if (updater.state().get() == DirectRequest.RequestState.DECLINED) {
-            this.notificationService.sendEntryNotification(reviewerId, user.getAttribute("sub").toString(),
-                entryId, EntryMessageTemplates.REQUEST_DECLINED);
+            this.notificationService.sendEntryNotification(reviewerId, researcherId, entryId,
+                EntryMessageTemplates.REQUEST_DECLINED);
         }
 
         DirectRequest updatedDirectRequest = new DirectRequest(request.get().getId(),
