@@ -184,7 +184,7 @@
 
                 </div>
                 {#if pdf_document !== null}
-                    <div class="absolute flex h-full w-[50%] right-1/4 left-1/4 justify-center">
+                    <div class="absolute flex h-[50%] w-[40%] left-[55%] justify-center">
                         <PaperView document="{pdf_document}"/>
                     </div>
                 {/if}
