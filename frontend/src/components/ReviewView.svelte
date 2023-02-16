@@ -108,11 +108,10 @@
     }
 </style>
 
-<div class="max-lg:hidden" id="pdfContainer">
-    <PdfViewer document={document} />
-</div>
-
 <div class="flex flex-auto h-full">
+    <div class="max-lg:hidden" id="pdfContainer">
+        <PdfViewer document={document} />
+    </div>
     <div class="p-4 w-[100%] lg:w-[50%] mx-5 overflow-auto">
         <Tabs style="underline">
             <TabItem open>
