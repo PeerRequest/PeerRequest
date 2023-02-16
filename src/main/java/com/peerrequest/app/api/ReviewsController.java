@@ -386,7 +386,7 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review does not exist");
         }
         if (!review.get().getReviewerId().equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "you may not have the permission to patch this review");
         }
     }
@@ -396,7 +396,7 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
         if (!entry.get().getResearcherId().equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "you may not have the permission to access this reviews");
         }
     }
@@ -410,7 +410,7 @@ public class ReviewsController extends ServiceBasedController {
         }
         if (!review.get().getReviewerId().equals(user.getAttribute("sub"))
             && !entry.get().getResearcherId().equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "you may not have the permission to access this review");
         }
     }
@@ -420,7 +420,7 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "message does not exist");
         }
         if (!message.get().getCreatorId().equals(user.getAttribute("sub"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "you may not have the permission to delete this message");
         }
     }
