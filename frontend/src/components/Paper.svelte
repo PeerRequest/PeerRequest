@@ -25,6 +25,9 @@
 
     function loadCategory() {
         category = null;
+        if (paper === null ||  paper.category_id === undefined) {
+            return
+        }
         fetch("/api/categories/" + paper.category_id)
             .then(resp => resp.json())
             .then(resp => {
@@ -40,6 +43,9 @@
 
     function loadDirectRequestProcess() {
         process = null;
+        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+            return
+        }
         fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
             .then(resp => resp.json())
             .then(resp => {
@@ -56,6 +62,9 @@
     }
 
     function claimSlot() {
+        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+            return
+        }
         return fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/claim", {
             method: "POST",
             headers: {
