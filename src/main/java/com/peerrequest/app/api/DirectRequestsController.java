@@ -151,7 +151,7 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
         }
 
-        if (user.getAttribute("sub").toString().equals(entry.get().getResearcherId())) {
+        if (!user.getAttribute("sub").toString().equals(entry.get().getResearcherId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the researcher may delete an request");
         }
 
