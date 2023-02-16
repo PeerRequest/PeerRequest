@@ -27,6 +27,7 @@
     let reviewerUser = true;
     let path = $page.url.pathname;
     export let pdf_document = null;
+    export let paper_pdf = null;
     export let error = null;
 
     let fileInput = null;
@@ -110,7 +111,9 @@
 
 <div class="flex flex-auto h-full">
     <div class="max-lg:hidden" id="pdfContainer">
-        <PdfViewer document={document} />
+        {#if paper_pdf !== null}
+            <PdfViewer document={paper_pdf} />
+        {/if}
     </div>
     <div class="p-4 w-[100%] lg:w-[50%] mx-5 overflow-auto">
         <Tabs style="underline">

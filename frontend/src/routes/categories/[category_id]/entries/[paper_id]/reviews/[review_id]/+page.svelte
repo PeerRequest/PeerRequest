@@ -38,7 +38,7 @@
             })
             .catch(err => console.log(err))
         paper_pdf = null;
-        fetch("/api" + path + "/paper")
+        fetch("/api/categories/" + data.category_id + "/entries/" + data.paper_id + "/paper")
             .then(resp => resp.blob())
             .then(resp => {
                 paper_pdf = window.URL.createObjectURL(resp);
@@ -146,7 +146,7 @@
                     {/if}
                 </Secondary>
             </Heading>
-            <ReviewView review="{review}" category="{category}" pdf_document="{paper_pdf}"/>
+            <ReviewView review="{review}" category="{category}" paper_pdf="{paper_pdf}"/>
         </Container>
     {/if}
 {/if}
