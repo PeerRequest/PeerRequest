@@ -8,13 +8,14 @@
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
     import PaperView from "./PaperView.svelte";
+    import PdfViewer from "./PdfViewer.svelte";
 
     export let review = {
         reviewer_id: "",
         entry_id: ""
     }
     export let category = {
-        id:""
+        id: ""
     }
     export let current_user = {
         id: "",
@@ -26,6 +27,7 @@
     let reviewerUser = true;
     let path = $page.url.pathname;
     export let pdf_document = null;
+    export let paper_pdf = null;
     export let error = null;
 
     let fileInput = null;
@@ -97,8 +99,23 @@
     }
 </script>
 
+<style>
+    #pdfContainer {
+        @apply w-[50%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;
+    }
+
+    #pdfContainer.hidden {
+        @apply w-0 h-0;
+    }
+</style>
+
 <div class="flex flex-auto h-full">
-    <div class="p-4 w-[100%] mx-5 overflow-auto">
+    <div class="max-lg:hidden" id="pdfContainer">
+        {#if paper_pdf !== null}
+            <PdfViewer document={paper_pdf} />
+        {/if}
+    </div>
+    <div class="p-4 w-[100%] lg:w-[50%] mx-5 overflow-auto">
         <Tabs style="underline">
             <TabItem open>
                 <div class="flex items-center gap-2" slot="title">

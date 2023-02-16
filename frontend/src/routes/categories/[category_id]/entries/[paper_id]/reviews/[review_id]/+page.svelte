@@ -22,6 +22,7 @@
     let review = null
     let reviewer = null;
     let path = $page.url.pathname;
+    let paper_pdf = null;
 
     function loadEntry() {
         entry = null;
@@ -34,6 +35,13 @@
                 } else {
                     entry = resp;
                 }
+            })
+            .catch(err => console.log(err))
+        paper_pdf = null;
+        fetch("/api/categories/" + data.category_id + "/entries/" + data.paper_id + "/paper")
+            .then(resp => resp.blob())
+            .then(resp => {
+                paper_pdf = window.URL.createObjectURL(resp);
             })
             .catch(err => console.log(err))
     }
@@ -138,7 +146,7 @@
                     {/if}
                 </Secondary>
             </Heading>
-            <ReviewView review="{review}" category="{category}"/>
+            <ReviewView review="{review}" category="{category}" paper_pdf="{paper_pdf}"/>
         </Container>
     {/if}
 {/if}
