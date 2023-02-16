@@ -83,15 +83,15 @@
 </script>
 
 <Label>Score: {edited_score} / {maxScore}</Label>
-<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}" />
+<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}" disabled={!reviewerUser}/>
 
 <div class="my-4"></div>
 
 <Label class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
 <ButtonGroup>
-    <Button color="red" outline on:click={() => confidence = 0}>Low</Button>
-    <Button color="yellow" outline on:click={() => confidence = 1}>Medium</Button>
-    <Button color="green" outline on:click={() => confidence = 2}>High</Button>
+    <Button color="red" outline on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
+    <Button color="yellow" outline on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
+    <Button color="green" outline on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
 </ButtonGroup>
 <hr class="my-4">
 
