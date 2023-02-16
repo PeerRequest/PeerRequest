@@ -123,11 +123,11 @@
                         {entry.name}
                     {/if}
                 </BreadcrumbItem>
-                <BreadcrumbItem>{"Review #" + String(review.id)}</BreadcrumbItem>
+                <BreadcrumbItem>{"Review for " + entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
 
             <Heading class="mb-1 flex items-center" tag="h2">
-                {"Review #" + String(review.id)}
+                {"Review for " + entry.name}
             </Heading>
             <Heading tag="h6">
                 <Secondary>
