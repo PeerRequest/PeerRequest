@@ -74,22 +74,6 @@
 
     }
 
-    function notifyOtherParty() {
-        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/notify", {
-            method: "POST"
-        })
-            .then(resp => resp)
-            .then(resp => {
-                console.log(resp.status)
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                }
-            })
-            .catch(err => console.log(err));
-    }
-
     onMount(() => {
         if (review.confidence_level !== null) {
             confidence = confidenceLevels.indexOf(review.confidence_level)
@@ -131,5 +115,4 @@
 <Textarea bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
           disabled={reviewerUser}/>
 <Button class="w-full m-auto" on:click={() => editReviewForm()}> Save Changes </Button>
-<Button class="w-full m-auto" on:click={() => notifyOtherParty()}> Submit Review </Button>
 
