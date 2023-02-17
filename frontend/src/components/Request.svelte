@@ -48,12 +48,12 @@
         <TableBodyCell>
             <div class="justify-center flex w-full gap-x-2">
                 <Button pill class="!p-2" outline
-                        on:click={() => updateRequest("ACCEPTED")}>
+                        on:click|once={() => updateRequest("ACCEPTED")}>
                     Accept
                 </Button>
 
                 <Button pill class="!p-2" outline color="red"
-                        on:click={() => updateRequest("DECLINED")}>
+                        on:click|once={() => updateRequest("DECLINED")}>
                     Decline
                 </Button>
 
