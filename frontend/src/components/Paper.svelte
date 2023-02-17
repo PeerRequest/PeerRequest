@@ -80,6 +80,7 @@
                 } else {
                     console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
+                    alert("A review slot has been claimed.")
                     dispatch("claimSlot");
                 }
             })
