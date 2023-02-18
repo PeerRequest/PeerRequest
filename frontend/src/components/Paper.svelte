@@ -6,7 +6,7 @@
     import {goto} from "$app/navigation";
 
     export let href;
-    export let paper = "";
+    export let paper = null;
     // export let rating = null;
     export let category = null;
     export let slots = null;
@@ -19,11 +19,15 @@
 
     let process = null;
     let review = null;
+    let authors = "";
 
     const dispatch = createEventDispatcher();
 
     function loadCategory() {
         category = null;
+        if (paper === null ||  paper.category_id === undefined) {
+            return
+        }
         fetch("/api/categories/" + paper.category_id)
             .then(resp => resp.json())
             .then(resp => {
@@ -39,6 +43,9 @@
 
     function loadDirectRequestProcess() {
         process = null;
+        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+            return
+        }
         fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
             .then(resp => resp.json())
             .then(resp => {
@@ -55,6 +62,9 @@
     }
 
     function claimSlot() {
+        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+            return
+        }
         return fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/claim", {
             method: "POST",
             headers: {
@@ -70,6 +80,7 @@
                 } else {
                     console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
+                    alert("A review slot has been claimed.")
                     dispatch("claimSlot");
                 }
             })
@@ -111,16 +122,18 @@
             </TableBodyCell>
         {/if}
 
+        <TableBodyCell class="max-w-[5vw] overflow-x-hidden text-ellipsis">
+            {#if paper.authors === "undefined"}
+            {:else }
+                {paper.authors}
+            {/if}
+        </TableBodyCell>
+
         {#if show_slots}
-            {#if slots === null}
-                <TableBodyCell>0</TableBodyCell>
-                <TableBodyCell>
-                    <Button disabled outline size="xs">Claim Review Slot</Button>
-                </TableBodyCell>
-            {:else}
+            {#if slots !== null}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled={slots<=0} outline size="xs"
+                    <Button disabled={slots<=0 || current_user.id === paper.researcher_id || isReviewer} outline size="xs"
                             on:click={slots > 0
                             ? () => {
                                 claimSlot();
@@ -130,8 +143,12 @@
                         Claim Review Slot
                     </Button>
                 </TableBodyCell>
+            {:else}
+                <TableBodyCell>0</TableBodyCell>
+                <TableBodyCell>
+                    <Button disabled outline size="xs">Claim Review Slot</Button>
+                </TableBodyCell>
             {/if}
-
         {/if}
 
         <!--

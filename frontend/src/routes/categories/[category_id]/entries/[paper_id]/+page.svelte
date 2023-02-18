@@ -1,5 +1,5 @@
 <script>
-    import {Badge, Button, BreadcrumbItem, Heading} from "flowbite-svelte";
+    import {Badge, Button, BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
     import Container from "../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../components/ResponsiveBreadCrumb.svelte";
     import PaperView from "../../../../../components/PaperView.svelte";
@@ -46,6 +46,8 @@
                 } else {
                     entry = resp;
                     current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+                    loadCategory()
+                    loadEntryDocument()
                     if (entry.researcher_id === current_user.id) {
                         loadReviews()
                     }
@@ -98,10 +100,16 @@
             .catch(err => console.log(err))
     }
 
+    function map_deadline(deadline) {
+        if (deadline != null) {
+            return new Date(Date.parse(deadline)).toLocaleDateString();
+        } else {
+            return "not specified"
+        }
+    }
+
     onMount(() => {
         loadEntry()
-        loadCategory()
-        loadEntryDocument()
     });
 
     let show_edit_modal = false;
@@ -139,15 +147,36 @@
                 </BreadcrumbItem>
                 <BreadcrumbItem>{entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
-            <Heading class="mb-4 flex items-center" tag="h2">{entry.name}
-                <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
-                                                             target="_blank">Download</a>
+            <div class="flex flex-row">
+                <Heading tag="h2">
+                    {entry.name}
+                    <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
+                                                                             target="_blank" download>Download</a>
                 </Badge>
+                </Heading>
+            </div>
+            <Heading tag="h6">
+
+                <Secondary>Review Deadline:
+                    {#if category !== null}
+                        {map_deadline(category.deadline)}
+                    {:else}
+                        LOADING
+                    {/if}
+                </Secondary>
+                <Secondary>
+                    <div class="w-[50%] overflow-x-auto">
+                        {#if entry.authors === "undefined"}
+                        {:else }
+                            <h1 class="font-extrabold">Authors:</h1> {entry.authors}
+                        {/if}
+                    </div>
+                </Secondary>
             </Heading>
 
 
             {#if current_user !== null && current_user.id === entry.researcher_id}
-                <div class="flex w-full justify-between">
+                <div class="flex w-full justify-between mt-4">
                     <div class="justify-start gap-x-4 flex">
                         <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline
                                 on:click={() => show_edit_modal = true}>
@@ -167,6 +196,7 @@
                     </div>
                 </div>
             {/if}
+
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">

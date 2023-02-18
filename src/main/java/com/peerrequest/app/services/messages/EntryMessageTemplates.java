@@ -21,7 +21,7 @@ public enum EntryMessageTemplates {
      */
     DIRECT_REQUEST(
         "PeerRequest - Review Request",
-        "Hi %s,\n%s has requested a review for his entry %s from you.\nTake a look!"
+        "Hi %s,\n%s has requested a review for their entry %s from you.\nTake a look!"
     ),
 
     /**

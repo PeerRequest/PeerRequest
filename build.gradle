@@ -33,7 +33,7 @@ ext {
 }
 
 dependencies {
-    implementation ('org.keycloak:keycloak-admin-client:20.0.3'){
+    implementation('org.keycloak:keycloak-admin-client:20.0.3') {
         exclude group: "com.sun.activation", module: "jakarta.activation"
     }
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -88,4 +88,8 @@ checkstyle {
         checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
     }
+}
+
+test {
+    environment "TESTCONTAINERS_RYUK_DISABLED", "TRUE"
 }

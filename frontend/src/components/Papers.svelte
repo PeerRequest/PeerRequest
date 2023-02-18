@@ -16,6 +16,8 @@
             <TableHeadCell>Conference</TableHeadCell>
         {/if}
 
+        <TableHeadCell>Authors</TableHeadCell>
+
         {#if show_slots}
             <TableHeadCell>Open Review Slots</TableHeadCell>
             <TableHeadCell></TableHeadCell>
