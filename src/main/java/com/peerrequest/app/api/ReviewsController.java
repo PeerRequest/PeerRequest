@@ -235,8 +235,9 @@ public class ReviewsController extends ServiceBasedController {
 
         } catch (ResponseStatusException r) {
             checkAuthResearcher(entry, user);
+            var reviewerId = this.reviewService.get(reviewId).get().getReviewerId();
             this.notificationService.sendReviewNotification(entry.get().getResearcherId(),
-                user.getAttribute("sub").toString(), entryId, ReviewMessageTemplates.EDIT_RESEARCHER);
+                reviewerId, entryId, ReviewMessageTemplates.EDIT_RESEARCHER);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

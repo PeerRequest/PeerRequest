@@ -1,5 +1,5 @@
 <script>
-    import {BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
+    import {Button, BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
     import Container from "../../../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../../../components/ResponsiveBreadCrumb.svelte";
     import ReviewView from "../../../../../../../components/ReviewView.svelte";
@@ -96,6 +96,23 @@
             .catch(err => console.log(err))
     }
 
+    function notifyOtherParty() {
+        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/notify", {
+            method: "POST"
+        })
+            .then(resp => resp)
+            .then(resp => {
+                console.log(resp.status)
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    alert("The other party has been notified about the submission")
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
     onMount(() => {
         loadEntry();
         loadCategory();
@@ -131,11 +148,12 @@
                         {entry.name}
                     {/if}
                 </BreadcrumbItem>
-                <BreadcrumbItem>{"Review #" + String(review.id)}</BreadcrumbItem>
+                <BreadcrumbItem>{"Review for " + entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
 
-            <Heading class="mb-1 flex items-center" tag="h2">
-                {"Review #" + String(review.id)}
+            <Heading class="mb-1 flex items-center w-full justify-between" tag="h2">
+                {"Review for " + entry.name}
+                <Button on:click={() => notifyOtherParty()}> Submit Review </Button>
             </Heading>
             <Heading tag="h6">
                 <Secondary>
