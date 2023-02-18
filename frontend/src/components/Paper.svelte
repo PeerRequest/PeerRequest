@@ -20,6 +20,7 @@
     let process = null;
     let review = null;
     let authors = "";
+    let clickedClaim = "Claim Review Slot"
 
     const dispatch = createEventDispatcher();
 
@@ -62,6 +63,7 @@
     }
 
     function claimSlot() {
+        clickedClaim = "LOADING"
         if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
             return
         }
@@ -82,6 +84,7 @@
                     loadDirectRequestProcess()
                     alert("A review slot has been claimed.")
                     dispatch("claimSlot");
+                    goto(href);
                 }
             })
     }
@@ -134,13 +137,12 @@
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
                     <Button disabled={slots<=0 || current_user.id === paper.researcher_id || isReviewer} outline size="xs"
-                            on:click={slots > 0
+                            on:click|once={slots > 0
                             ? () => {
                                 claimSlot();
-                                goto(href);
                             }
                             : null}>
-                        Claim Review Slot
+                        {clickedClaim}
                     </Button>
                 </TableBodyCell>
             {:else}

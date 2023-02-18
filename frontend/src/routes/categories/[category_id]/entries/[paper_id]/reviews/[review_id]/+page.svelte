@@ -44,6 +44,7 @@
                 paper_pdf = window.URL.createObjectURL(resp);
             })
             .catch(err => console.log(err))
+            .then( () => {loadCategory();})
     }
 
     function loadCategory() {
@@ -59,6 +60,7 @@
                 }
             })
             .catch(err => console.log(err))
+            .then( () => {loadReview();})
     }
 
     function loadUsers() {
@@ -94,6 +96,7 @@
                 }
             })
             .catch(err => console.log(err))
+            .then(() => {loadReviewer();})
     }
 
     function notifyOtherParty() {
@@ -115,9 +118,6 @@
 
     onMount(() => {
         loadEntry();
-        loadCategory();
-        loadReview();
-        loadReviewer();
     });
 </script>
 
