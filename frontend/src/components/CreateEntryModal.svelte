@@ -42,6 +42,7 @@
     let new_entry_id;
     let current_user;
     let path = $page.url.pathname;
+    let open_slots = 0;
 
     let fileuploadprops = {
         id: "annotations_file_input",
@@ -90,7 +91,7 @@
 
     function createDirectRequestProcess() {
         let data = {
-            open_slots: reviewers.length
+            open_slots: open_slots
         }
 
         return fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process", {
@@ -167,7 +168,7 @@
                      on:click={hide}/>
     </svelte:fragment>
 
-    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault={() => createEntry()}>
+    <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault|once={() => createEntry()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4"> Enter Paper Title</Heading>
             <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
@@ -191,7 +192,8 @@
             <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
             <input class="justify-end rounded-lg"
                    id=selected_open_slots
-                   min={reviewers.length > 0 ? reviewers.length : 1}
+                   min=0
+                   bind:value={open_slots}
                    type=number>
         </div>
 
@@ -205,7 +207,8 @@
             </div>
             {#if users !== null}
                 {#each users.filter(u => !reviewers.includes(u) &&
-                    (query === "" || u.name.toLowerCase().includes(query.toLowerCase()))) as u }
+                    // TODO: also allow searching after lastName
+                    (query === "" || u.firstName.toLowerCase().includes(query.toLowerCase()))) as u }
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
                     <span class="cursor-pointer" on:click={() => addReviewer(u) }>
                       {u.firstName + " " + u.lastName}
