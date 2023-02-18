@@ -97,7 +97,10 @@
         })
             .then(resp => resp.json())
             .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
+                if (resp.status === 500) {
+                    alert("Conference already exists!")
+                }
+                else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
