@@ -80,6 +80,7 @@
                 } else {
                     console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
+                    alert("A review slot has been claimed.")
                     dispatch("claimSlot");
                 }
             })
@@ -129,15 +130,10 @@
         </TableBodyCell>
 
         {#if show_slots}
-            {#if slots === null}
-                <TableBodyCell>0</TableBodyCell>
-                <TableBodyCell>
-                    <Button disabled outline size="xs">Claim Review Slot</Button>
-                </TableBodyCell>
-            {:else}
+            {#if slots !== null}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled={slots<=0} outline size="xs"
+                    <Button disabled={slots<=0 || current_user.id === paper.researcher_id || isReviewer} outline size="xs"
                             on:click={slots > 0
                             ? () => {
                                 claimSlot();
@@ -147,8 +143,12 @@
                         Claim Review Slot
                     </Button>
                 </TableBodyCell>
+            {:else}
+                <TableBodyCell>0</TableBodyCell>
+                <TableBodyCell>
+                    <Button disabled outline size="xs">Claim Review Slot</Button>
+                </TableBodyCell>
             {/if}
-
         {/if}
 
         <!--
