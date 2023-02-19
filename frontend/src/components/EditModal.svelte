@@ -6,7 +6,6 @@
         Heading
     } from "flowbite-svelte" ;
     import {onMount} from "svelte";
-    import Cookies from "js-cookie";
 
     export let error = null;
     export let show = false;
@@ -29,7 +28,6 @@
 
     let edited_paper_name = null;
     let edited_authors = null;
-
     function editCategory() {
         let data = {
             id: conference.id,
