@@ -64,6 +64,7 @@
     }
 
     function editComment() {
+        console.log(comment.id)
         editable = !editable;
         let data = {
             id: comment.id,
@@ -103,10 +104,14 @@
             .catch(err => console.log(err))
     }
 
+    function deleteComment() {
+        delete_self_path = path + "/messages/" + comment.id;
+        show_delete = true
+    }
+
     let mounted = false
     onMount(() => {
         path = "/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id
-        delete_self_path = path + "/messages/" + comment.id;
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
         loadUser()
         mounted = true
@@ -139,7 +144,7 @@
                         </svg>
                     </Button>
                     <Button pill class="!p-2 mx-3 " outline color="red"
-                            on:click={() => show_delete = true}>
+                            on:click={() => deleteComment()}>
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                              width="32px" height="32px" viewBox="0 0 64 64"
                              xml:space="preserve">
@@ -173,6 +178,7 @@
     <div class="h-1"/>
 </div>
 
-
-<ConfirmDeletionModal hide="{() => show_delete = false}" show="{show_delete}"
-                      to_delete={delete_self_path} delete_name="comment" afterpath= {path}/>
+{#if delete_self_path !== ""}
+    <ConfirmDeletionModal hide="{() => show_delete = false}" show="{show_delete}"
+                          to_delete={delete_self_path} delete_name="comment" afterpath= {path}/>
+{/if}
