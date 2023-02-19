@@ -41,7 +41,6 @@
         let diffDay = (diff / (1000 * 3600 * 24))
         let diffHour = (Math.abs(diff) / 36e5)
         let diffMin = (Math.round((diff / 1000) / 60))
-        console.log(diffDay, diffHour, diffMin)
 
         //return the correct string
         if (diffDay < 0) {
