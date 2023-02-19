@@ -444,10 +444,19 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "researcher of the entry can not be the reviewer");
         }
 
+        DirectRequest request = null;
+
         for (var reviewer :
                 this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
             if (reviewer.getReviewerId().equals(user.getAttribute("sub"))) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already reviewer for this entry");
+                if (reviewer.getState().equals(DirectRequest.RequestState.ACCEPTED)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already reviewer for this entry");
+                }
+                if (reviewer.getState().equals(DirectRequest.RequestState.PENDING)) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already requested for this entry");
+                }
+                request = reviewer;
+                break;
             }
         }
 
@@ -460,17 +469,23 @@ public class DirectRequestsController extends ServiceBasedController {
         directRequestProcessService.update(directRequestProcess.get().getId(), updatedDirectRequestProcess.toDto());
 
         var reviewerId = user.getAttribute("sub").toString();
-        DirectRequest directRequestObject = new DirectRequest(null, DirectRequest.RequestState.ACCEPTED,
-                reviewerId, directRequestProcess.get().getId());
 
         Review.Dto review = new Review.Dto(Optional.empty(), Optional.of(reviewerId), Optional.of(entryId),
-                Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
-
+            Optional.empty(), Review.ConfidenceLevel.LOW, null, null, null, null, null, null, null);
         this.reviewService.create(review);
 
         this.notificationService.sendEntryNotification(reviewerId, researcherId, entryId,
             EntryMessageTemplates.OPEN_SLOT_CLAIMED);
 
-        return this.directRequestService.create(directRequestObject.toDto()).toDto();
+        if (request != null) {
+            DirectRequest.Dto patchRequest = new DirectRequest.Dto(Optional.empty(),
+                Optional.of(DirectRequest.RequestState.ACCEPTED), Optional.empty(), Optional.empty());
+            this.directRequestService.update(request.getId(), patchRequest);
+            return request.toDto();
+        } else {
+            DirectRequest directRequestObject = new DirectRequest(null, DirectRequest.RequestState.ACCEPTED,
+                reviewerId, directRequestProcess.get().getId());
+            return this.directRequestService.create(directRequestObject.toDto()).toDto();
+        }
     }
 }
