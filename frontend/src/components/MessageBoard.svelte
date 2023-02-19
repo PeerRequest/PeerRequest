@@ -74,9 +74,7 @@
                     }
                 )
             comment = ""
-        } else {
-
-        }
+        } 
     }
 
     function loadComments() {
@@ -133,7 +131,7 @@
             <form on:submit={submitComment}>
                 <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment" type="text">
                 {#if comment.length >= 250}
-                    <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only comments under 250 Symbols allowed</Helper>
+                    <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span>  Only Comments under 250 Characters allowed</Helper>
                 {/if}
             </form>
         </main>
