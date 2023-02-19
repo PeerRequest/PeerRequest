@@ -8,6 +8,7 @@
     import Error from "../../../../../components/Error.svelte";
     import {page} from '$app/stores';
     import {onMount} from "svelte";
+    import {goto} from "$app/navigation";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
     import AddReviewerModal from "../../../../../components/AddReviewerModal.svelte";
@@ -28,6 +29,8 @@
     let reviews = null;
     let path = $page.url.pathname;
     let go_after;
+    let user_reviews = null;
+    let review_href = null;
 
     const loading_lines = 5;
     let currentPage = 1;
@@ -51,6 +54,21 @@
                     if (entry.researcher_id === current_user.id) {
                         loadReviews()
                     }
+                    fetch("/api/requests")
+                        .then(resp => resp.json())
+                        .then(resp => {
+                            if (resp.status < 200 || resp.status >= 300) {
+                                error = "" + resp.status + ": " + resp.message;
+                                console.log(error);
+                            } else {
+                                for (const e of resp.content) {
+                                    if (entry.id === e.second.id) {
+                                        loadUserReviews()
+                                        break;
+                                    }
+                                }
+                            }
+                        })
                 }
             })
             .catch(err => console.log(err))
@@ -100,6 +118,28 @@
             .catch(err => console.log(err))
     }
 
+    function loadUserReviews() {
+        user_reviews = null;
+        fetch("/api/reviews")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    user_reviews = resp.content;
+                    user_reviews.forEach(getReview)
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function getReview(pair) {
+        if (entry.id === pair.second.id) {
+            review_href = pair.first.id;
+        }
+    }
+
     function map_deadline(deadline) {
         if (deadline != null) {
             return new Date(Date.parse(deadline)).toLocaleDateString();
@@ -147,13 +187,16 @@
                 </BreadcrumbItem>
                 <BreadcrumbItem>{entry.name}</BreadcrumbItem>
             </ResponsiveBreadCrumb>
-            <div class="flex flex-row">
+            <div class="flex flex-row w-full justify-between">
                 <Heading tag="h2">
                     {entry.name}
                     <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
-                                                                             target="_blank" download>Download</a>
-                </Badge>
+                                                                 target="_blank" download>Download</a>
+                    </Badge>
                 </Heading>
+                {#if review_href !== null}
+                    <Button size="xs" outline on:click|once={() => goto(path + "/reviews/" + review_href)}> Go to your Review</Button>
+                {/if}
             </div>
             <Heading tag="h6">
 
@@ -196,7 +239,6 @@
                     </div>
                 </div>
             {/if}
-
 
             <div class="flex h-full align-items-flex-start">
                 <div class="sm:h-full lg:w-[100%] md:w-[100%] mr-4">
