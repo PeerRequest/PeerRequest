@@ -1,6 +1,6 @@
 <script>
     import Comment from './Comment.svelte'
-    import {Button, Chevron, Dropdown, DropdownItem} from "flowbite-svelte";
+    import {Button, Chevron, Dropdown, DropdownItem, Helper} from "flowbite-svelte";
     import {afterUpdate, onMount} from "svelte";
     import Error from "./Error.svelte";
     import {page} from '$app/stores';
@@ -18,7 +18,8 @@
     }
     let sortedComments = null
     let amount = 0
-    let order = true, comment
+    let order = true
+    let comment = ""
 
     let show_confirm_deletion_modal = false;
 
@@ -45,33 +46,37 @@
     };
 
     const submitComment = (e) => {
-        e.preventDefault()
-        if (!comment) return;
-        let newComment = {
-            "content": comment,
-            "timestamp": new Date()
-        }
-        fetch("/api" + path + "/messages", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newComment)
-        })
-            .then(resp => resp)
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    loadComments()
-                }
+        if (comment.length <= 250) {
+            e.preventDefault()
+            if (!comment) return;
+            let newComment = {
+                "content": comment,
+                "timestamp": new Date()
+            }
+            fetch("/api" + path + "/messages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newComment)
             })
-            .catch(err => {
-                    console.log(err)
-                }
-            )
-        comment = ""
+                .then(resp => resp)
+                .then(resp => {
+                    if (resp.status < 200 || resp.status >= 300) {
+                        error = "" + resp.status + ": " + resp.message;
+                        console.log(error);
+                    } else {
+                        loadComments()
+                    }
+                })
+                .catch(err => {
+                        console.log(err)
+                    }
+                )
+            comment = ""
+        } else {
+
+        }
     }
 
     function loadComments() {
@@ -127,6 +132,9 @@
             </div>
             <form on:submit={submitComment}>
                 <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment" type="text">
+                {#if comment.length >= 250}
+                    <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only comments under 250 Symbols allowed</Helper>
+                {/if}
             </form>
         </main>
     {/if}
