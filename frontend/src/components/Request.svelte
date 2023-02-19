@@ -32,7 +32,7 @@
                     console.log(error);
                 } else {
                     dispatch("requestUpdated", state);
-                    alert("The request state has been updated to: " + state)
+                    alert("You have "+ state.toLocaleLowerCase() +" the review request")
                 }
             })
             .catch(err => console.log(err))
