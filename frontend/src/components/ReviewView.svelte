@@ -53,6 +53,7 @@
                         console.log(error);
                     } else {
                         pdf_document = window.URL.createObjectURL(resp);
+                        upload_state = "done"
                     }
                 }
             })
@@ -77,7 +78,6 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    upload_state = "done"
                     loadReviewDocument()
                 }
             })
@@ -98,6 +98,7 @@
     })
 
     $: if (!show_confirm_deletion_modal) {
+        upload_state = ""
         loadReviewDocument()
     }
 </script>
