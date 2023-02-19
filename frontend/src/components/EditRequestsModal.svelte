@@ -213,7 +213,7 @@
 <Modal class="w-full" bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="md">
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
-            Add additional Reviewers
+            Edit Requests and Open Slots
         </div>
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>

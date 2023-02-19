@@ -11,8 +11,8 @@
     import {goto} from "$app/navigation";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
-    import AddReviewerModal from "../../../../../components/AddReviewerModal.svelte";
     import Cookies from "js-cookie";
+    import EditRequestsModal from "../../../../../components/EditRequestsModal.svelte";
 
     let show_confirm_deletion_modal = false;
 
@@ -234,7 +234,7 @@
                     <div class="w-full flex justify-end">
                         <Button class="mx-auto lg:m-0 h-12" size="md" outline
                                 on:click={() => show_add_reviewer_modal = true}>
-                            Add additional Reviewer
+                            Edit Requests and Open Slots
                         </Button>
                     </div>
                 </div>
@@ -269,7 +269,7 @@
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
 
-        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}"
+        <EditRequestsModal paper={entry} hide="{() => show_add_reviewer_modal = false}"
                           show="{show_add_reviewer_modal}"/>
     {/if}
 {/if}
