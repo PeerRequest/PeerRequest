@@ -187,15 +187,24 @@
     }
 
     onMount(() => {
+        buttonMessage = "Save & Send Requests"
         loadUsers()
         loadDirectRequestProcess()
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
+
     });
 
     function sendRequests() {
+        buttonMessage = "Sending ..."
         patchOpenSlots()
         new_reviewers.map(reviewer => createDirectRequest(reviewer))
-        hide()
+        if (new_reviewers === []) {
+            hide()
+        }
+    }
+
+    $: if (show) {
+        buttonMessage = "Save & Send Requests"
     }
 
 
@@ -284,7 +293,7 @@
             </Table>
         </div>
         <Footer class="bottom-0 left-0 z-20 w-full">
-            <Button class="w-full" color="primary" size="sm" type="submit" on:click|once={() => sendRequests()}>
+            <Button disabled={buttonMessage === "Sending ..."} class="w-full" color="primary" size="sm" type="submit" on:click|once={() => sendRequests()}>
                 {buttonMessage}
             </Button>
         </Footer>
