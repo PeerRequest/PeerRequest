@@ -121,7 +121,7 @@
             <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
 
                 {#each sortedComments as data}
-                    <Comment bind:comment={data} category={category.id} review={review} bind:show_delete={show_confirm_deletion_modal}/>
+                    <Comment bind:comment={data} category={category} review={review} bind:show_delete={show_confirm_deletion_modal}/>
                 {/each}
 
             </div>
