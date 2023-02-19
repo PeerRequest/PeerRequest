@@ -32,6 +32,7 @@
                     console.log(error);
                 } else {
                     dispatch("requestUpdated", state);
+                    alert("The request state has been updated to: " + state)
                 }
             })
             .catch(err => console.log(err))
