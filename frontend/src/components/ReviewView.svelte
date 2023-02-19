@@ -40,6 +40,9 @@
     let show_confirm_deletion_modal = false
 
     function loadReviewDocument() {
+        if (pdf_document === null){
+            upload_state = "";
+        }
         pdf_document = null;
         fetch("/api" + path + "/document")
             .then(resp => resp.blob())
@@ -163,31 +166,33 @@
                     {/if}
                 </div>
                 <Label class="pb-2">Your PDF</Label>
-                <div class="flex flex-row justify-between items-center">
-                    {#if reviewerUser}
-                        <Fileupload {...fileuploadprops} bind:value={fileInput}
-                                    inputClass="my-auto annotations_file_input"
-                                    on:change={() => upload_state = ""}
-                                    size="lg" required
-                        />
-                        <Button disabled={!fileInput}
-                                on:click={() => uploadReviewPdf()} outline
-                                color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
-                            {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
-                        </Button>
-                    {/if}
-                    {#if pdf_document !== null}
-                        <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
-                            Delete
-                        </Button>
-                    {/if}
+                <div class="flex grid">
+                    <div class="flex flex-row justify-between items-center">
+                        {#if reviewerUser}
+                            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                                        inputClass="my-auto annotations_file_input"
+                                        on:change={() => upload_state = ""}
+                                        size="lg" required
+                            />
+                            <Button disabled={!fileInput}
+                                    on:click={() => uploadReviewPdf()} outline
+                                    color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
+                                {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
+                            </Button>
+                        {/if}
+                        {#if pdf_document !== null}
+                            <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
+                                Delete
+                            </Button>
+                        {/if}
 
-                </div>
-                {#if pdf_document !== null}
-                    <div class="absolute flex h-[50%] w-[40%] left-[55%] justify-center">
-                        <PaperView document="{pdf_document}"/>
                     </div>
-                {/if}
+                    {#if pdf_document !== null}
+                        <div class="flex w-full h-[50vh]">
+                            <PaperView document="{pdf_document}"/>
+                        </div>
+                    {/if}
+                </div>
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
