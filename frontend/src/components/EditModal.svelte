@@ -6,7 +6,6 @@
         Heading
     } from "flowbite-svelte" ;
     import {onMount} from "svelte";
-    import Cookies from "js-cookie";
 
     export let error = null;
     export let show = false;
@@ -29,9 +28,6 @@
 
     let edited_paper_name = null;
     let edited_authors = null;
-    let process = null;
-    let slots = null
-
     function editCategory() {
         let data = {
             id: conference.id,
@@ -87,54 +83,6 @@
                     console.log(error);
                 } else {
                     try {
-                        patchOpenSlots();
-                        hide();
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-            })
-            .catch(err => console.log(err))
-    }
-
-    function loadDirectRequestProcess() {
-        process = null;
-        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
-            return
-        }
-        fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
-            .then(resp => resp.json())
-            .then(resp => {
-                if (resp.status < 200 || resp.status >= 300) {
-                    error = "" + resp.status + ": " + resp.message;
-                    console.log(error);
-                } else {
-                    process = resp;
-                    slots = process.open_slots;
-
-                }
-            })
-            .catch(err => console.log(err))
-    }
-
-    function patchOpenSlots() {
-        let data = {
-            open_slots : slots
-        };
-        fetch('/api/categories/' + paper.category_id + "/entries/" + paper.id + "/process", {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.status < 200 || response.status >= 300) {
-                    error = "" + response.status + ": " + response.message;
-                    console.log(error);
-                } else {
-                    try {
                         hide();
                     } catch (error) {
                         console.log(error);
@@ -154,7 +102,6 @@
             edited_max_score = conference.max_score;
             edited_score_step_size = conference.score_step_size;
         } else {
-            loadDirectRequestProcess()
             edited_paper_name = paper.name;
             edited_authors = paper.authors === "undefined" ? "" : paper.authors;
         }
@@ -220,14 +167,6 @@
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Authors</Heading>
                     <input bind:value={edited_authors} class="w-full rounded-lg" type=text>
-                </div>
-                <div class="flex flex-row justify-between items-center">
-                    <Heading class="mr-3" size="sm" tag="h4">Open Slots</Heading>
-                    <input class="justify-end rounded-lg"
-                           id=selected_open_slots
-                           min=0
-                           bind:value={slots}
-                           type=number>
                 </div>
                 <Button color="primary" size="xs" type="submit">
                     Save

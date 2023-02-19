@@ -4,6 +4,7 @@
         Button,
         CloseButton,
         Footer,
+        Heading,
         TableBodyRow,
         TableHeadCell,
         TableHead,
@@ -36,6 +37,9 @@
     let requests = null;
     let pending_reviewer = [];
     let new_reviewers = [];
+    let slots = null
+    let process = null;
+    let buttonMessage = "Save & Send Requests"
 
 
     function addReviewer(u) {
@@ -85,10 +89,29 @@
                     new_reviewers = new_reviewers.filter(new_reviewer => new_reviewer !== reviewer)
                     pending_reviewer = pending_reviewer.concat([reviewer.id])
                     loadRequests()
-                    hide()
                 }
             })
             .catch(err => console.log(err));
+    }
+
+    function loadDirectRequestProcess() {
+        process = null;
+        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+            return
+        }
+        fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    process = resp;
+                    slots = process.open_slots;
+
+                }
+            })
+            .catch(err => console.log(err))
     }
 
     function loadRequests() {
@@ -136,14 +159,43 @@
         }
         reviewers = reviewers.filter(e => e !== reviewer)
     }
+    function patchOpenSlots() {
+        let data = {
+            open_slots : slots
+        };
+        fetch('/api/categories/' + paper.category_id + "/entries/" + paper.id + "/process", {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                if (response.status < 200 || response.status >= 300) {
+                    error = "" + response.status + ": " + response.message;
+                    console.log(error);
+                } else {
+                    try {
+                        hide();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            })
+            .catch(err => console.log(err))
+    }
 
     onMount(() => {
         loadUsers()
+        loadDirectRequestProcess()
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     });
 
     function sendRequests() {
+        patchOpenSlots()
         new_reviewers.map(reviewer => createDirectRequest(reviewer))
+        hide()
     }
 
 
@@ -159,6 +211,14 @@
     </svelte:fragment>
 
     <div class="flex grid gap-y-6 w-full">
+        <div class="flex flex-row justify-between items-center">
+            <Heading class="mr-3" size="sm" tag="h4">Open Slots</Heading>
+            <input class="justify-end rounded-lg"
+                   id=selected_open_slots
+                   min=0
+                   bind:value={slots}
+                   type=number>
+        </div>
         <Button color="primary">
             <Chevron>Add Reviewer</Chevron>
         </Button>
@@ -225,7 +285,7 @@
         </div>
         <Footer class="bottom-0 left-0 z-20 w-full">
             <Button class="w-full" color="primary" size="sm" type="submit" on:click|once={() => sendRequests()}>
-                Send Requests
+                {buttonMessage}
             </Button>
         </Footer>
     </div>
