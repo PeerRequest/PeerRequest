@@ -84,6 +84,7 @@
                 } else {
                     new_reviewers = new_reviewers.filter(new_reviewer => new_reviewer !== reviewer)
                     pending_reviewer = pending_reviewer.concat([reviewer.id])
+                    loadRequests()
                     hide()
                 }
             })
@@ -116,7 +117,7 @@
     }
 
     function retractRequest(reviewer) {
-        if (pending_reviewer.includes(reviewer.id)) {
+        if (pending_reviewer.includes(reviewer.id) && !new_reviewers.includes(reviewer.id)) {
             let reviewer_request = requests.filter(request => request.reviewer_id === reviewer.id)
             fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/requests/" + reviewer_request[0].id, {
                 method: 'DELETE',
@@ -144,6 +145,7 @@
     function sendRequests() {
         new_reviewers.map(reviewer => createDirectRequest(reviewer))
     }
+
 
 </script>
 
