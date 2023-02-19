@@ -1,6 +1,6 @@
 <script>
     import ConfirmDeletionModal from "./ConfirmDeletionModal.svelte";
-    import {Button, Textarea} from "flowbite-svelte";
+    import {Button, Helper, Textarea} from "flowbite-svelte";
     import {onMount} from 'svelte'
     import Cookies from "js-cookie";
 
@@ -64,29 +64,30 @@
     }
 
     function editComment() {
-        console.log(comment.id)
-        editable = !editable;
-        let data = {
-            id: comment.id,
-            content: text
-        }
-        fetch("/api" + path + "/messages", {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.status < 200 || response.status >= 300) {
-                    error = "" + response.status + ": " + response.message;
-                    console.log(error);
-                } else {
-                    console.log("Save success")
-                }
+        if (text.length <= 250) {
+            editable = !editable;
+            let data = {
+                id: comment.id,
+                content: text
+            }
+            fetch("/api" + path + "/messages", {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
             })
-            .catch(err => console.log(err))
+                .then((response) => response.json())
+                .then((response) => {
+                    if (response.status < 200 || response.status >= 300) {
+                        error = "" + response.status + ": " + response.message;
+                        console.log(error);
+                    } else {
+                        console.log("Save success")
+                    }
+                })
+                .catch(err => console.log(err))
+        }
     }
 
     function loadUser() {
@@ -171,6 +172,9 @@
             <Textarea bind:value={text}
                    class="my-2.5 font-normal text-gray-700 mx-2 rounded-lg relative w-[98%]" type=text
                       on:keydown={() => {if (event.keyCode === 13){ editComment() }}}/>
+            {#if text.length >= 250}
+                <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only Comments under 250 Characters allowed</Helper>
+            {/if}
         {/if}
     {:else }
         LOADING COMMENT
