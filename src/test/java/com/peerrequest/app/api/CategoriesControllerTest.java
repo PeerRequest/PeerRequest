@@ -2,41 +2,36 @@ package com.peerrequest.app.api;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
+import com.peerrequest.app.Once;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.services.CategoryService;
-
-import java.time.ZonedDateTime;
+import com.peerrequest.app.services.EntryService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.peerrequest.app.services.EntryService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ObjectNode;
@@ -48,9 +43,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ObjectNode;
 class CategoriesControllerTest {
     @Autowired
     CategoryService categoryService;
-
     @Autowired
     EntryService entryService;
+
     @MockBean
     JavaMailSender mailSender;
     @MockBean
@@ -59,27 +54,27 @@ class CategoriesControllerTest {
     @Autowired
     private MockMvc mockMvc;
     private List<Category> categories;
-    private List<Entry> entries;
-    private final UUID userId = UUID.randomUUID();
-
     private MockHttpSession session;
-
-    private final int LIST_LENGTH = 200;
-
-    @BeforeEach
-    void setUp() throws Exception {
+    private static final int LIST_LENGTH = 200;
+    private final UUID userId = UUID.randomUUID();
+    private List<Entry> entries;
+    private final Once init = new Once(() -> {
         // login and set current user
         session = new MockHttpSession();
-        mockMvc.perform(
-                get("/test/auth/login")
-                    .queryParam("user_id", userId.toString())
-                    .queryParam("user_name", "ich")
-                    .queryParam("given_name", "kann")
-                    .queryParam("family_name", "das")
-                    .queryParam("email", "alles@nicht.mehr")
-                    .session(session)
-                    .secure(true))
-            .andExpect(status().isOk());
+        try {
+            mockMvc.perform(
+                    get("/test/auth/login")
+                        .queryParam("user_id", userId.toString())
+                        .queryParam("user_name", "ich")
+                        .queryParam("given_name", "kann")
+                        .queryParam("family_name", "das")
+                        .queryParam("email", "alles@nicht.mehr")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         // setup data
         // first 10 categories will be created by the current test user
@@ -100,14 +95,18 @@ class CategoriesControllerTest {
         entries = new ArrayList<>();
         for (int i = 1; i <= LIST_LENGTH; i++) {
             var e = Entry.builder()
-                    .name("Test Entry " + i)
-                    .categoryId(categories.get(i - 1).getId())
-                    .researcherId((i <= 10 ? userId : UUID.randomUUID()).toString())
-                    .documentId(UUID.randomUUID().toString())
-                    .build();
+                .name("Test Entry " + i)
+                .categoryId(categories.get(i - 1).getId())
+                .researcherId((i <= 10 ? userId : UUID.randomUUID()).toString())
+                .documentId(UUID.randomUUID().toString())
+                .build();
             entries.add(entryService.create(e.toDto()));
         }
+    });
 
+    @BeforeEach
+    void setUp() throws Exception {
+        init.run();
     }
 
     @AfterEach
