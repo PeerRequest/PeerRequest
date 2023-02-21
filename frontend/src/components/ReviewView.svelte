@@ -8,6 +8,7 @@
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
     import PdfViewer from "./PdfViewer.svelte";
+    import PaperView from "./PaperView.svelte";
 
     export let review = {
         reviewer_id: "",
@@ -179,14 +180,18 @@
                                     color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
                                 {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
                             </Button>
-                        {/if}
-
-                        {#if pdf_document !== null}
-                            <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
-                                Delete
-                            </Button>
+                            {#if pdf_document !== null}
+                                <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
+                                    Delete
+                                </Button>
+                            {/if}
                         {/if}
                     </div>
+                    {#if pdf_document !== null}
+                        <div class="flex w-full h-[50vh]">
+                            <PaperView document="{pdf_document}"/>
+                        </div>
+                    {/if}
                 </div>
             </TabItem>
             <TabItem>
