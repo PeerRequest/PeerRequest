@@ -110,7 +110,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    alert("The other party has been notified about the submission")
+                    alert("The other party has been notified about the changes")
                 }
             })
             .catch(err => console.log(err));
@@ -153,7 +153,7 @@
 
             <Heading class="mb-1 flex items-center w-full justify-between" tag="h2">
                 {"Review for " + entry.name}
-                <Button on:click={() => notifyOtherParty()}> Submit Review </Button>
+                <Button on:click={() => notifyOtherParty()}> Notify about changes </Button>
             </Heading>
             <Heading tag="h6">
                 <Secondary>
