@@ -11,8 +11,8 @@
     import {goto} from "$app/navigation";
     import EditModal from "../../../../../components/EditModal.svelte";
     import ConfirmDeletionModal from "../../../../../components/ConfirmDeletionModal.svelte";
-    import AddReviewerModal from "../../../../../components/AddReviewerModal.svelte";
     import Cookies from "js-cookie";
+    import EditRequestsModal from "../../../../../components/EditRequestsModal.svelte";
 
     let show_confirm_deletion_modal = false;
 
@@ -219,24 +219,20 @@
 
 
             {#if current_user !== null && current_user.id === entry.researcher_id}
-                <div class="flex w-full justify-between mt-4">
+                <div class="w-full flex justify-between mt-4">
                     <div class="justify-start gap-x-4 flex">
-                        <Button class="mx-auto my-auto lg:m-0 h-10" size="md" outline
+                        <Button class="mx-auto my-auto lg:m-0 h-10" size="xs" outline
                                 on:click={() => show_edit_modal = true}>
                             Edit Paper
                         </Button>
-                        <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="md" outline
-                                on:click={() => show_confirm_deletion_modal = true}>
+                        <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="xs" outline on:click={() => show_confirm_deletion_modal = true}>
                             Delete Paper
                         </Button>
                     </div>
 
-                    <div class="w-full flex justify-end">
-                        <Button class="mx-auto lg:m-0 h-12" size="md" outline
-                                on:click={() => show_add_reviewer_modal = true}>
-                            Add additional Reviewer
-                        </Button>
-                    </div>
+                    <Button class="mx-auto lg:m-0 h-12" size="md" outline on:click={() => show_add_reviewer_modal = true}>
+                        Edit Requests and Open Slots
+                    </Button>
                 </div>
             {/if}
 
@@ -269,7 +265,7 @@
         <ConfirmDeletionModal hide="{() => show_confirm_deletion_modal = false}" show="{show_confirm_deletion_modal}"
                               to_delete={path} delete_name="{entry.name}" afterpath="{go_after}"/>
 
-        <AddReviewerModal paper={entry} hide="{() => show_add_reviewer_modal = false}"
+        <EditRequestsModal paper={entry} hide="{() => show_add_reviewer_modal = false}"
                           show="{show_add_reviewer_modal}"/>
     {/if}
 {/if}
