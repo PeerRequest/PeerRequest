@@ -1,5 +1,5 @@
 <script>
-    import {Button, BreadcrumbItem, Heading, Secondary} from "flowbite-svelte";
+    import {Button, BreadcrumbItem, Heading, Secondary, Toast} from "flowbite-svelte";
     import Container from "../../../../../../../components/Container.svelte";
     import ResponsiveBreadCrumb from "../../../../../../../components/ResponsiveBreadCrumb.svelte";
     import ReviewView from "../../../../../../../components/ReviewView.svelte";
@@ -23,6 +23,20 @@
     let reviewer = null;
     let path = $page.url.pathname;
     let paper_pdf = null;
+
+    let show_notify_notification = false;
+    let counter = 6;
+
+    function triggerNotification() {
+        show_notify_notification = true;
+        counter = 6;
+        timeout();
+    }
+    function timeout() {
+        if (--counter > 0)
+            return setTimeout(timeout, 1000);
+        show_notify_notification = false;
+    }
 
     function loadEntry() {
         entry = null;
@@ -110,7 +124,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    alert("The other party has been notified about the changes")
+                    triggerNotification()
                 }
             })
             .catch(err => console.log(err));
@@ -121,7 +135,13 @@
     });
 </script>
 
-
+<Toast color="green" class="mb-2 absolute max-w-fit w-[40vw] top-0 right-[35vw]" bind:open={show_notify_notification}>
+    <svelte:fragment slot="icon">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        <span class="sr-only">Check icon</span>
+    </svelte:fragment>
+    The other party has been notified about the changes
+</Toast>
 <svelte:head>
     {#if review === null}
         <title> Loading | PeerRequest</title>
