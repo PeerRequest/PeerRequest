@@ -12,7 +12,12 @@ FROM gradle:7-jdk17 as java-builder
 WORKDIR /project
 COPY --chown=gradle:gradle . .
 RUN --mount=type=cache,target=/gradle-cache \
-    gradle build --no-daemon --build-cache --parallel --project-cache-dir /gradle-cache
+    gradle build \
+      --no-daemon \
+      --build-cache \
+      --parallel \
+      --project-cache-dir /gradle-cache \
+      --exclude-task test
 
 FROM eclipse-temurin:17-jre
 RUN useradd -m -d /app peerrequest
