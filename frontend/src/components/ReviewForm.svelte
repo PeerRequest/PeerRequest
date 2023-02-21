@@ -44,6 +44,11 @@
     let show_save_notification = false;
     let counter = 6;
 
+    function triggerNotification() {
+        show_save_notification = true;
+        counter = 6;
+        timeout();
+    }
     function timeout() {
         if (--counter > 0)
             return setTimeout(timeout, 1000);
@@ -76,9 +81,7 @@
                         error = "" + response.status + ": " + response.message;
                         console.log(error);
                     } else {
-                        show_save_notification = true
-                        counter = 6;
-                        timeout();
+                        triggerNotification()
                     }
                 })
                 .catch(err => console.log(err))
@@ -100,9 +103,7 @@
                         error = "" + response.status + ": " + response.message;
                         console.log(error);
                     } else {
-                        show_save_notification = true
-                        counter = 6;
-                        timeout();
+                        triggerNotification()
                     }
                 })
                 .catch(err => console.log(err))
