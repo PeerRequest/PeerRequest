@@ -4,7 +4,8 @@
         Button,
         CloseButton,
         Heading,
-        Radio
+        Radio,
+        Toast
     } from "flowbite-svelte" ;
 
     let current_user = {
@@ -45,13 +46,27 @@
         deadline: new_category_deadline
     }
 
+    let show_conference_notification = false;
+    let counter = 3;
+
+    function triggerNotification() {
+        show_conference_notification = true;
+        counter = 3;
+        timeout();
+    }
+    function timeout() {
+        if (--counter > 0)
+            return setTimeout(timeout, 1000);
+        show_conference_notification = false;
+    }
+
     function finishCreation() {
         new_category = {
             year: document.getElementsByName("")
         }
         existing_categories.forEach(compare)
         if (already_exists) {
-            alert("Conference already exists!")
+            triggerNotification()
         }
     }
 
@@ -98,7 +113,7 @@
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status === 500) {
-                    alert("Conference already exists!")
+                    triggerNotification()
                 }
                 else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
@@ -116,6 +131,14 @@
     }
 
 </script>
+
+<Toast simple={true} color="red" class="mb-2 absolute w-[20vw] top-0 right-[40vw] z-50" bind:open={show_conference_notification}>
+    <svelte:fragment slot="icon">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        <span class="sr-only">Error icon</span>
+    </svelte:fragment>
+    Conference already exists!
+</Toast>
 
 <Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
     <svelte:fragment slot="header">
