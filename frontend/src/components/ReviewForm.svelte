@@ -110,7 +110,7 @@
 <Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}"
        disabled={!reviewerUser}/>
 
-<div className="my-4"></div>
+<div class="my-4"></div>
 
 <Label class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
 <ButtonGroup>
@@ -118,7 +118,7 @@
     <Button color="yellow" outline on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
     <Button color="green" outline on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
 </ButtonGroup>
-<hr className="my-4">
+<hr class="my-4">
 
 <Label class="mb-2" for="summary">Summary of the paper</Label>
 <Textarea bind:value={edited_summary} placeholder="Summary of the paper" rows="4" disabled={!reviewerUser}/>
