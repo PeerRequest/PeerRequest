@@ -7,8 +7,8 @@
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
     import {page} from '$app/stores';
-    import PaperView from "./PaperView.svelte";
     import PdfViewer from "./PdfViewer.svelte";
+    import PaperView from "./PaperView.svelte";
 
     export let review = {
         reviewer_id: "",
@@ -24,7 +24,7 @@
         email: "",
         account_management_url: "",
     };
-    let reviewerUser = true;
+    let IsUserReviewer = true;
     let path = $page.url.pathname;
     export let pdf_document = null;
     export let paper_pdf = null;
@@ -92,7 +92,7 @@
         // get current user data from cookie
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
         if (current_user.id !== review.reviewer_id) {
-            reviewerUser = true;
+            IsUserReviewer = false;
         }
         loadReviewDocument()
     })
@@ -140,7 +140,7 @@
                     Review form
                 </div>
                 <ReviewForm category="{category}" review="{review}"
-                            reviewerUser="{reviewerUser}"/>
+                            reviewerUser="{IsUserReviewer}"/>
             </TabItem>
             <TabItem>
                 <div class="flex items-center gap-2" slot="title">
@@ -160,7 +160,7 @@
                             <rect height="6" width="36" x="20.941" y="65.935"/>
                         </g>
                       </svg>
-                    {#if reviewerUser}
+                    {#if IsUserReviewer}
                         Upload PDF file
                     {:else}
                         Reviewed PDF file
@@ -169,7 +169,7 @@
                 <Label class="pb-2">Your PDF</Label>
                 <div class="flex grid">
                     <div class="flex flex-row justify-between items-center">
-                        {#if reviewerUser}
+                        {#if IsUserReviewer}
                             <Fileupload {...fileuploadprops} bind:value={fileInput}
                                         inputClass="my-auto annotations_file_input"
                                         on:change={() => upload_state = ""}
@@ -180,13 +180,12 @@
                                     color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
                                 {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
                             </Button>
+                            {#if pdf_document !== null}
+                                <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
+                                    Delete
+                                </Button>
+                            {/if}
                         {/if}
-                        {#if pdf_document !== null}
-                            <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
-                                Delete
-                            </Button>
-                        {/if}
-
                     </div>
                     {#if pdf_document !== null}
                         <div class="flex w-full h-[50vh]">
