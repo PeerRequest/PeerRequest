@@ -43,34 +43,57 @@
 
 
     function editReviewForm() {
-        let editedReviewForm = {
-            id: review.id,
-            confidence_level: confidenceLevels[confidence],
-            summary: edited_summary,
-            main_weaknesses: edited_main_weaknesses,
-            main_strengths: edited_main_strengths,
-            questions_for_authors: edited_questions_for_authors,
-            answers_from_authors: edited_answers_the_authors,
-            other_comments: edited_other_comments,
-            score: edited_score
-        };
-        fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews" , {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(editedReviewForm),
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.status < 200 || response.status >= 300) {
-                    error = "" + response.status + ": " + response.message;
-                    console.log(error);
-                } else {
-                    alert("Save success")
-                }
+        if (reviewerUser) {
+            let editedReviewForm = {
+                id: review.id,
+                confidence_level: confidenceLevels[confidence],
+                summary: edited_summary,
+                main_weaknesses: edited_main_weaknesses,
+                main_strengths: edited_main_strengths,
+                questions_for_authors: edited_questions_for_authors,
+                other_comments: edited_other_comments,
+                score: edited_score
+            };
+            fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews" , {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editedReviewForm),
             })
-            .catch(err => console.log(err))
+                .then((response) => response.json())
+                .then((response) => {
+                    if (response.status < 200 || response.status >= 300) {
+                        error = "" + response.status + ": " + response.message;
+                        console.log(error);
+                    } else {
+                        alert("Save success")
+                    }
+                })
+                .catch(err => console.log(err))
+        }else {
+            let editedReviewForm = {
+                id: review.id,
+                answers_from_authors: edited_answers_the_authors
+            };
+            fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews" , {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editedReviewForm),
+            })
+                .then((response) => response.json())
+                .then((response) => {
+                    if (response.status < 200 || response.status >= 300) {
+                        error = "" + response.status + ": " + response.message;
+                        console.log(error);
+                    } else {
+                        alert("Save success")
+                    }
+                })
+                .catch(err => console.log(err))
+        }
 
     }
 
@@ -82,6 +105,7 @@
 
 </script>
 
+<Button class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes </Button>
 <Label>Score: {edited_score} / {maxScore}</Label>
 <Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}" disabled={!reviewerUser}/>
 
@@ -114,5 +138,4 @@
 <Label class="mb-2" for="answers">Answers from the authors</Label>
 <Textarea bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
           disabled={reviewerUser}/>
-<Button class="w-full m-auto" on:click={() => editReviewForm()}> Save Changes </Button>
 
