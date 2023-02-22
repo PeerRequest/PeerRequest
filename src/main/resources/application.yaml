@@ -49,6 +49,7 @@ spring:
       auth: true
       starttls.enable: true
       ssl.trust: ${PR_SMTP_SERVER}
+  load: ${PR_LOAD_MOCK}
 server:
   port: ${PORT:8080}
 keycloak:
