@@ -101,7 +101,7 @@ Now your PeerRequest instance should be up and running.
 | PR_DATABASE_URL             | jdbc:postgresql://host:port/database | database url to connect to your database                                                 |
 | PR_DATABASE_USER            | user                                 | database user                                                                            |
 | PR_DATABASE_PASSWORD        | super-secret-password                | database password                                                                        |
-| PR_LOAD_MOCK                | true                                 | loads mock data for the developers                                                       |
+| PR_LOAD_EXAMPLE             | true                                 | loads example data for the developers                                                    |
 | PORT                        | 8080                                 | defines the port where the backend will listen on inside the container (Default: `8080`) |
 | PR_SMTP_SERVER              | smtp.gmail.com                       | smtp server of your email provider                                                       |
 | PR_SMTP_PORT                | 587                                  | smtp server port                                                                         |
