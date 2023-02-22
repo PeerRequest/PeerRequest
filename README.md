@@ -105,7 +105,8 @@ Now your PeerRequest instance should be up and running.
 | PR_SMTP_SERVER              | smtp.gmail.com                       | smtp server of your email provider                                                       |
 | PR_SMTP_PORT                | 587                                  | smtp server port                                                                         |
 | PR_SMTP_EMAIL               | example@gmail.com                    | your email address of your email provider                                                |
-| PR_SMTP_SERVER_PW           | add****************nfs               | smtp server password                                                                     |
+| PR_SMTP_PW                  | add****************nfs               | smtp server password                                                                     |
+| PR_SMTP_USER_NAME           | user_name                            | user name of your email account                                                          |
 
 Convenience script for [DSN](https://en.wikipedia.org/wiki/Data_source_name) database urls
 

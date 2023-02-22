@@ -4,6 +4,7 @@ import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import com.peerrequest.app.services.messages.ReviewMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,16 @@ public class NotificationService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Value("${spring.mail.from}")
+    private String from;
+
 
     private void sendEmail(String toEmail, String subject, String message) {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(toEmail);
         mail.setText(message);
         mail.setSubject(subject);
+        mail.setFrom(from);
         mailSender.send(mail);
     }
 

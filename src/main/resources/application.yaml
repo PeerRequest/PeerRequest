@@ -40,10 +40,11 @@ spring:
   mail:
     host: ${PR_SMTP_SERVER}
     port: ${PR_SMTP_PORT}
-    username: ${PR_SMTP_EMAIL}
-    password: ${PR_SMTP_APP_PW}
+    username: ${PR_SMTP_USER_NAME}
+    password: ${PR_SMTP_PW}
     protocol: smtp
     tls: true
+    from: ${PR_SMTP_EMAIL}
     properties.mail.smtp:
       auth: true
       starttls.enable: true
