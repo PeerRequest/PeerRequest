@@ -145,10 +145,38 @@
             .catch(err => console.log(err))
     }
 
+    let reviews = null;
+
+    function loadUserReviews() {
+        reviews = null;
+        fetch("/api/reviews")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function getReviewToPaper(paper) {
+        let review_id = ""
+        reviews.forEach( pair => {
+            if (paper.id === pair.second.id) {
+                review_id = pair.first.id;
+            }
+        })
+        return review_id;
+    }
+
 
     onMount(() => {
         loadCategory()
         loadEntries()
+        loadUserReviews()
         current_user = JSON.parse(Cookies.get("current-user") ?? "{}")
     });
 
@@ -257,15 +285,28 @@
                     {/each}
                 {:else }
                     {#each entries as e}
-                        <Paper
-                                on:claimSlot={() => loadEntries()}
-                                show_slots=true
-                                href="/categories/{category.id}/entries/{e.id}"
-                                bind:paper={e}
-                                category={category}
-                                current_user={current_user}
-                                isReviewer={e.isReviewer}
-                        />
+                        {#if !e.isReviewer}
+                            <Paper
+                                    on:claimSlot={() => loadEntries()}
+                                    show_slots=true
+                                    href="/categories/{category.id}/entries/{e.id}"
+                                    bind:paper={e}
+                                    category={category}
+                                    current_user={current_user}
+                                    isReviewer={e.isReviewer}
+                            />
+                        {:else }
+                            <Paper
+                                    on:claimSlot={() => loadEntries()}
+                                    show_slots=true
+                                    href="/categories/{category.id}/entries/{e.id}"
+                                    bind:paper={e}
+                                    category={category}
+                                    current_user={current_user}
+                                    isReviewer={e.isReviewer}
+                                    review_id={getReviewToPaper(e)}
+                            />
+                        {/if}
                     {/each}
                 {/if}
             </Papers>
