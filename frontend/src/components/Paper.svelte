@@ -81,9 +81,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
-                    alert("A review slot has been claimed.")
                     dispatch("claimSlot");
                     goto(href);
                 }
