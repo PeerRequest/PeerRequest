@@ -5,7 +5,7 @@
         TableBodyRow,
         Toast
     } from "flowbite-svelte";
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
 
     export let request;
     export let entry;
@@ -29,6 +29,7 @@
     }
 
     const dispatch = createEventDispatcher();
+
 
     function updateRequest(state) {
         request_state = state;
@@ -55,6 +56,39 @@
             .catch(err => console.log(err))
     }
 
+    let reviews = null;
+
+
+    function loadUserReviews() {
+        reviews = null;
+        fetch("/api/reviews")
+            .then(resp => resp.json())
+            .then(resp => {
+                if (resp.status < 200 || resp.status >= 300) {
+                    error = "" + resp.status + ": " + resp.message;
+                    console.log(error);
+                } else {
+                    reviews = resp.content;
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
+    function getReviewToPaper(paper) {
+        let review_id = ""
+        reviews.forEach( pair => {
+            if (paper.id === pair.second.id) {
+                review_id = pair.first.id;
+            }
+        })
+        return review_id;
+    }
+
+    onMount(() => {
+        if (accepted) {
+            loadUserReviews();
+        }
+    })
 </script>
 
 {#if request_state === "ACCEPTED"}
@@ -76,8 +110,11 @@
 {/if}
 <TableBodyRow>
     <TableBodyCell>
-        <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</BreadcrumbItem>
-
+        {#if accepted && reviews !== null}
+            <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}/reviews/{getReviewToPaper(entry)}">{entry.name}</BreadcrumbItem>
+        {:else }
+            <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</BreadcrumbItem>
+        {/if}
     </TableBodyCell>
     {#if pending}
         <TableBodyCell>
