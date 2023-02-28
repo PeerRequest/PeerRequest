@@ -4,6 +4,7 @@
     import {createEventDispatcher, onMount} from "svelte";
     import Cookies from "js-cookie";
     import {goto} from "$app/navigation";
+    import {element} from "svelte/internal";
 
     export let href;
     export let paper = null;
@@ -18,7 +19,7 @@
     export let isReviewer = false;
 
     let process = null;
-    let review = null;
+    export let review_id = "";
     let authors = "";
     let clickedClaim = "Claim Review Slot"
 
@@ -80,9 +81,7 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
-                    console.log("A review slot has been claimed.")
                     loadDirectRequestProcess()
-                    alert("A review slot has been claimed.")
                     dispatch("claimSlot");
                     goto(href);
                 }
@@ -111,8 +110,10 @@
         {/each}
     {:else }
         <TableBodyCell>
-            {#if current_user !== null && (current_user.id === paper.researcher_id || isReviewer) }
+            {#if current_user !== null && current_user.id === paper.researcher_id }
                 <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+            {:else if isReviewer && review_id !== ""}
+                <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}/reviews/{review_id}">{paper.name}</BreadcrumbItem>
             {:else }
                 <BreadcrumbItem>{paper.name}</BreadcrumbItem>
             {/if}
