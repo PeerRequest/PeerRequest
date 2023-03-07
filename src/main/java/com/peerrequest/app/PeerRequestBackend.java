@@ -5,11 +5,15 @@ import com.peerrequest.app.data.repos.*;
 import com.peerrequest.app.services.DocumentService;
 import com.peerrequest.app.services.UserService;
 import java.io.File;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -17,8 +21,6 @@ import org.springframework.util.ResourceUtils;
  */
 @SpringBootApplication
 public class  PeerRequestBackend {
-
-    private static boolean loadMockData = false;
 
     /**
      * Main.
@@ -28,12 +30,13 @@ public class  PeerRequestBackend {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(PeerRequestBackend.class, args);
 
-        if (loadMockData) {
+        if (context.getBean(MockConfig.class).getLoadMockData()) {
             mockData(context);
         }
     }
 
     private static void mockData(ConfigurableApplicationContext context) {
+
 
 
         CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
@@ -84,6 +87,10 @@ public class  PeerRequestBackend {
                 userIds[ind] = user.getId();
                 ind++;
             }
+        }
+        // doesnt work, will be fixed in the future so its disabled
+        if (names[5] == null) {
+            return;
         }
 
         EntryRepository entryRepository = context.getBean(EntryRepository.class);
@@ -142,6 +149,17 @@ public class  PeerRequestBackend {
                 userIds[0], 3 * id - 1, null, Review.ConfidenceLevel.LOW, null, null, null, null, null, null, 1F);
             reviewRepository.save(reviewOne);
             reviewRepository.save(reviewTwo);
+        }
+    }
+
+    @Service
+    private static class MockConfig {
+        @Getter
+        private final Boolean loadMockData;
+
+        @Autowired
+        public MockConfig(@Value("${spring.load}") Boolean b) {
+            this.loadMockData = b;
         }
     }
 }
