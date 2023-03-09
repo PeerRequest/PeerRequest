@@ -17,7 +17,7 @@
     })
 </script>
 
-<div class="flex items-center lg:order-2">
+<div class="flex items-center lg:order-2 p-3" >
     <Button class="py-1 px-4 h-12 max-w-xl" color="primary" id="avatar_with_name" pill>
         <span class="hidden md:inline">{current_user.first_name + " " + current_user.last_name}</span>
         <span class="md:hidden">{current_user.first_name.toLocaleUpperCase().charAt(0) + current_user.last_name.toLocaleUpperCase().charAt(0)}</span>
