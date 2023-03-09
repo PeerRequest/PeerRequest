@@ -113,7 +113,7 @@
             <header class="flex">
                 <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
             </header>
-            <Button class="w-44 h-8">
+            <Button color="primary" class="w-44 h-8">
                 <Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron>
             </Button>
             <Dropdown>
