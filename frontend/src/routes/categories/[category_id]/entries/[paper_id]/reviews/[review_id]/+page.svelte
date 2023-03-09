@@ -173,7 +173,7 @@
 
             <Heading class="mb-1 flex items-center w-full justify-between" tag="h2">
                 {"Review for " + entry.name}
-                <Button on:click={() => notifyOtherParty()}> Notify about changes </Button>
+                <Button on:click={() => notifyOtherParty()}> Notify Researcher Of Changes </Button>
             </Heading>
             <Heading tag="h6">
                 <Secondary>
