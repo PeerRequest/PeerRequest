@@ -126,7 +126,7 @@
     </svelte:fragment>
     Save successful
 </Toast>
-<Button class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
+<Button color="primary" class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
 <Label>Score: {edited_score} / {maxScore}</Label>
 <Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}"
        disabled={!reviewerUser}/>
