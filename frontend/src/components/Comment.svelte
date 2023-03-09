@@ -45,13 +45,13 @@
         //return the correct string
         if (diffDay < 0) {
             return Math.round(diffDay) + " days ago"
-        }else if (diffDay >= 1 && diffDay < 2) {
+        } else if (diffDay >= 1 && diffDay < 2) {
             return Math.round(diffDay) + " day ago"
         } else if (diffDay > 1) {
             return Math.round(diffDay) + " days ago"
         }
         if (diffHour >= 1 && diffHour < 2) {
-            return Math.round(diffDay) + " hour ago"
+            return Math.round(diffHour) + " hour ago"
         } else if (diffHour > 1) {
             return Math.round(diffHour) + " hours ago"
         }
@@ -92,7 +92,7 @@
 
     function loadUser() {
         user = null;
-        fetch("/api/users/" + comment.creator_id )
+        fetch("/api/users/" + comment.creator_id)
             .then(resp => resp.json())
             .then(resp => {
                 if (resp.status < 200 || resp.status >= 300) {
@@ -123,66 +123,46 @@
 </script>
 
 
-
 <div class="rounded-lg outline outline-blue-500 mx-4 my-4 max-w-[90vw] h-fit">
-    <div class="h-1"/>
+    <div class="h-1"></div>
     {#if comment !== null && user !== null}
         <div class="font-bold flex mx-2 w-full h-fit flex justify-between">
             {user.firstName + " " + user.lastName}
             {#if is_commenter}
-                <div class="flex justify-end">
-                    <Button pill class="!p-2" outline on:click={() => editable = true}>
-                        <svg class="svg-icon w-3 h-3" viewBox="0 0 20 20">
-                            <path d="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,
-                        0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,
-                        0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,
-                        15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,
-                        0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,
-                        1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,
-                        0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,
-                        0.808L11.241,11.156z">
-                            </path>
-                        </svg>
+
+                <div class="flex justify-end gap-1 mr-3.5">
+                    <Button pill size="xs" class="!p-2 w-20 h-7 bg-white" outline on:click={() => editable = true}>
+                        Edit
                     </Button>
-                    <Button pill class="!p-2 mx-3 " outline color="red"
+
+                    <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                             on:click={() => deleteComment()}>
-                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                             width="32px" height="32px" viewBox="0 0 64 64"
-                             xml:space="preserve">
-                          <g>
-                            <line fill="none" stroke="#000000" stroke-width="4" stroke-miterlimit="10" x1="8.947"
-                                  y1="7.153" x2="55.045"
-                                  y2="53.056"/>
-                          </g>
-                            <g>
-                            <line fill="none" stroke="#000000" stroke-width="4" stroke-miterlimit="10" x1="9.045"
-                                  y1="53.153" x2="54.947"
-                                  y2="7.056"/>
-                          </g>
-                      </svg>
+                        Delete
                     </Button>
+
                 </div>
             {/if}
         </div>
-        <h1 class="text-xs mx-2 my-2">{calculateDate(commentedTime)}</h1>
+        <h1 class="text-xs mx-2 mb-2">{calculateDate(commentedTime)}</h1>
         {#if !editable}
             <Textarea bind:value={text}
-                   class="my-2.5 font-normal text-gray-700 mx-2 border-none break-all h-fit" type=text disabled/>
+                      class="my-1 font-normal text-gray-700 mx-2 border-none break-all h-fit" type=text disabled/>
         {:else }
             <Textarea bind:value={text}
-                   class="my-2.5 font-normal text-gray-700 mx-2 rounded-lg relative w-[98%]" type=text
+                      class="my-1 font-normal text-gray-700 mx-2 rounded-lg relative w-[98%]" type=text
                       on:keydown={() => {if (event.keyCode === 13){ editComment() }}}/>
             {#if text.length >= 250}
-                <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only Comments under 250 Characters allowed</Helper>
+                <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only
+                    Comments under 250 Characters allowed
+                </Helper>
             {/if}
         {/if}
     {:else }
         LOADING COMMENT
     {/if}
-    <div class="h-1"/>
 </div>
 
 {#if delete_self_path !== ""}
     <ConfirmDeletionModal hide="{() => show_delete = false}" show="{show_delete}"
-                          to_delete={delete_self_path} delete_name="comment" afterpath= {path}/>
+                          to_delete={delete_self_path} delete_name="comment" afterpath={path}/>
 {/if}
