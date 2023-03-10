@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest()
+@SpringBootTest(properties = {"spring.mail.from=mail", "spring.load=false"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = PeerRequestBackend.class)
 @ActiveProfiles("test")
@@ -40,13 +40,13 @@ class CategoriesControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    private List<Category> categories;
-    private UUID userId = UUID.randomUUID();
+    private static List<Category> categories;
+    private static UUID userId = UUID.randomUUID();
 
-    private MockHttpSession session;
+    private static MockHttpSession session;
 
-    @BeforeEach
-    void setUp() throws Exception {
+    @BeforeAll
+    public static void  setUp(@Autowired CategoryService categoryService, @Autowired MockMvc mockMvc) throws Exception {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
@@ -62,7 +62,7 @@ class CategoriesControllerTest {
 
         // setup data
         // first 10 categories will be created by the current test user
-        categories = new ArrayList<Category>();
+        categories = new ArrayList<>();
         for (int i = 1; i <= 200; i++) {
             var c = Category.builder()
                 .name("Test Category " + i)
