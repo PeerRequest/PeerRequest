@@ -221,16 +221,25 @@
             {#if current_user !== null && current_user.id === entry.researcher_id}
                 <div class="w-full flex justify-between mt-4">
                     <div class="justify-start gap-x-4 flex">
-                        <Button class="mx-auto my-auto lg:m-0 h-10" size="xs" outline
-                                on:click={() => show_edit_modal = true}>
+                        <Button class="mb-4"
+                                outline
+                                on:click={() => show_edit_modal = true}
+                                size="xs">
                             Edit Paper
                         </Button>
-                        <Button class="mx-auto my-auto lg:m-0 h-10" color="red" size="xs" outline on:click={() => show_confirm_deletion_modal = true}>
+                        <Button class="mb-4"
+                                outline
+                                color="red"
+                                on:click={() => show_confirm_deletion_modal = true}
+                                size="xs">
                             Delete Paper
                         </Button>
                     </div>
 
-                    <Button class="mx-auto lg:m-0 h-12" size="md" outline on:click={() => show_add_reviewer_modal = true}>
+                    <Button class="mb-4"
+                            color="primary"
+                            on:click={() => show_add_reviewer_modal = true}
+                            size="sm">
                         Edit Requests and Open Slots
                     </Button>
                 </div>

@@ -231,7 +231,6 @@
                         <TableBodyRow>
                             <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
                             <TableBodyCell>
-                               <!--<div class="flex flex-wrap items-center gap-2">-->
                                     <div class="flex justify-end">
                                     <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                                             on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
