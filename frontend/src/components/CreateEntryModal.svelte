@@ -220,7 +220,7 @@
                 LOADING USERS
             {/if}
         </Dropdown>
-        <div class="mb-4 h-[20vh] overflow-y-auto  max-h-[20vh]">
+        <div class="mb-4 min-h-[200px] overflow-y-auto  max-h-[20vh]">
             <Table divClass="relative">
                 <TableHead>
                     <TableHeadCell>Name</TableHeadCell>
