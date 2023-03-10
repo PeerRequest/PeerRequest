@@ -158,6 +158,10 @@
     $: if (!show_edit_modal) {
         loadEntry()
     }
+
+    $: if (!show_add_reviewer_modal) {
+        loadEntry()
+    }
 </script>
 
 <svelte:head>
