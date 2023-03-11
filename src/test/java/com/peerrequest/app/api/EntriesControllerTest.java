@@ -1,5 +1,10 @@
 package com.peerrequest.app.api;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.Category;
 import com.peerrequest.app.data.Document;
@@ -7,6 +12,13 @@ import com.peerrequest.app.data.Entry;
 import com.peerrequest.app.services.CategoryService;
 import com.peerrequest.app.services.DocumentService;
 import com.peerrequest.app.services.EntryService;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -26,19 +38,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+/**
+ * This test class tests the endpoints of the {@link EntriesController} class.
+ */
 @SpringBootTest(properties = {"spring.mail.from=mail", "spring.load=false"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = PeerRequestBackend.class)
@@ -64,7 +66,7 @@ public class EntriesControllerTest {
     private static int currentUserEntrySize = 10;
 
     @BeforeAll
-    public static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
+    static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
                              @Autowired DocumentService documentService, @Autowired MockMvc mockMvc) throws Exception {
         // login and set current user
         session = new MockHttpSession();
@@ -91,7 +93,7 @@ public class EntriesControllerTest {
                 .build().toDto());
         int entriesSize = 210;
         String[] documentIds = new String[entriesSize];
-        for(int i = 0; i < entriesSize; i++) {
+        for (int i = 0; i < entriesSize; i++) {
             File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
             Document.Dto document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
                     Optional.of("loremipsum " + i));
@@ -105,7 +107,7 @@ public class EntriesControllerTest {
                     .researcherId((i <= currentUserEntrySize ? userId : UUID.randomUUID()).toString())
                     .name("Test Entry " + i)
                     .authors(i % 2 == 1 ? null : "Alan Turing")
-                    .documentId(documentIds[i-1])
+                    .documentId(documentIds[i - 1])
                     .categoryId(category.getId())
                     .build();
             entries.add(entryService.create(c.toDto()));
@@ -188,7 +190,7 @@ public class EntriesControllerTest {
                         .multipart("/api/categories/" + category.getId() + "/entries")
                         .file(document)
                         .param("authors", authors)
-                        .param("name",name)
+                        .param("name", name)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .session(session)
                         .secure(true))
@@ -211,7 +213,7 @@ public class EntriesControllerTest {
         JSONObject patch = new JSONObject();
         patch.put("id", e.getId());
         patch.put("name", newName);
-        patch.put("authors",newAuthors);
+        patch.put("authors", newAuthors);
 
         var action = mockMvc.perform(
                         patch("/api/categories/" + category.getId() + "/entries")
