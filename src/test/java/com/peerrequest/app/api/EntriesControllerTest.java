@@ -184,7 +184,8 @@ public class EntriesControllerTest {
 
         MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
                 "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
-        var action = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/categories/" + category.getId() + "/entries")
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + category.getId() + "/entries")
                         .file(document)
                         .param("authors", authors)
                         .param("name",name)
@@ -238,7 +239,7 @@ public class EntriesControllerTest {
         Entry e = entryService.create(new Entry.Dto(Optional.empty(), Optional.of(userId.toString()), "Test delete",
                 Optional.empty(), Optional.of(documentId), Optional.of(category.getId())));
 
-        var action = mockMvc.perform(
+        mockMvc.perform(
                         delete("/api/categories/" + category.getId() + "/entries/" + e.getId())
                                 .session(session)
                                 .secure(true))
@@ -261,7 +262,7 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(currentUserEntrySize)));
 
-        //get entries of current signed in user
+        //get entries of currently signed-in user
         List<Entry> list = entries.stream().flatMap(Stream::ofNullable).filter(entry -> entry.getResearcherId()
                 .equals(userId.toString())).toList();
         for (int i = 0; i < list.size(); i++) {
