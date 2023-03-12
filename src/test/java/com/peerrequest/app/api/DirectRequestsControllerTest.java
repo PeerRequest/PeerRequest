@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.util.AssertionErrors.assertFalse;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,10 +59,11 @@ public class DirectRequestsControllerTest {
 
     private static Category category;
     //for getSpecificRequests()
-    private static List<Entry> entries = new ArrayList<>();
-    private static List<DirectRequestProcess> drps;
-    private static List<DirectRequest> userRequestsOthers = new ArrayList<>();
-    private static UUID userId = UUID.randomUUID();
+    private static final List<Entry> entries = new ArrayList<>();
+    private static final List<DirectRequestProcess> drpPatch = new ArrayList<>();
+    private static final List<DirectRequest> requestsPatch = new ArrayList<>();
+    private static final List<DirectRequest> userRequestsOthers = new ArrayList<>();
+    private static final UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
 
@@ -70,8 +72,8 @@ public class DirectRequestsControllerTest {
 
     private static Entry userEntryRequests;
     private static Entry userEntryCreateDrp;
-    private static DirectRequestProcess userDrpDelete;
     private static DirectRequestProcess userDrpRequests;
+    private static DirectRequestProcess userDrpDelete;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -167,7 +169,7 @@ public class DirectRequestsControllerTest {
         entries.add(userEntryCreateDrp);
 
 
-        // create three entries, drps with open slot but no requests for currently signed-in user - to claim open slots
+        // create nine entries, drps with open slot but no requests for currently signed-in user - to claim open slots
         for (int i = 0; i < 9; i++) {
             var e = entryService.create(
                     Entry.builder()
@@ -187,9 +189,10 @@ public class DirectRequestsControllerTest {
         }
 
 
-        // create nine entries, drps with one requests each (first three drp has pending, second three accepted,
-        // third three declined) - to patch direct requests
-        for (int i = 0; i < 9; i++) {
+        // create nine entries, drps with one requests each (first third drp has pending, second third accepted,
+        // last third declined) - to patch direct requests
+        int drpsSize = 9; // should be multiple of 3
+        for (int i = 0; i < drpsSize; i++) {
 
             var e = entryService.create(
                     Entry.builder()
@@ -206,16 +209,17 @@ public class DirectRequestsControllerTest {
                     .entryId(e.getId())
                     .openSlots(0)
                     .build().toDto());
+            drpPatch.add(p);
 
             var r = directRequestService.create(
                     DirectRequest.builder()
-                            .state(i < 3 ? DirectRequest.RequestState.PENDING
-                                    : (i < 6 ? DirectRequest.RequestState.ACCEPTED
+                            .state(i < drpsSize / 3 ? DirectRequest.RequestState.PENDING
+                                    : (i < (drpsSize / 3) * 2 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
                             .reviewerId(userId.toString())
                             .directRequestProcessId(p.getId())
-                            .build().toDto()
-            );
+                            .build().toDto());
+            requestsPatch.add(r);
         }
     }
 
@@ -364,8 +368,60 @@ public class DirectRequestsControllerTest {
 
     @Test
     @Order(2)
-    void patchDirectRequest() throws Exception {
+    void patchDirectRequestAccept(@Autowired ReviewService reviewService) throws Exception {
+        int index = 0;
+        DirectRequestProcess drp = drpPatch.get(index);
+        DirectRequest request = requestsPatch.get(index);
+        String state = DirectRequest.RequestState.ACCEPTED.toString();
 
+        JSONObject patch = new JSONObject();
+        patch.put("request_id", request.getId());
+        patch.put("state", state);
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + drp.getEntryId()
+                        + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(request.getId()))
+                .andExpect(jsonPath("$.state").value(state))
+                .andExpect(jsonPath("$.reviewer_id").value(request.getReviewerId()))
+                .andExpect(jsonPath("$.direct_request_process_id").value(request.getDirectRequestProcessId()));
+
+        assertTrue("review was not created", reviewService.getReviewerIdsByEntryId(drp.getEntryId()).stream()
+                .anyMatch(string -> string.equals(request.getReviewerId())));
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestDecline(@Autowired ReviewService reviewService) throws Exception {
+        int index = 1;
+        DirectRequestProcess drp = drpPatch.get(index);
+        DirectRequest request = requestsPatch.get(index);
+        String state = DirectRequest.RequestState.DECLINED.toString();
+
+        JSONObject patch = new JSONObject();
+        patch.put("request_id", request.getId());
+        patch.put("state", state);
+
+        mockMvc.perform(
+                        patch("/api/categories/" + category.getId() + "/entries/" + drp.getEntryId()
+                                + "/process/requests")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(request.getId()))
+                .andExpect(jsonPath("$.state").value(state))
+                .andExpect(jsonPath("$.reviewer_id").value(request.getReviewerId()))
+                .andExpect(jsonPath("$.direct_request_process_id").value(request.getDirectRequestProcessId()));
+
+        assertFalse("review was created", reviewService.getReviewerIdsByEntryId(drp.getEntryId()).stream()
+                .anyMatch(string -> string.equals(request.getReviewerId())));
     }
 
     @Test
