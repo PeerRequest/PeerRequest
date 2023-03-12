@@ -49,7 +49,7 @@ public class DirectRequestsControllerTest {
     private MockMvc mockMvc;
     private static Category category;
     //for getSpecificRequests()
-    private static List<Entry> entries;
+    private static List<Entry> entries = new ArrayList<>();
     private static List<DirectRequestProcess> drps;
     private static List<DirectRequest> directRequests;
     private static UUID userId = UUID.randomUUID();
@@ -60,6 +60,7 @@ public class DirectRequestsControllerTest {
     private static int currentUserEntrySize = 20;
 
     private static Entry userEntryRequests;
+    private static DirectRequestProcess userEntryRequestsDrp;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -97,43 +98,41 @@ public class DirectRequestsControllerTest {
 
         // create entry, drp, and 120 Request (40 each state, random open slots 0-10) for currently signed-in user
         // to list the requests
-        userEntryRequests = Entry.builder()
-                .researcherId(userId.toString())
-                .name("User Entry with Requests")
-                .authors("Alan Turing")
-                .documentId(documentService.create(document).getId())
-                .categoryId(category.getId())
-                .build();
-        entryService.create(userEntryRequests.toDto());
+        userEntryRequests = entryService.create(
+                Entry.builder()
+                        .researcherId(userId.toString())
+                        .name("User Entry with Requests")
+                        .authors("Alan Turing")
+                        .documentId((documentService.create(document)).getId())
+                        .categoryId(category.getId())
+                        .build().toDto());
         entries.add(userEntryRequests);
 
-        var userEntryRequestsDrp = drpService.create(
+        userEntryRequestsDrp = drpService.create(drpService.create(
                 DirectRequestProcess.builder()
                         .entryId(userEntryRequests.getId())
                         .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
-                        .build().toDto());
-        drpService.create(userEntryRequestsDrp.toDto());
+                        .build().toDto()).toDto());
 
         for (int i = 0; i < 120; i++) {
             var r = directRequestService.create(
                     DirectRequest.builder()
-                            .state( i < 40 ? DirectRequest.RequestState.PENDING
+                            .state(i < 40 ? DirectRequest.RequestState.PENDING
                                     : (i < 80 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
-                            .reviewerId(userId.toString())
+                            .reviewerId(UUID.randomUUID().toString())
                             .directRequestProcessId(userEntryRequestsDrp.getId())
                             .build().toDto());
         }
 
-        // create entry drp of user with 9 requests (each state 3 times) - to delete a request
-        var userEntryDelete = Entry.builder()
+        // create entry, drp of user with 9 requests (each state 3 times) - to delete a request
+        var userEntryDelete = entryService.create(Entry.builder()
                 .researcherId(userId.toString())
                 .name("User Entry Delete")
                 .authors("Alan Turing")
                 .documentId(documentService.create(document).getId())
                 .categoryId(category.getId())
-                .build();
-        entryService.create(userEntryDelete.toDto());
+                .build().toDto());
         entries.add(userEntryDelete);
 
         var userEntryDeleteDrp = drpService.create(
@@ -146,10 +145,10 @@ public class DirectRequestsControllerTest {
         for (int i = 0; i < 9; i++) {
             var r = directRequestService.create(
                     DirectRequest.builder()
-                            .state( i < 3 ? DirectRequest.RequestState.PENDING
+                            .state(i < 3 ? DirectRequest.RequestState.PENDING
                                     : (i < 6 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
-                            .reviewerId(userId.toString())
+                            .reviewerId(UUID.randomUUID().toString())
                             .directRequestProcessId(userEntryDeleteDrp.getId())
                             .build().toDto()
             );
@@ -157,14 +156,14 @@ public class DirectRequestsControllerTest {
 
 
         // create entry of user without drp - to create a drp
-        var userEntryCreateDrp = Entry.builder()
-                .researcherId(userId.toString())
-                .name("User Entry Create Direct Request Process")
-                .authors("Alan Turing")
-                .documentId(documentService.create(document).getId())
-                .categoryId(category.getId())
-                .build();
-        entryService.create(userEntryCreateDrp.toDto());
+        var userEntryCreateDrp = entryService.create(
+                Entry.builder()
+                        .researcherId(userId.toString())
+                        .name("User Entry Create Direct Request Process")
+                        .authors("Alan Turing")
+                        .documentId(documentService.create(document).getId())
+                        .categoryId(category.getId())
+                        .build().toDto());
         entries.add(userEntryCreateDrp);
 
 
@@ -185,40 +184,38 @@ public class DirectRequestsControllerTest {
                             .entryId(e.getId())
                             .openSlots(10)
                             .build().toDto());
-            drpService.create(p.toDto());
         }
 
 
-        // create three entries, drps with 3 requests each (first drp has pending, second accepted, third declined)
-        // - to patch direct requests
+        // create nine entries, drps with one requests each (first three drp has pending, second three accepted,
+        // third three declined) - to patch direct requests
         for (int i = 0; i < 9; i++) {
 
             var e = entryService.create(
                     Entry.builder()
-                    .researcherId(userId.toString())
-                    .name("User Entry Requested " + i)
-                    .authors("Alan Turing")
-                    .documentId(documentService.create(document).getId())
-                    .categoryId(category.getId())
-                    .build().toDto());
+                            .researcherId(UUID.randomUUID().toString())
+                            .name("User Entry Requested " + i)
+                            .authors("Alan Turing")
+                            .documentId(documentService.create(document).getId())
+                            .categoryId(category.getId())
+                            .build().toDto());
+            entries.add(e);
 
             var p = drpService.create(
                     DirectRequestProcess.builder()
                     .entryId(e.getId())
                     .openSlots(0)
                     .build().toDto());
-            drpService.create(p.toDto());
 
             var r = directRequestService.create(
                     DirectRequest.builder()
-                            .state( i < 3 ? DirectRequest.RequestState.PENDING
+                            .state(i < 3 ? DirectRequest.RequestState.PENDING
                                     : (i < 6 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
                             .reviewerId(userId.toString())
                             .directRequestProcessId(p.getId())
                             .build().toDto()
             );
-
         }
     }
 
