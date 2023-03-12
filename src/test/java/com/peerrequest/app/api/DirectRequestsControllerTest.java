@@ -62,6 +62,7 @@ public class DirectRequestsControllerTest {
     private static Category category;
     //for getSpecificRequests()
     private static final List<Entry> entries = new ArrayList<>();
+    private static final List<Entry> entriesClaimOpenSlot = new ArrayList<>();
     private static final List<DirectRequestProcess> drpPatch = new ArrayList<>();
     private static final List<DirectRequest> requestsPatch = new ArrayList<>();
     private static final List<DirectRequest> userRequestsOthers = new ArrayList<>();
@@ -179,6 +180,7 @@ public class DirectRequestsControllerTest {
                             .categoryId(category.getId())
                             .build().toDto());
             entries.add(e);
+            entriesClaimOpenSlot.add(e);
 
             var p = drpService.create(
                     DirectRequestProcess.builder()
@@ -452,12 +454,12 @@ public class DirectRequestsControllerTest {
     void getSpecificRequests() throws Exception {
         List<Long> entryIds = entries.stream().map(Entry::getId).toList();
         ObjectMapper mapper = new ObjectMapper();
-        String test = mapper.writeValueAsString(entryIds);
+        String content = mapper.writeValueAsString(entryIds);
 
         var action = mockMvc.perform(
                 post("/api/requests")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(test)
+                        .content(content)
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk());
@@ -475,7 +477,17 @@ public class DirectRequestsControllerTest {
 
     @Test
     @Order(2)
-    void claimOpenSlot() throws Exception {
+    void claimOpenSlotNoRequest(@Autowired ReviewService reviewService) throws Exception {
+        Entry entry = entriesClaimOpenSlot.get(0);
 
+        var action = mockMvc.perform(
+                        post("/api/categories/" + category.getId() + "/entries/" + entry.getId()
+                                + "/process/claim")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk());
+
+        assertTrue("review was not created", reviewService.getReviewerIdsByEntryId(entry.getId()).stream()
+                .anyMatch(string -> string.equals(userId.toString())));
     }
 }
