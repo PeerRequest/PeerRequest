@@ -84,7 +84,7 @@ public class EntriesControllerTest {
         // setup data
         category = categoryService.create(
                 Category.builder()
-                .name("Test Category")
+                .name("Test Category Entry")
                 .year(2000)
                 .label(Category.CategoryLabel.INTERNAL)
                 .minScore(0)
