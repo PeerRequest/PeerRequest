@@ -356,7 +356,22 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(2)
     void postDirectRequest() throws Exception {
+        String reviewerId = UUID.randomUUID().toString();
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", reviewerId);
 
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.state").value(DirectRequest.RequestState.PENDING.toString()))
+                .andExpect(jsonPath("$.reviewer_id").value(reviewerId))
+                .andExpect(jsonPath("$.direct_request_process_id").value(userDrpRequests.getId()));
     }
 
     @Test
