@@ -63,12 +63,9 @@ public class DirectRequestsControllerTest {
     private static final List<Entry> entriesClaimOpenSlot = new ArrayList<>();
     private static final List<DirectRequestProcess> drpPatch = new ArrayList<>();
     private static final List<DirectRequest> requestsPatch = new ArrayList<>();
-    private static final List<DirectRequest> userRequestsOthers = new ArrayList<>();
+    private static final List<DirectRequest> userRequestedOthers = new ArrayList<>();
     private static final UUID userId = UUID.randomUUID();
-
     private static MockHttpSession session;
-
-    private static Entry userEntryRequests;
     private static Entry userEntryCreateDrp;
     private static DirectRequestProcess userDrpRequests;
     private static DirectRequestProcess userDrpDelete;
@@ -94,7 +91,7 @@ public class DirectRequestsControllerTest {
         // setup data
         category = categoryService.create(
                 Category.builder()
-                        .name("Test Category")
+                        .name("Test Category Requests")
                         .year(2000)
                         .label(Category.CategoryLabel.INTERNAL)
                         .minScore(0)
@@ -109,7 +106,7 @@ public class DirectRequestsControllerTest {
 
         // create entry, drp, and 120 Request (40 each state, random open slots 0-10) for currently signed-in user
         // to list the requests
-        userEntryRequests = entryService.create(
+        var userEntryRequests = entryService.create(
                 Entry.builder()
                         .researcherId(userId.toString())
                         .name("User Entry with Requests")
@@ -135,7 +132,7 @@ public class DirectRequestsControllerTest {
                             .reviewerId(UUID.randomUUID().toString())
                             .directRequestProcessId(userDrpRequests.getId())
                             .build().toDto());
-            userRequestsOthers.add(r);
+            userRequestedOthers.add(r);
         }
 
         // create entry, drp of user - to delete a request
@@ -283,8 +280,8 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void getDirectRequest() throws Exception {
-        DirectRequest request = userRequestsOthers.get(
-                ThreadLocalRandom.current().nextInt(0, userRequestsOthers.size()));
+        DirectRequest request = userRequestedOthers.get(
+                ThreadLocalRandom.current().nextInt(0, userRequestedOthers.size()));
         mockMvc.perform(
                 get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
                         + "/process/requests/" + request.getId())
@@ -332,7 +329,7 @@ public class DirectRequestsControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(100)));
 
-        List<DirectRequest> list = userRequestsOthers.stream().limit(100).toList();
+        List<DirectRequest> list = userRequestedOthers.stream().limit(100).toList();
         for (int i = 0; i < list.size(); i++) {
             DirectRequest request = list.get(i);
 
