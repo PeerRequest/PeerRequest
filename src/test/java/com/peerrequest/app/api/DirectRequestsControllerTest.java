@@ -67,9 +67,6 @@ public class DirectRequestsControllerTest {
 
     private static MockHttpSession session;
 
-    // should be multiple of four
-    private static int currentUserEntrySize = 20;
-
     private static Entry userEntryRequests;
     private static Entry userEntryCreateDrp;
     private static DirectRequestProcess userDrpRequests;
@@ -408,12 +405,12 @@ public class DirectRequestsControllerTest {
         patch.put("state", state);
 
         mockMvc.perform(
-                        patch("/api/categories/" + category.getId() + "/entries/" + drp.getEntryId()
-                                + "/process/requests")
-                                .content(patch.toString())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .session(session)
-                                .secure(true))
+                patch("/api/categories/" + category.getId() + "/entries/" + drp.getEntryId()
+                        + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(request.getId()))
                 .andExpect(jsonPath("$.state").value(state))
@@ -427,7 +424,25 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void listRequestsByResearcher() throws Exception {
+        var action = mockMvc.perform(
+                get("/api/requests")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(requestsPatch.size()))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(1))
+                .andExpect(jsonPath("$.content").isArray());
 
+        for (int i = 0; i < requestsPatch.size(); i++) {
+            DirectRequest r = requestsPatch.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].first.id").value(r.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.state").value(r.getState().toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.reviewer_id").value(userId.toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.direct_request_process_id")
+                    .value(r.getDirectRequestProcessId()));
+        }
     }
 
     @Test
