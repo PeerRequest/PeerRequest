@@ -4,11 +4,13 @@ import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
 import com.peerrequest.app.services.*;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -16,6 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -25,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,6 +65,7 @@ public class DirectRequestsControllerTest {
     private static int currentUserEntrySize = 20;
 
     private static Entry userEntryRequests;
+    private static Entry userEntryCreateDrp;
     private static DirectRequestProcess userEntryRequestsDrp;
 
     @BeforeAll
@@ -157,7 +162,7 @@ public class DirectRequestsControllerTest {
 
 
         // create entry of user without drp - to create a drp
-        var userEntryCreateDrp = entryService.create(
+        userEntryCreateDrp = entryService.create(
                 Entry.builder()
                         .researcherId(userId.toString())
                         .name("User Entry Create Direct Request Process")
@@ -227,22 +232,35 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void getDirectRequestProcess() throws Exception {
-        var action = mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries/" + userEntryRequestsDrp.getEntryId()
+        mockMvc.perform(
+                get("/api/categories/" + category.getId() + "/entries/" + userEntryRequestsDrp.getEntryId()
                         + "/process")
-                                .session(session)
-                                .secure(true))
-                .andExpect(status().isOk());
-
-        action.andExpect(jsonPath("$.id").value(userEntryRequestsDrp.getId()));
-        action.andExpect(jsonPath("$.entry_id").value(userEntryRequestsDrp.getEntryId()));
-        action.andExpect(jsonPath("$.open_slots").value(userEntryRequestsDrp.getOpenSlots()));
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userEntryRequestsDrp.getId()))
+                .andExpect(jsonPath("$.entry_id").value(userEntryRequestsDrp.getEntryId()))
+                .andExpect(jsonPath("$.open_slots").value(userEntryRequestsDrp.getOpenSlots()));
     }
 
     @Test
     @Order(2)
     void createDirectRequestProcess() throws Exception {
+        int openSlots = 2;
+        JSONObject toPost = new JSONObject();
+        toPost.put("open_slots", openSlots);
 
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId()
+                        + "/process")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.entry_id").value(userEntryCreateDrp.getId()))
+                .andExpect(jsonPath("$.open_slots").value(openSlots));
     }
 
     @Test
