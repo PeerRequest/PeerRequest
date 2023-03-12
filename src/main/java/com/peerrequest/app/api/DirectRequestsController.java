@@ -404,7 +404,13 @@ public class DirectRequestsController extends ServiceBasedController {
                 pairList);
     }
 
-    // awaits a json array of entry ids e.g. '[1,4,7,2,3,6,8,9]'
+    /**
+     * Returns all requests of the user of the given entry ids where the request state is not declined.
+     *
+     * @param entryIds entry ids, awaits a json array of entry ids e.g. '[1,4,7,2,3,6,8,9]'
+     * @param user user who is signed in
+     * @return specified requests
+     */
     @PostMapping("/requests")
     List<DirectRequest.Dto> getSpecificRequests(@RequestBody List<Long> entryIds,
                                                        @AuthenticationPrincipal OAuth2User user) {
