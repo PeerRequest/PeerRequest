@@ -18,7 +18,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -28,8 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,7 +64,7 @@ public class DirectRequestsControllerTest {
 
     private static Entry userEntryRequests;
     private static Entry userEntryCreateDrp;
-    private static DirectRequestProcess userEntryRequestsDrp;
+    private static DirectRequestProcess userDrpRequests;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -114,7 +112,7 @@ public class DirectRequestsControllerTest {
                         .build().toDto());
         entries.add(userEntryRequests);
 
-        userEntryRequestsDrp = drpService.create(drpService.create(
+        userDrpRequests = drpService.create(drpService.create(
                 DirectRequestProcess.builder()
                         .entryId(userEntryRequests.getId())
                         .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
@@ -127,7 +125,7 @@ public class DirectRequestsControllerTest {
                                     : (i < 80 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
                             .reviewerId(UUID.randomUUID().toString())
-                            .directRequestProcessId(userEntryRequestsDrp.getId())
+                            .directRequestProcessId(userDrpRequests.getId())
                             .build().toDto());
         }
 
@@ -146,7 +144,7 @@ public class DirectRequestsControllerTest {
                         .entryId(userEntryDelete.getId())
                         .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
                         .build().toDto());
-        drpService.create(userEntryRequestsDrp.toDto());
+        drpService.create(userDrpRequests.toDto());
 
         for (int i = 0; i < 9; i++) {
             var r = directRequestService.create(
@@ -233,14 +231,14 @@ public class DirectRequestsControllerTest {
     @Order(1)
     void getDirectRequestProcess() throws Exception {
         mockMvc.perform(
-                get("/api/categories/" + category.getId() + "/entries/" + userEntryRequestsDrp.getEntryId()
+                get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
                         + "/process")
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userEntryRequestsDrp.getId()))
-                .andExpect(jsonPath("$.entry_id").value(userEntryRequestsDrp.getEntryId()))
-                .andExpect(jsonPath("$.open_slots").value(userEntryRequestsDrp.getOpenSlots()));
+                .andExpect(jsonPath("$.id").value(userDrpRequests.getId()))
+                .andExpect(jsonPath("$.entry_id").value(userDrpRequests.getEntryId()))
+                .andExpect(jsonPath("$.open_slots").value(userDrpRequests.getOpenSlots()));
     }
 
     @Test
@@ -266,7 +264,21 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(2)
     void patchDirectRequestProcess() throws Exception {
+        int openSlots = 3;
+        JSONObject patch = new JSONObject();
+        patch.put("open_slots", 3);
 
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getId()
+                        + "/process")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userDrpRequests.getId()))
+                .andExpect(jsonPath("$.entry_id").value(userDrpRequests.getEntryId()))
+                .andExpect(jsonPath("$.open_slots").value(openSlots));;
     }
 
     @Test
