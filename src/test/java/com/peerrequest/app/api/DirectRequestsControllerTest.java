@@ -70,6 +70,7 @@ public class DirectRequestsControllerTest {
 
     private static Entry userEntryRequests;
     private static Entry userEntryCreateDrp;
+    private static DirectRequestProcess userDrpDelete;
     private static DirectRequestProcess userDrpRequests;
 
     @BeforeAll
@@ -137,7 +138,7 @@ public class DirectRequestsControllerTest {
             userRequestsOthers.add(r);
         }
 
-        // create entry, drp of user with 9 requests (each state 3 times) - to delete a request
+        // create entry, drp of user - to delete a request
         var userEntryDelete = entryService.create(Entry.builder()
                 .researcherId(userId.toString())
                 .name("User Entry Delete")
@@ -147,24 +148,11 @@ public class DirectRequestsControllerTest {
                 .build().toDto());
         entries.add(userEntryDelete);
 
-        var userEntryDeleteDrp = drpService.create(
+        userDrpDelete = drpService.create(
                 DirectRequestProcess.builder()
                         .entryId(userEntryDelete.getId())
                         .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
                         .build().toDto());
-        drpService.create(userDrpRequests.toDto());
-
-        for (int i = 0; i < 9; i++) {
-            var r = directRequestService.create(
-                    DirectRequest.builder()
-                            .state(i < 3 ? DirectRequest.RequestState.PENDING
-                                    : (i < 6 ? DirectRequest.RequestState.ACCEPTED
-                                    : DirectRequest.RequestState.DECLINED))
-                            .reviewerId(UUID.randomUUID().toString())
-                            .directRequestProcessId(userEntryDeleteDrp.getId())
-                            .build().toDto()
-            );
-        }
 
 
         // create entry of user without drp - to create a drp
@@ -313,11 +301,11 @@ public class DirectRequestsControllerTest {
                 DirectRequest.builder()
                         .state(DirectRequest.RequestState.PENDING)
                         .reviewerId(UUID.randomUUID().toString())
-                        .directRequestProcessId(userDrpRequests.getId())
+                        .directRequestProcessId(userDrpDelete.getId())
                         .build().toDto());
 
         mockMvc.perform(
-                delete("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                delete("/api/categories/" + category.getId() + "/entries/" + userDrpDelete.getEntryId()
                         + "/process/requests/" + request.getId().toString())
                         .session(session)
                         .secure(true))
