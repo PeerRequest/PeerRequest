@@ -5,27 +5,26 @@
     import Error from "./Error.svelte";
     import {page} from '$app/stores';
 
-
     let path = $page.url.pathname;
 
     export let error = null;
     export let review = {
         id: "",
-        entry_id:""
+        entry_id: ""
     }
     export let category = {
         id: ""
     }
-    let sortedComments = null
-    let amount = 0
-    let order = true
-    let comment = ""
+    let sortedComments = null;
+    let amount = 0;
+    let order = true;
+    let comment = "";
 
     let show_confirm_deletion_modal = false;
 
     const handleOrder = (sorting_data) => {
-        if (order) return sortedComments = sorting_data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-        return sortedComments = sorting_data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        if (order) return sorting_data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        return sorting_data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     };
 
     afterUpdate(() => {
@@ -60,7 +59,7 @@
                 },
                 body: JSON.stringify(newComment)
             })
-                .then(resp => resp)
+                .then(resp => resp.json())
                 .then(resp => {
                     if (resp.status < 200 || resp.status >= 300) {
                         error = "" + resp.status + ": " + resp.message;
@@ -74,7 +73,7 @@
                     }
                 )
             comment = ""
-        } 
+        }
     }
 
     function loadComments() {
@@ -113,25 +112,31 @@
             <header class="flex">
                 <h1 class="font-bold text-sm my-2">{amount}{amount > 1 ? " comments" : " comment" }</h1>
             </header>
-            <Button class="w-44 h-8">
-                <Chevron> Sort by {order ? "Oldest" : "Newest"}</Chevron>
+            <Button color="primary" class="w-48 h-8">
+                <Chevron> Jump to {order ? "Newest" : "Oldest"}</Chevron>
             </Button>
             <Dropdown>
-                <DropdownItem on:click={()=>order = !order}
-                              on:click={handleOrder(sortedComments)}>{order ? "Newest" : "Oldest"}</DropdownItem>
+                <DropdownItem on:click={()=> {
+                    order = !order;
+                    handleOrder(sortedComments);
+                }}>Jump to {order ? "Oldest" : "Newest"}</DropdownItem>
             </Dropdown>
 
             <div class="max-h-[34vh] h-screen w-full overflow-y-auto my-4 " id="CommentSection">
 
                 {#each sortedComments as data}
-                    <Comment bind:comment={data} category={category} review={review} bind:show_delete={show_confirm_deletion_modal}/>
+                    <Comment bind:comment={data} category={category} review={review}
+                             bind:show_delete={show_confirm_deletion_modal}/>
                 {/each}
 
             </div>
             <form on:submit={submitComment}>
-                <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment" type="text">
+                <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment"
+                       type="text">
                 {#if comment.length >= 250}
-                    <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span>  Only Comments under 250 Characters allowed</Helper>
+                    <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only
+                        Comments under 250 Characters allowed
+                    </Helper>
                 {/if}
             </form>
         </main>

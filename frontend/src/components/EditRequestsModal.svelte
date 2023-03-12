@@ -96,7 +96,7 @@
 
     function loadDirectRequestProcess() {
         process = null;
-        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+        if (paper === null || paper.category_id === undefined || paper.id === undefined) {
             return
         }
         fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
@@ -159,9 +159,10 @@
         }
         reviewers = reviewers.filter(e => e !== reviewer)
     }
+
     function patchOpenSlots() {
         let data = {
-            open_slots : slots
+            open_slots: slots
         };
         fetch('/api/categories/' + paper.category_id + "/entries/" + paper.id + "/process", {
             method: 'PATCH',
@@ -210,7 +211,7 @@
 
 </script>
 
-<Modal class="w-full" bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="md">
+<Modal bind:open={show} class="w-full" on:hide={() => hide ? hide() : null} permanent={true} size="md">
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
             Edit Requests and Open Slots
@@ -222,10 +223,10 @@
     <div class="flex grid gap-y-6 w-full">
         <div class="flex flex-row justify-between items-center">
             <Heading class="mr-3" size="sm" tag="h4">Open Slots</Heading>
-            <input class="justify-end rounded-lg"
+            <input bind:value={slots}
+                   class="justify-end rounded-lg"
                    id=selected_open_slots
                    min=0
-                   bind:value={slots}
                    type=number>
         </div>
         <Button color="primary">
@@ -238,7 +239,9 @@
             </div>
             {#if users !== null}
                 {#each users.filter(u => !reviewers.includes(u) &&
-                    (query === "" || u.firstName.toLowerCase().includes(query.toLowerCase()))) as u }
+                    (query === "" ||
+                        ((u.firstName.toLowerCase().includes(query.toLowerCase())) ||
+                            u.lastName.toLowerCase().includes(query.toLowerCase())))) as u}
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
                         <span class="cursor-pointer" on:click={() => addReviewer(u) }>
                           {u.firstName + " " + u.lastName}
@@ -250,10 +253,12 @@
             {/if}
         </Dropdown>
 
-        <div class="flex mb-4 overflow-y-auto h-56 max-h-[50vh]">
+        <div class="mb-4 overflow-y-auto min-h-[200px] max-h-[50vh]">
             <Table divClass="relative">
                 <TableHead>
-                    <TableHeadCell>Name</TableHeadCell>
+                    <TableHeadCell class="w-[50%]">Name</TableHeadCell>
+                    <TableHeadCell>Status</TableHeadCell>
+                    <TableHeadCell></TableHeadCell>
                 </TableHead>
                 <TableBody class="divide-y">
                     {#each reviewers as r }
@@ -265,24 +270,9 @@
                                 </TableBodyCell>
                                 <TableBodyCell>
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <Button pill class="!p-2" outline color="red"
+                                        <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                                                 on:click={() => retractRequest(r)}>
-                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                                 width="32px" height="32px" viewBox="0 0 64 64"
-                                                 xml:space="preserve">
-                                          <g>
-                                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10"
-                                                  x1="18.947"
-                                                  y1="17.153" x2="45.045"
-                                                  y2="43.056"/>
-                                          </g>
-                                                <g>
-                                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10"
-                                                  x1="19.045"
-                                                  y1="43.153" x2="44.947"
-                                                  y2="17.056"/>
-                                          </g>
-                                      </svg>
+                                            Remove
                                         </Button>
                                     </div>
                                 </TableBodyCell>
@@ -293,7 +283,12 @@
             </Table>
         </div>
         <Footer class="bottom-0 left-0 z-20 w-full">
-            <Button disabled={buttonMessage === "Sending ..."} class="w-full" color="primary" size="sm" type="submit" on:click|once={() => sendRequests()}>
+            <Button class="w-full"
+                    color="primary"
+                    disabled={buttonMessage === "Sending ..."}
+                    on:click|once={() => sendRequests()}
+                    size="sm"
+                    type="submit">
                 {buttonMessage}
             </Button>
         </Footer>
