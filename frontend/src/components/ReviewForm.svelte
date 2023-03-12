@@ -126,7 +126,7 @@
     </svelte:fragment>
     Save successful
 </Toast>
-<Button class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
+<Button color="primary" class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
 <Label>Score: {edited_score} / {maxScore}</Label>
 <Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}"
        disabled={!reviewerUser}/>
@@ -135,9 +135,9 @@
 
 <Label class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
 <ButtonGroup>
-    <Button color="red" outline on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
-    <Button color="yellow" outline on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
-    <Button color="green" outline on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
+    <Button color="red" outline={confidence !== 0} on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
+    <Button color="yellow" outline={confidence !== 1} on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
+    <Button color="green" outline={confidence !== 2} on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
 </ButtonGroup>
 <hr class="my-4">
 
