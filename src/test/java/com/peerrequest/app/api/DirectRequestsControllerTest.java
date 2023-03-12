@@ -329,7 +329,28 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void listDirectRequestsByEntry() throws Exception {
+        var action = mockMvc.perform(
+                        get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                                + "/process/requests")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(100))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(2))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(100)));
 
+        List<DirectRequest> list = userRequestsOthers.stream().limit(100).toList();
+        for (int i = 0; i < list.size(); i++) {
+            DirectRequest request = list.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(request.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].state").value(request.getState().toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].reviewer_id").value(request.getReviewerId()));
+            action.andExpect(jsonPath("$.content[" + i + "].direct_request_process_id")
+                    .value(request.getDirectRequestProcessId()));
+        }
     }
 
     @Test
