@@ -4,6 +4,7 @@ import com.peerrequest.app.services.messages.CategoryMessageTemplates;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import com.peerrequest.app.services.messages.ReviewMessageTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,16 @@ public class NotificationService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Value("${spring.mail.from}")
+    private String from;
+
 
     private void sendEmail(String toEmail, String subject, String message) {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(toEmail);
         mail.setText(message);
         mail.setSubject(subject);
+        mail.setFrom(from);
         mailSender.send(mail);
     }
 
@@ -41,9 +46,9 @@ public class NotificationService {
      * @param messageTemplate review message
      */
     public void sendCategoryNotification(
-                                       String receiverId,
-                                       Long entryId,
-                                       CategoryMessageTemplates messageTemplate) {
+            String receiverId,
+            Long entryId,
+            CategoryMessageTemplates messageTemplate) {
 
 
         var receiver = userService.get(receiverId);
@@ -71,9 +76,9 @@ public class NotificationService {
      * @param messageTemplate entry message
      */
     public void sendEntryNotification(String emitterId,
-                                       String receiverId,
-                                       Long entryId,
-                                       EntryMessageTemplates messageTemplate) {
+                                      String receiverId,
+                                      Long entryId,
+                                      EntryMessageTemplates messageTemplate) {
         var emitter = userService.get(emitterId);
         var receiver = userService.get(receiverId);
         var entry = entryService.get(entryId);
@@ -83,12 +88,12 @@ public class NotificationService {
         }
 
         sendEmail(
-            receiver.get().getEmail(),
-            messageTemplate.getSubject(),
-            messageTemplate.getMessage(
-                receiver.get().firstName(),
-                emitter.get().firstName() + " " + emitter.get().lastName(),
-                entry.get().getName())
+                receiver.get().getEmail(),
+                messageTemplate.getSubject(),
+                messageTemplate.getMessage(
+                        receiver.get().firstName(),
+                        emitter.get().firstName() + " " + emitter.get().lastName(),
+                        entry.get().getName())
         );
 
     }
@@ -114,12 +119,12 @@ public class NotificationService {
         }
 
         sendEmail(
-            receiver.get().getEmail(),
-            messageTemplate.getSubject(),
-            messageTemplate.getMessage(
-                receiver.get().firstName(),
-                emitter.get().firstName() + " " + emitter.get().lastName(),
-                entry.get().getName())
+                receiver.get().getEmail(),
+                messageTemplate.getSubject(),
+                messageTemplate.getMessage(
+                        receiver.get().firstName(),
+                        emitter.get().firstName() + " " + emitter.get().lastName(),
+                        entry.get().getName())
         );
     }
 }

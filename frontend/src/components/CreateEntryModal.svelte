@@ -190,10 +190,10 @@
 
         <div class="flex flex-row justify-between items-center">
             <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
-            <input class="justify-end rounded-lg"
+            <input bind:value={open_slots}
+                   class="justify-end rounded-lg"
                    id=selected_open_slots
                    min=0
-                   bind:value={open_slots}
                    type=number>
         </div>
 
@@ -207,8 +207,9 @@
             </div>
             {#if users !== null}
                 {#each users.filter(u => !reviewers.includes(u) &&
-                    // TODO: also allow searching after lastName
-                    (query === "" || u.firstName.toLowerCase().includes(query.toLowerCase()))) as u }
+                    (query === "" ||
+                        ((u.firstName.toLowerCase().includes(query.toLowerCase())) ||
+                            u.lastName.toLowerCase().includes(query.toLowerCase())))) as u}
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
                     <span class="cursor-pointer" on:click={() => addReviewer(u) }>
                       {u.firstName + " " + u.lastName}
@@ -219,34 +220,21 @@
                 LOADING USERS
             {/if}
         </Dropdown>
-        <div class="mb-4 h-[20vh] overflow-y-auto  max-h-[20vh]">
+        <div class="mb-4 min-h-[200px] overflow-y-auto  max-h-[20vh]">
             <Table divClass="relative">
                 <TableHead>
                     <TableHeadCell>Name</TableHeadCell>
+                    <TableHeadCell></TableHeadCell>
                 </TableHead>
                 <TableBody class="divide-y">
                     {#each reviewers as r }
                         <TableBodyRow>
                             <TableBodyCell>{r.firstName + " " + r.lastName}</TableBodyCell>
                             <TableBodyCell>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <Button pill class="!p-2" outline color="red"
+                                    <div class="flex justify-end">
+                                    <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                                             on:click={() => {reviewers = reviewers.filter(e => e !== r)}}>
-                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                                             width="32px" height="32px" viewBox="0 0 64 64"
-                                             xml:space="preserve">
-                          <g>
-                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="18.947"
-                                  y1="17.153" x2="45.045"
-                                  y2="43.056"/>
-                          </g>
-                                            <g>
-                            <line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="19.045"
-                                  y1="43.153" x2="44.947"
-                                  y2="17.056"/>
-                          </g>
-                      </svg>
-
+                                        Remove
                                     </Button>
                                 </div>
                             </TableBodyCell>
