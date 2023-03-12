@@ -83,7 +83,7 @@
                 outline
                 on:click={() => {show_create_category_modal = true}}
                 size="xs">
-            Create new Conference
+            Create New Conference
         </Button>
         <Categories>
             {#if categories === null}
