@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,8 +50,12 @@ public class DirectRequestsControllerTest {
     @MockBean
     JavaMailSender mailSender;
 
+    @MockBean
+    UserService userService;
+
     @Autowired
     private MockMvc mockMvc;
+
     private static Category category;
     //for getSpecificRequests()
     private static List<Entry> entries = new ArrayList<>();
@@ -118,11 +124,12 @@ public class DirectRequestsControllerTest {
                         .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
                         .build().toDto()).toDto());
 
-        for (int i = 0; i < 120; i++) {
+        int requestsSize = 120; // should be multiple of three
+        for (int i = 0; i < requestsSize; i++) {
             var r = directRequestService.create(
                     DirectRequest.builder()
-                            .state(i < 40 ? DirectRequest.RequestState.PENDING
-                                    : (i < 80 ? DirectRequest.RequestState.ACCEPTED
+                            .state(i < requestsSize / 3 ? DirectRequest.RequestState.PENDING
+                                    : (i < (requestsSize / 3) * 2 ? DirectRequest.RequestState.ACCEPTED
                                     : DirectRequest.RequestState.DECLINED))
                             .reviewerId(UUID.randomUUID().toString())
                             .directRequestProcessId(userDrpRequests.getId())
@@ -288,10 +295,10 @@ public class DirectRequestsControllerTest {
         DirectRequest request = userRequestsOthers.get(
                 ThreadLocalRandom.current().nextInt(0, userRequestsOthers.size()));
         mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
-                                + "/process/requests/" + request.getId())
-                                .session(session)
-                                .secure(true))
+                get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests/" + request.getId())
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(request.getId()))
                 .andExpect(jsonPath("$.state").value(request.getState().toString()))
@@ -301,8 +308,22 @@ public class DirectRequestsControllerTest {
 
     @Test
     @Order(2)
-    void deleteDirectRequest() throws Exception {
+    void deleteDirectRequest(@Autowired DirectRequestService directRequestService) throws Exception {
+        var request = directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.PENDING)
+                        .reviewerId(UUID.randomUUID().toString())
+                        .directRequestProcessId(userDrpRequests.getId())
+                        .build().toDto());
 
+        mockMvc.perform(
+                delete("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests/" + request.getId().toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        assertTrue("entry was not deleted", directRequestService.get(request.getId()).isEmpty());
     }
 
     @Test
