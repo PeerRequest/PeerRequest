@@ -249,4 +249,34 @@ class CategoriesControllerTest {
         action.andExpect(jsonPath("$.max_score").value(5.0));
         action.andExpect(jsonPath("$.score_step_size").value(1.0));
     }
+
+    @Test
+    void patchCategory() throws Exception {
+        Long categoryId = categories.get(1).getId();
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", categoryId);
+        toPost.put("name", "Patched Category");
+        toPost.put("year", 1338);
+        toPost.put("label", "INTERNAL");
+        toPost.put("min_score", 2.0);
+        toPost.put("max_score", 6.0);
+        toPost.put("score_step_size", 2.0);
+
+        var action = mockMvc.perform(
+                    patch("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isOk());
+
+        action.andExpect(jsonPath("$.id").isNotEmpty());
+        action.andExpect(jsonPath("$.name").value("Patched Category"));
+        action.andExpect(jsonPath("$.year").value(1338));
+        action.andExpect(jsonPath("$.label").value(Category.CategoryLabel.INTERNAL.toString()));
+        action.andExpect(jsonPath("$.min_score").value(2.0));
+        action.andExpect(jsonPath("$.max_score").value(6.0));
+        action.andExpect(jsonPath("$.score_step_size").value(2.0));
+    }
 }
