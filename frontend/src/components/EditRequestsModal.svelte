@@ -185,6 +185,12 @@
                 }
             })
             .catch(err => console.log(err))
+            .then(() => {
+                new_reviewers.map(reviewer => createDirectRequest(reviewer))
+                if (new_reviewers === []) {
+                    hide()
+                }
+            })
     }
 
     onMount(() => {
@@ -198,10 +204,6 @@
     function sendRequests() {
         buttonMessage = "Sending ..."
         patchOpenSlots()
-        new_reviewers.map(reviewer => createDirectRequest(reviewer))
-        if (new_reviewers === []) {
-            hide()
-        }
     }
 
     $: if (show) {
