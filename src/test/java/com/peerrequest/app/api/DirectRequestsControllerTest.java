@@ -1,5 +1,6 @@
 package com.peerrequest.app.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
 import com.peerrequest.app.services.*;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.util.AssertionErrors.assertFalse;
@@ -448,7 +450,27 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void getSpecificRequests() throws Exception {
+        List<Long> entryIds = entries.stream().map(Entry::getId).toList();
+        ObjectMapper mapper = new ObjectMapper();
+        String test = mapper.writeValueAsString(entryIds);
 
+        var action = mockMvc.perform(
+                post("/api/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(test)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        for (int i = 0; i < (requestsPatch.size() / 3) * 2; i++) {
+            DirectRequest r = requestsPatch.get(i);
+
+            action.andExpect(jsonPath("$.[" + i + "].id").value(r.getId()));
+            action.andExpect(jsonPath("$.[" + i + "].state").value(r.getState().toString()));
+            action.andExpect(jsonPath("$.[" + i + "].reviewer_id").value(userId.toString()));
+            action.andExpect(jsonPath("$.[" + i + "].direct_request_process_id")
+                    .value(r.getDirectRequestProcessId()));
+        }
     }
 
     @Test

@@ -404,6 +404,7 @@ public class DirectRequestsController extends ServiceBasedController {
                 pairList);
     }
 
+    // awaits a json array of entry ids e.g. '[1,4,7,2,3,6,8,9]'
     @PostMapping("/requests")
     List<DirectRequest.Dto> getSpecificRequests(@RequestBody List<Long> entryIds,
                                                        @AuthenticationPrincipal OAuth2User user) {
