@@ -54,7 +54,7 @@ public class DirectRequestsControllerTest {
     //for getSpecificRequests()
     private static List<Entry> entries = new ArrayList<>();
     private static List<DirectRequestProcess> drps;
-    private static List<DirectRequest> directRequests;
+    private static List<DirectRequest> userRequestsOthers = new ArrayList<>();
     private static UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
@@ -127,6 +127,7 @@ public class DirectRequestsControllerTest {
                             .reviewerId(UUID.randomUUID().toString())
                             .directRequestProcessId(userDrpRequests.getId())
                             .build().toDto());
+            userRequestsOthers.add(r);
         }
 
         // create entry, drp of user with 9 requests (each state 3 times) - to delete a request
@@ -269,7 +270,7 @@ public class DirectRequestsControllerTest {
         patch.put("open_slots", 3);
 
         mockMvc.perform(
-                patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getId()
+                patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
                         + "/process")
                         .content(patch.toString())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -278,13 +279,24 @@ public class DirectRequestsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userDrpRequests.getId()))
                 .andExpect(jsonPath("$.entry_id").value(userDrpRequests.getEntryId()))
-                .andExpect(jsonPath("$.open_slots").value(openSlots));;
+                .andExpect(jsonPath("$.open_slots").value(openSlots));
     }
 
     @Test
     @Order(1)
     void getDirectRequest() throws Exception {
-
+        DirectRequest request = userRequestsOthers.get(
+                ThreadLocalRandom.current().nextInt(0, userRequestsOthers.size()));
+        mockMvc.perform(
+                        get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                                + "/process/requests/" + request.getId())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(request.getId()))
+                .andExpect(jsonPath("$.state").value(request.getState().toString()))
+                .andExpect(jsonPath("$.reviewer_id").value(request.getReviewerId()))
+                .andExpect(jsonPath("$.direct_request_process_id").value(request.getDirectRequestProcessId()));
     }
 
     @Test
