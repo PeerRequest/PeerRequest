@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -226,17 +227,26 @@ public class DirectRequestsControllerTest {
     @Test
     @Order(1)
     void getDirectRequestProcess() throws Exception {
+        var action = mockMvc.perform(
+                        get("/api/categories/" + category.getId() + "/entries/" + userEntryRequestsDrp.getEntryId()
+                        + "/process")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk());
 
+        action.andExpect(jsonPath("$.id").value(userEntryRequestsDrp.getId()));
+        action.andExpect(jsonPath("$.entry_id").value(userEntryRequestsDrp.getEntryId()));
+        action.andExpect(jsonPath("$.open_slots").value(userEntryRequestsDrp.getOpenSlots()));
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void createDirectRequestProcess() throws Exception {
 
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void patchDirectRequestProcess() throws Exception {
 
     }
@@ -248,7 +258,7 @@ public class DirectRequestsControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void deleteDirectRequest() throws Exception {
 
     }
@@ -260,13 +270,13 @@ public class DirectRequestsControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void postDirectRequest() throws Exception {
 
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void patchDirectRequest() throws Exception {
 
     }
@@ -284,7 +294,7 @@ public class DirectRequestsControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void claimOpenSlot() throws Exception {
 
     }
