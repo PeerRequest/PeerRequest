@@ -137,7 +137,7 @@
                       l-46.199-45.031l63.847-9.281c2.443-0.355,4.555-1.889,5.647-4.103l28.55-57.849l28.55,57.849c1.092,2.213,3.204,3.748,5.646,4.103
                       l63.844,9.281L173.504,146.299z"/>
             </svg>
-                    Review form
+                    Review Form
                 </div>
                 <ReviewForm category="{category}" review="{review}"
                             reviewerUser="{IsUserReviewer}"/>
@@ -161,9 +161,9 @@
                         </g>
                       </svg>
                     {#if IsUserReviewer}
-                        Upload PDF file
+                        Upload PDF
                     {:else}
-                        Reviewed PDF file
+                        Reviewed PDF
                     {/if}
                 </div>
                 <Label class="pb-2">Your PDF</Label>
@@ -228,10 +228,10 @@
                             </g>
                         </g>
                     </svg>
-                    Message board
+                    Message Board
                 </div>
                 <p class="text-sm text-gray-500 dark:text-gray-400"><b class="text-3xl font-bold text-gray-900">Message
-                    board:</b>
+                    Board</b>
                     <MessageBoard review={review} category={category} path={path}/>
                 </p>
             </TabItem>
