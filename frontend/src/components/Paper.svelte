@@ -21,7 +21,7 @@
     let process = null;
     export let review_id = "";
     let authors = "";
-    let clickedClaim = "Claim Review Slot"
+    let clickedClaim = "Start Review"
 
     const dispatch = createEventDispatcher();
 
@@ -149,7 +149,7 @@
             {:else}
                 <TableBodyCell>0</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled outline size="xs">Claim Review Slot</Button>
+                    <Button disabled outline size="xs">Start Review</Button>
                 </TableBodyCell>
             {/if}
         {/if}
