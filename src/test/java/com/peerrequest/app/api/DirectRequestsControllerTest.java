@@ -104,7 +104,7 @@ public class DirectRequestsControllerTest {
                 Optional.of("loremipsum"));
 
 
-        // create entry, drp, and 120 Request (40 each state, random open slots 0-10) for currently signed-in user
+        // create entry, drp, and 120 Request (40 each state, random open slots 1-10) for currently signed-in user
         // to list the requests
         var userEntryRequests = entryService.create(
                 Entry.builder()
@@ -119,7 +119,7 @@ public class DirectRequestsControllerTest {
         userDrpRequests = drpService.create(drpService.create(
                 DirectRequestProcess.builder()
                         .entryId(userEntryRequests.getId())
-                        .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
+                        .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
                         .build().toDto()).toDto());
 
         int requestsSize = 120; // should be multiple of three
@@ -475,14 +475,25 @@ public class DirectRequestsControllerTest {
     void claimOpenSlotNoRequest(@Autowired ReviewService reviewService) throws Exception {
         Entry entry = entriesClaimOpenSlot.get(0);
 
-        var action = mockMvc.perform(
-                        post("/api/categories/" + category.getId() + "/entries/" + entry.getId()
-                                + "/process/claim")
-                                .session(session)
-                                .secure(true))
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + entry.getId()
+                        + "/process/claim")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
         assertTrue("review was not created", reviewService.getReviewerIdsByEntryId(entry.getId()).stream()
                 .anyMatch(string -> string.equals(userId.toString())));
+    }
+
+    @Test
+    @Order(1)
+    void notifyOpenSlots() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
     }
 }
