@@ -108,6 +108,22 @@
                     console.log(error);
                 } else {
                     reviewers.map(reviewer => createDirectRequest(reviewer.id))
+                    if (open_slots !== 0) {
+                        console.log("/api/categories/" + category.id + "/entries/" + new_entry_id + "/notify")
+                        fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/notify", {
+                            method: "POST"
+                        })
+                            .then(resp => resp)
+                            .then(resp => {
+                                console.log(resp.status)
+                                if (resp.status < 200 || resp.status >= 300) {
+                                    error = "" + resp.status + ": " + resp.message;
+                                    console.log(error);
+                                } else {
+                                }
+                            })
+                            .catch(err => console.log(err));
+                    }
                 }
             })
             .catch(err => console.log(err));
