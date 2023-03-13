@@ -116,7 +116,9 @@ public class NotificationService {
         }
 
         var category = categoryService.get(entry.get().getCategoryId());
-        if (category.isEmpty()) return;
+        if (category.isEmpty()) {
+            return;
+        }
 
         EntryMessageTemplates messageTemplate = EntryMessageTemplates.OPEN_SLOTS;
 

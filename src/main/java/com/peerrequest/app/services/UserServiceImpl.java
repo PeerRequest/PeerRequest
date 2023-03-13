@@ -1,7 +1,6 @@
 package com.peerrequest.app.services;
 
 import com.peerrequest.app.model.User;
-
 import java.util.List;
 import java.util.Optional;
 import org.keycloak.admin.client.Keycloak;
