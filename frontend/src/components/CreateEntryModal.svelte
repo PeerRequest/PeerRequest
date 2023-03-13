@@ -109,8 +109,8 @@
                 } else {
                     reviewers.map(reviewer => createDirectRequest(reviewer.id))
                     if (open_slots !== 0) {
-                        console.log("/api/categories/" + category.id + "/entries/" + new_entry_id + "process/notify")
-                        fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "process/notify", {
+                        console.log("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/notify")
+                        fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/notify", {
                             method: "POST"
                         })
                             .then(resp => resp)
