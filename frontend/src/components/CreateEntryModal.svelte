@@ -108,22 +108,6 @@
                     console.log(error);
                 } else {
                     reviewers.map(reviewer => createDirectRequest(reviewer.id))
-                    if (open_slots !== 0) {
-                        console.log("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/notify")
-                        fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/notify", {
-                            method: "POST"
-                        })
-                            .then(resp => resp)
-                            .then(resp => {
-                                console.log(resp.status)
-                                if (resp.status < 200 || resp.status >= 300) {
-                                    error = "" + resp.status + ": " + resp.message;
-                                    console.log(error);
-                                } else {
-                                }
-                            })
-                            .catch(err => console.log(err));
-                    }
                 }
             })
             .catch(err => console.log(err));
@@ -146,8 +130,27 @@
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
+                    reviewers = reviewers.filter(r => r.id !== reviewer_id);
                 }
             })
+            .then(() => {
+                if (open_slots !== 0 && reviewers.length === 0) {
+                    fetch("/api/categories/" + category.id + "/entries/" + new_entry_id + "/process/notify", {
+                        method: "POST"
+                    })
+                        .then(resp => resp)
+                        .then(resp => {
+                            console.log(resp.status)
+                            if (resp.status < 200 || resp.status >= 300) {
+                                error = "" + resp.status + ": " + resp.message;
+                                console.log(error);
+                            } else {
+                            }
+                        })
+                        .catch(err => console.log(err));
+                }
+            })
+
             .catch(err => console.log(err));
     }
 
