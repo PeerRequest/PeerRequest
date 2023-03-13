@@ -104,7 +104,8 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "open slots value must be greater than 0");
         }
 
-        var option = this.directRequestProcessService.update(entryId, dto);
+        var option = this.directRequestProcessService.update(
+                this.directRequestProcessService.getByEntry(entryId).get().getId(), dto);
         if (option.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
         }
