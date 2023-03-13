@@ -19,8 +19,10 @@ public class NotificationService {
     private UserService userService;
 
     @Autowired
-    private EntryService entryService;
+    private CategoryService categoryService;
 
+    @Autowired
+    private EntryService entryService;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -95,7 +97,38 @@ public class NotificationService {
                         emitter.get().firstName() + " " + emitter.get().lastName(),
                         entry.get().getName())
         );
+    }
 
+    /**
+     * Sends the open slot notification.
+     *
+     * @param emitterId       userID of the user who caused the notification
+     * @param receiverId      userId of the user who receives the notification
+     * @param entryId         entryID of the entry
+     */
+    public void sendOpenSlotNotification(String emitterId, String receiverId, Long entryId) {
+        var emitter = userService.get(emitterId);
+        var receiver = userService.get(receiverId);
+        var entry = entryService.get(entryId);
+
+        if (emitter.isEmpty() || receiver.isEmpty() || entry.isEmpty()) {
+            return;
+        }
+
+        var category = categoryService.get(entry.get().getCategoryId());
+        if (category.isEmpty()) return;
+
+        EntryMessageTemplates messageTemplate = EntryMessageTemplates.OPEN_SLOTS;
+
+        sendEmail(
+                receiver.get().getEmail(),
+                messageTemplate.getSubject(),
+                messageTemplate.getMessage(
+                        receiver.get().firstName(),
+                        emitter.get().firstName() + " " + emitter.get().lastName(),
+                        entry.get().getName(),
+                        category.get().getName() + " " + category.get().getYear())
+        );
     }
 
     /**

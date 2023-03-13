@@ -57,10 +57,23 @@ public enum EntryMessageTemplates {
     REQUEST_WITHDRAWN(
         "PeerRequest - Request Withdrawn",
         "Hi %s,\n%s withdrew their request to you for their entry %s."
+    ),
+
+    /**
+     * Message template when a researcher created an entry with open slots.
+     * Notifies the user about the open slots.
+     */
+    OPEN_SLOTS(
+            "PeerRequest - Review Slots Available",
+            "Hi %s,\n%s posted a paper '%s' to the conference '%s' with open review slots.\n Take a look!"
     );
 
     public String getMessage(String receiver, String emitter, String entryName) {
         return String.format(message, receiver, emitter, entryName);
+    }
+
+    public String getMessage(String receiver, String emitter, String entryName, String categoryName) {
+        return String.format(message, receiver, emitter, entryName, categoryName);
     }
 
     @Getter
