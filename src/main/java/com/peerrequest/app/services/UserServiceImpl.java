@@ -1,6 +1,7 @@
 package com.peerrequest.app.services;
 
 import com.peerrequest.app.model.User;
+import java.util.List;
 import java.util.Optional;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -76,5 +77,12 @@ public class UserServiceImpl implements UserService {
         }
 
         return Optional.of(new User(u.getId(), u.getFirstName(), u.getLastName(), u.getEmail()));
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return this.keycloak().realm(realm).users().list()
+                .stream().map(u -> new User(u.getId(), u.getFirstName(), u.getLastName(), u.getEmail()))
+                .toList();
     }
 }
