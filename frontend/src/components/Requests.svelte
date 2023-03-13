@@ -9,7 +9,7 @@
     <TableHead>
 
         {#if accepted}
-            <TableHeadCell>Accepted Requests</TableHeadCell>
+            <TableHeadCell>Reviews for Papers</TableHeadCell>
         {:else}
             {#if pending}
                 <TableHeadCell>Pending Requests</TableHeadCell>
