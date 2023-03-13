@@ -1,6 +1,7 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
+import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -492,5 +494,38 @@ public class DirectRequestsController extends ServiceBasedController {
                 reviewerId, directRequestProcess.get().getId());
             return this.directRequestService.create(directRequestObject.toDto()).toDto();
         }
+    }
+
+    @PostMapping("/categories/{categoryId}/entries/{entryId}/process/notify")
+    ResponseEntity<?> notifyOpenSlots(@PathVariable Long entryId, @AuthenticationPrincipal OAuth2User user) {
+        var entry = this.entryService.get(entryId);
+        if (entry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        var researcherId = user.getAttribute("sub").toString();
+        if (!entry.get().getResearcherId().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "only the owner may send this notification");
+        }
+
+        var directRequestProcess = directRequestProcessService.getByEntry(entryId);
+        if (directRequestProcess.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
+        }
+        if (directRequestProcess.get().getOpenSlots() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "the direct request process has no open slots");
+        }
+
+        List<String> reviewerIds = this.reviewService.getReviewerIdsByEntryId(entryId);
+        List<User> receivers = this.userService.getUsers();
+        List<String> receiverIds = receivers.stream()
+                .filter(u -> !reviewerIds.contains(u.getId()) && !u.getId().equals(researcherId))
+                .map(User::getId).toList();
+        for (String receiverId : receiverIds) {
+            this.notificationService.sendOpenSlotNotification(researcherId, receiverId, entryId);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
