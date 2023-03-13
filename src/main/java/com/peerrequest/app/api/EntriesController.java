@@ -1,6 +1,7 @@
 package com.peerrequest.app.api;
 
 import com.peerrequest.app.data.*;
+import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.messages.EntryMessageTemplates;
 import java.util.List;
 import java.util.Optional;
@@ -213,6 +214,30 @@ public class EntriesController extends ServiceBasedController {
 
         var deleted = this.entryService.delete(entryId);
         return deleted.map(Entry::toDto);
+    }
+
+    @PostMapping("/categories/{categoryId}/entries/{entryId}/notify")
+    ResponseEntity<?> notifyOpenSlots(@PathVariable Long entryId, @AuthenticationPrincipal OAuth2User user) {
+        var entry = this.entryService.get(entryId);
+        if (entry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+
+        var researcherId = user.getAttribute("sub").toString();
+        if (!entry.get().getResearcherId().equals(researcherId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "only the owner may send this notification");
+        }
+
+        List<String> reviewerIds = this.reviewService.getReviewerIdsByEntryId(entryId);
+        List<User> receivers = this.userService.getUsers();
+        List<String> receiverIds = receivers.stream()
+                .filter(u -> !reviewerIds.contains(u.getId()) && !u.getId().equals(researcherId))
+                .map(User::getId).toList();
+        for (String receiverId : receiverIds) {
+            this.notificationService.sendOpenSlotNotification(researcherId, receiverId, entryId);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/entries")
