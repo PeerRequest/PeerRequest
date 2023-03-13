@@ -103,12 +103,12 @@ public class DirectRequestsController extends ServiceBasedController {
         if (dto.openSlots().get() < 0) {
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "open slots value must be greater than 0");
         }
-
-        var option = this.directRequestProcessService.update(
-                this.directRequestProcessService.getByEntry(entryId).get().getId(), dto);
-        if (option.isEmpty()) {
+        var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
+        if (directRequestProcess.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "direct request process does not exist");
         }
+        var option = this.directRequestProcessService.update(
+                directRequestProcess.get().getId(), dto);
 
         return option.get().toDto();
     }
@@ -260,12 +260,9 @@ public class DirectRequestsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reviewer id must be set");
         }
 
-        /*
-        // TODO: Comment in commented out code
         if (request.reviewerId().get().equals(researcherId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "user can not review their own entry");
         }
-         */
 
         for (var reviewer :
                 this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
