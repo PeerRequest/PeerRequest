@@ -1,5 +1,6 @@
 package com.peerrequest.app.api;
 
+import com.jayway.jsonpath.JsonPath;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
 import com.peerrequest.app.data.repos.CategoryRepository;
@@ -14,14 +15,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
+import static org.springframework.test.util.AssertionErrors.*;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.in;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * This test class tests the endpoints of the {@link EntriesController} class.
@@ -104,6 +109,7 @@ public class ReviewsControllerTest {
         // creates 120 reviews with current user as researcher to list, get and patch them
         EntityWrapper wrapperListReviews = new EntityWrapper(category);
         createEntryAndDrp(true, "User Entry Review", wrapperListReviews, entryService, documentService, drpService);
+
         for (int i = 0; i < 120; i++) {
             EntityWrapper wrapper = new EntityWrapper(wrapperListReviews.category,
                     wrapperListReviews.entry, wrapperListReviews.directRequestProcess);
@@ -111,31 +117,20 @@ public class ReviewsControllerTest {
             listReviews.add(wrapper);
         }
 
-
-        //creates 10 reviews with user as reviewer
+        // creates 10 reviews with user as reviewer
         for (int i = 0; i < 10; i++) {
-            Entry entry = entryService.create(
-                    Entry.builder()
-                            .researcherId(userId.toString())
-                            .name("User Entry Review Patch " + i)
-                            .authors("Alan Turing")
-                            .documentId((documentService.create(reviewDocumentDto)).getId())
-                            .categoryId(category.getId())
-                            .build().toDto());
-
-            DirectRequestProcess drp = drpService.create(drpService.create(
-                    DirectRequestProcess.builder()
-                            .entryId(entry.getId())
-                            .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
-                            .build().toDto()).toDto());
-            patchReviewsAsReviewer.add(new EntityWrapper(category, entry, drp));
+            EntityWrapper wrapper = new EntityWrapper(category);
+            createEntryAndDrp(true, "Not User Entry + Review Patch " + i, wrapper,
+                    entryService, documentService, drpService);
+            createReview(true, false, wrapper, documentService, directRequestService, reviewService);
+            patchReviewsAsReviewer.add(wrapper);
         }
 
-        for (EntityWrapper e : patchReviewsAsReviewer) {
-            createReview(true, false, e, documentService, directRequestService, reviewService);
-        }
-
-       // reviewWithDocument = new EntityWrapper(category,)
+        // creates a review to get and upload a review document
+        reviewWithDocument = new EntityWrapper(category);
+        createEntryAndDrp(false, "Not User Entry + Review + Document", reviewWithDocument,
+                entryService, documentService, drpService);
+        createReview(true, true, reviewWithDocument, documentService, directRequestService, reviewService);
     }
 
     @Test
@@ -286,14 +281,53 @@ public class ReviewsControllerTest {
 
     @Test
     @Order(1)
-    void getReviewDocument() throws Exception {
+    void getReviewDocument(@Autowired DocumentService documentService) throws Exception {
+        Entry entry = reviewWithDocument.entry;
+        Review review = reviewWithDocument.review;
 
+        mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(reviewDocumentDto.file().get()));
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void postReviewDocument() throws Exception {
+        Entry entry = reviewWithDocument.entry;
+        Review review = reviewWithDocument.review;
+        String documentId = review.getReviewDocumentId();
 
+        MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
+                "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
+
+        var action = mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/document")
+                        .file(document)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(review.getId()))
+                .andExpect(jsonPath("$.reviewer_id").value(review.getReviewerId()))
+                .andExpect(jsonPath("$.entry_id").value(review.getEntryId()))
+                .andExpect(jsonPath("$.review_document_id").isNotEmpty())
+                .andExpect(jsonPath("$.confidence_level").value(review.getConfidenceLevel().toString()))
+                .andExpect(jsonPath("$.summary").value(review.getSummary()))
+                .andExpect(jsonPath("$.main_weaknesses").value(review.getMainWeakness()))
+                .andExpect(jsonPath("$.main_strengths").value(review.getMainStrengths()))
+                .andExpect(jsonPath("$.questions_for_authors").value(review.getQuestionsForAuthors()))
+                .andExpect(jsonPath("$.answers_from_authors").value(review.getAnswersFromAuthors()))
+                .andExpect(jsonPath("$.other_comments").value(review.getOtherComments()))
+                .andExpect(jsonPath("$.score").value(review.getScore()))
+                .andReturn();
+
+        String documentNewId = JsonPath.read(action.getResponse().getContentAsString(), "$.review_document_id");
+        assertFalse("document hat not been updatet", documentId.equals(documentNewId));
     }
 
     @Test
