@@ -1,11 +1,21 @@
 package com.peerrequest.app.api;
 
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.jayway.jsonpath.JsonPath;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.CategoryRepository;
-import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.*;
+import java.io.File;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -24,21 +34,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
-
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.util.AssertionErrors.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * This test class tests the endpoints of the {@link EntriesController} class.
@@ -115,7 +110,8 @@ public class ReviewsControllerTest {
 
         // creates 120 reviews with current user as researcher to list, get and patch them as researcher
         EntityWrapper wrapperListReviews = new EntityWrapper(category);
-        createEntryAndDrp(true, "User is Researcher + Review", wrapperListReviews, entryService, documentService, drpService);
+        createEntryAndDrp(true, "User is Researcher + Review", wrapperListReviews, entryService,
+                documentService, drpService);
 
         for (int i = 0; i < 120; i++) {
             EntityWrapper wrapper = new EntityWrapper(wrapperListReviews.category,
@@ -155,8 +151,8 @@ public class ReviewsControllerTest {
         // first half are user messages, second half are messages from the other role
         int size = 120;
         for (int i = 1; i <= size; i++) {
-            createEntityMessage(i < (size/2), "message " + i, reviewMessageReviewer, reviewService);
-            createEntityMessage(i < (size/2), "message " + i, reviewMessageResearcher, reviewService);
+            createEntityMessage(i < (size / 2), "message " + i, reviewMessageReviewer, reviewService);
+            createEntityMessage(i < (size / 2), "message " + i, reviewMessageResearcher, reviewService);
         }
     }
 
@@ -262,7 +258,7 @@ public class ReviewsControllerTest {
     @Order(2)
     void patchReviewAsReviewer() throws Exception {
         int index = 1;
-        Entry entry = patchReviewsAsReviewer.get(index).entry;
+        final Entry entry = patchReviewsAsReviewer.get(index).entry;
         Review review = patchReviewsAsReviewer.get(index).review;
 
         JSONObject patch = new JSONObject();
@@ -533,7 +529,8 @@ public class ReviewsControllerTest {
             action.andExpect(jsonPath("$.content[" + i + "].first.id").value(review.getId()));
             action.andExpect(jsonPath("$.content[" + i + "].first.reviewer_id").value(review.getReviewerId()));
             action.andExpect(jsonPath("$.content[" + i + "].first.entry_id").value(review.getEntryId()));
-            action.andExpect(jsonPath("$.content[" + i + "].first.review_document_id").value(review.getReviewDocumentId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.review_document_id")
+                    .value(review.getReviewDocumentId()));
             action.andExpect(jsonPath("$.content[" + i + "].first.confidence_level")
                     .value(review.getConfidenceLevel().toString()));
             action.andExpect(jsonPath("$.content[" + i + "].first.summary").value(review.getSummary()));
