@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
 import com.peerrequest.app.data.repos.CategoryRepository;
+import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.*;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -56,6 +57,9 @@ public class ReviewsControllerTest {
     @MockBean
     JavaMailSender mailSender;
 
+    @MockBean
+    UserService userService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -67,8 +71,6 @@ public class ReviewsControllerTest {
     private static final List<EntityWrapper> patchReviewsAsReviewer = new ArrayList<>();
 
     private static EntityWrapper reviewWithDocument;
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -106,7 +108,7 @@ public class ReviewsControllerTest {
                 Optional.of("loremipsum"));
 
 
-        // creates 120 reviews with current user as researcher to list, get and patch them
+        // creates 120 reviews with current user as researcher to list, get and patch them as researcher
         EntityWrapper wrapperListReviews = new EntityWrapper(category);
         createEntryAndDrp(true, "User Entry Review", wrapperListReviews, entryService, documentService, drpService);
 
@@ -117,16 +119,16 @@ public class ReviewsControllerTest {
             listReviews.add(wrapper);
         }
 
-        // creates 10 reviews with user as reviewer
+        // creates 10 reviews with user as reviewer to patch them as reviewer
         for (int i = 0; i < 10; i++) {
             EntityWrapper wrapper = new EntityWrapper(category);
-            createEntryAndDrp(true, "Not User Entry + Review Patch " + i, wrapper,
+            createEntryAndDrp(false, "Not User Entry + Review Patch " + i, wrapper,
                     entryService, documentService, drpService);
             createReview(true, false, wrapper, documentService, directRequestService, reviewService);
             patchReviewsAsReviewer.add(wrapper);
         }
 
-        // creates a review to get and upload a review document
+        // creates a review to get and upload a review document. To notify the researcher
         reviewWithDocument = new EntityWrapper(category);
         createEntryAndDrp(false, "Not User Entry + Review + Document", reviewWithDocument,
                 entryService, documentService, drpService);
@@ -327,7 +329,7 @@ public class ReviewsControllerTest {
                 .andReturn();
 
         String documentNewId = JsonPath.read(action.getResponse().getContentAsString(), "$.review_document_id");
-        assertFalse("document hat not been updatet", documentId.equals(documentNewId));
+        assertFalse("document has not been updated", documentId.equals(documentNewId));
     }
 
     @Test
@@ -344,13 +346,37 @@ public class ReviewsControllerTest {
                         .secure(true))
                 .andExpect(status().isOk());
 
-        assertNull("document was not deleted", reviewService.get(review.getId()).get().getReviewDocumentId());
+        assertTrue("document was not deleted", documentService.get(review.getReviewDocumentId()).isEmpty());
+        assertNull("document id was not deleted", reviewService.get(review.getId()).get().getReviewDocumentId());
     }
 
     @Test
     @Order(1)
-    void notifyReview() throws Exception {
+    void notifyReviewAsReviewer() throws Exception {
+        Entry entry = reviewWithDocument.entry;
+        Review review = reviewWithDocument.review;
 
+        mockMvc.perform(
+                post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(1)
+    void notifyReviewAsResearcher() throws Exception {
+        int index = 0;
+        Entry entry = patchReviewsAsReviewer.get(index).entry;
+        Review review = patchReviewsAsReviewer.get(index).review;
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/notify")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk());
     }
 
     @Test
