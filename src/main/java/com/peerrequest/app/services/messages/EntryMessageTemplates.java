@@ -65,7 +65,7 @@ public enum EntryMessageTemplates {
      */
     OPEN_SLOTS(
             "PeerRequest - Review Slots Available",
-            "Hi %s,\n%s posted a paper '%s' to the conference '%s' with open review slots.\n Take a look!"
+            "Hi %s,\n%s posted a paper '%s' to the conference '%s' with open review slots.\nTake a look!"
     );
 
     public String getMessage(String receiver, String emitter, String entryName) {

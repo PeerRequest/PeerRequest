@@ -524,7 +524,11 @@ public class DirectRequestsController extends ServiceBasedController {
                 .filter(u -> !reviewerIds.contains(u.getId()) && !u.getId().equals(researcherId))
                 .map(User::getId).toList();
         for (String receiverId : receiverIds) {
-            this.notificationService.sendOpenSlotNotification(researcherId, receiverId, entryId);
+            try {
+                this.notificationService.sendOpenSlotNotification(researcherId, receiverId, entryId);
+            } catch (Exception e) {
+                // this try catch is here because our mock user have no valid email addresses
+            }
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
