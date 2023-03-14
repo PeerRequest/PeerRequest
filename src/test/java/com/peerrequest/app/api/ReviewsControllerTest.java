@@ -432,7 +432,6 @@ public class ReviewsControllerTest {
 
             String timeStampString = JsonPath.read(action.andReturn().getResponse().getContentAsString(),
                     "$.content[" + i + "].timestamp");
-
             assertTrue("timestamp does not match", areDatesEqual(timeStampString, message.getTimeStamp()));
         }
     }
@@ -484,7 +483,32 @@ public class ReviewsControllerTest {
     @Test
     @Order(1)
     void patchMessage() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+        Message message = reviewMessageReviewer.messages.get(1);
 
+        String content = "new content";
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", message.getId());
+        toPost.put("content", content);
+
+        var action = mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.review_id").value(review.getId()))
+                .andExpect(jsonPath("$.creator_id").value(userId.toString()))
+                .andExpect(jsonPath("$.content").value(content))
+                .andReturn();
+
+        String timeStampString = JsonPath.read(action.getResponse().getContentAsString(),
+                "$.timestamp");
+        assertTrue("timestamp does not match", areDatesEqual(timeStampString, message.getTimeStamp()));
     }
 
     @Test
