@@ -348,7 +348,7 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @GetMapping("/reviews")
-    Paged<List<Pair<Review.Dto, Entry.Dto>>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
+    Paged<List<Pair<Review.Dto, Entry.Dto>>> listReviewByReviewer(@RequestParam("limit") Optional<Integer> limit,
                                                     @RequestParam("page") Optional<Integer> page,
                                                     @AuthenticationPrincipal OAuth2User user) {
         if (limit.isPresent()) {
