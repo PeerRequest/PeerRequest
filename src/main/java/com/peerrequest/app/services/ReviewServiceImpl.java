@@ -35,7 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<Review> list(int page, int maxCount, Review.Dto filter) {
         if (filter.entryId().isPresent()) {
-            return repo.findByEntryId(filter.entryId().get(), PageRequest.of(page, maxCount));
+            return repo.findByEntryIdOrderById(filter.entryId().get(), PageRequest.of(page, maxCount));
         }
         return repo.findAll(Pageable.ofSize(maxCount).withPage(page));
     }
