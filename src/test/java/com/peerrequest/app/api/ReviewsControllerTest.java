@@ -393,10 +393,10 @@ public class ReviewsControllerTest {
         Review review = patchReviewsAsReviewer.get(index).review;
 
         mockMvc.perform(
-                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
-                                + "/reviews/" + review.getId() + "/notify")
-                                .session(session)
-                                .secure(true))
+                post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/notify")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
     }
 
@@ -441,7 +441,7 @@ public class ReviewsControllerTest {
         Review review = reviewMessageResearcher.review;
         Message message = reviewMessageResearcher.messages.get(0);
 
-        var action = mockMvc.perform(
+        mockMvc.perform(
                 delete("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
                         + "/reviews/" + review.getId() + "/messages/" + message.getId())
                         .session(session)
@@ -637,23 +637,10 @@ public class ReviewsControllerTest {
             this.category = category;
         }
 
-        public EntityWrapper(Category category, Entry entry) {
-            this.category = category;
-            this.entry = entry;
-        }
-
         public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess) {
             this.category = category;
             this.entry = entry;
             this.directRequestProcess = directRequestProcess;
-        }
-
-        public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess,
-                             Review review) {
-            this.category = category;
-            this.entry = entry;
-            this.directRequestProcess = directRequestProcess;
-            this.review = review;
         }
     }
 }
