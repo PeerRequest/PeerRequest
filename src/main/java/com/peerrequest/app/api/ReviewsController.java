@@ -350,9 +350,9 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @GetMapping("/reviews")
-    Paged<List<Pair<Review.Dto, Entry.Dto>>> listReviewByReviewer(@RequestParam("limit") Optional<Integer> limit,
-                                                    @RequestParam("page") Optional<Integer> page,
-                                                    @AuthenticationPrincipal OAuth2User user) {
+    Paged<List<Pair<Review.Dto, Entry.Dto>>> listReviewsByReviewer(@RequestParam("limit") Optional<Integer> limit,
+                                                                   @RequestParam("page") Optional<Integer> page,
+                                                                   @AuthenticationPrincipal OAuth2User user) {
         if (limit.isPresent()) {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
