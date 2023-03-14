@@ -1,5 +1,6 @@
 package com.peerrequest.app.services;
 
+import com.peerrequest.app.api.ReviewsController;
 import com.peerrequest.app.data.Message;
 import com.peerrequest.app.data.Review;
 import com.peerrequest.app.data.repos.MessageRepository;
@@ -54,8 +55,13 @@ public class ReviewServiceImpl implements ReviewService {
 
         var review = optional.get();
 
+
         if (newProps.reviewDocumentId().isPresent()) {
-            review.setReviewDocumentId(newProps.reviewDocumentId().get());
+            if (newProps.reviewDocumentId().get().equals(ReviewsController.DELETE_REVIEW_DOCUMENT)) {
+                review.setReviewDocumentId(null);
+            } else {
+                review.setReviewDocumentId(newProps.reviewDocumentId().get());
+            }
         }
         if (newProps.confidenceLevel() != null) {
             review.setConfidenceLevel(newProps.confidenceLevel());
