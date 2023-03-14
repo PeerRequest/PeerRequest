@@ -2,6 +2,7 @@ package com.peerrequest.app.api;
 
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.repos.CategoryRepository;
 import com.peerrequest.app.services.*;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -57,10 +58,12 @@ public class ReviewsControllerTest {
     private static final UUID userId = UUID.randomUUID();
 
     private static Document.Dto reviewDocumentDto;
-
-    private static Entry entryReviewList;
     private static final List<EntityWrapper> listReviews = new ArrayList<>();
-    private static final List<Review> patchReviewsAsReviewer = new ArrayList<>();
+    private static final List<EntityWrapper> patchReviewsAsReviewer = new ArrayList<>();
+
+    private static EntityWrapper reviewWithDocument;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -97,33 +100,21 @@ public class ReviewsControllerTest {
         reviewDocumentDto = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
                 Optional.of("loremipsum"));
 
-        // creates 120 reviews with user as researcher entries to list, get and patch them
-        Entry entryListReview = entryService.create(
-                Entry.builder()
-                        .researcherId(userId.toString())
-                        .name("User Entry Review")
-                        .authors("Alan Turing")
-                        .documentId((documentService.create(reviewDocumentDto)).getId())
-                        .categoryId(category.getId())
-                        .build().toDto());
 
-        DirectRequestProcess drpListReview = drpService.create(drpService.create(
-                DirectRequestProcess.builder()
-                        .entryId(entryListReview.getId())
-                        .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
-                        .build().toDto()).toDto());
-
+        // creates 120 reviews with current user as researcher to list, get and patch them
+        EntityWrapper wrapperListReviews = new EntityWrapper(category);
+        createEntryAndDrp(true, "User Entry Review", wrapperListReviews, entryService, documentService, drpService);
         for (int i = 0; i < 120; i++) {
-            EntityWrapper entity = new EntityWrapper(category, entryListReview, drpListReview);
-            createReview(false, false, entity, documentService, directRequestService, reviewService);
-            listReviews.add(entity);
+            EntityWrapper wrapper = new EntityWrapper(wrapperListReviews.category,
+                    wrapperListReviews.entry, wrapperListReviews.directRequestProcess);
+            createReview(false, false, wrapper, documentService, directRequestService, reviewService);
+            listReviews.add(wrapper);
         }
 
-/*
 
         //creates 10 reviews with user as reviewer
         for (int i = 0; i < 10; i++) {
-            entryReviewList = entryService.create(
+            Entry entry = entryService.create(
                     Entry.builder()
                             .researcherId(userId.toString())
                             .name("User Entry Review Patch " + i)
@@ -131,85 +122,20 @@ public class ReviewsControllerTest {
                             .documentId((documentService.create(reviewDocumentDto)).getId())
                             .categoryId(category.getId())
                             .build().toDto());
-            patchReviewsAsReviewer.add()
 
-            DirectRequestProcess drpReviewPatchReviewer = drpService.create(drpService.create(
+            DirectRequestProcess drp = drpService.create(drpService.create(
                     DirectRequestProcess.builder()
-                            .entryId(entryReviewList.getId())
+                            .entryId(entry.getId())
                             .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
                             .build().toDto()).toDto());
-        }
-        var test = new entityWrapper(null);
-        test.
-
-        for (int i = 0; i < 120; i++) {
-            listReviews.add(createReview(false, false, entryReviewList.getId(), drpReviewList.getId(),
-                    documentService, directRequestService, reviewService));
-        }
-        */
-    }
-
-    private static void createReview(Boolean isReviewer, Boolean hasReviewDocument, EntityWrapper wrapper,
-                                       DocumentService documentService, DirectRequestService directRequestService,
-                                       ReviewService reviewService) {
-
-        directRequestService.create(
-                DirectRequest.builder()
-                        .state(DirectRequest.RequestState.ACCEPTED)
-                        .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                        .directRequestProcessId(wrapper.directRequestProcess.getId())
-                        .build().toDto());
-
-        Review review;
-        if (hasReviewDocument) {
-            review = reviewService.create(
-                    Review.builder()
-                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                            .entryId(wrapper.entry.getId())
-                            .reviewDocumentId(documentService.create(reviewDocumentDto).getId())
-                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
-                            .build().toDto());
-        } else {
-            review = reviewService.create(
-                    Review.builder()
-                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                            .entryId(wrapper.entry.getId())
-                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
-                            .build().toDto());
-        }
-        wrapper.review = review;
-    }
-
-    private static class EntityWrapper {
-
-        private final Category category;
-        private Entry entry;
-        private DirectRequestProcess directRequestProcess;
-        private Review review;
-        private final List<Message> messages = new ArrayList<>();
-
-        public EntityWrapper(Category category) {
-            this.category = category;
+            patchReviewsAsReviewer.add(new EntityWrapper(category, entry, drp));
         }
 
-        public EntityWrapper(Category category, Entry entry) {
-            this.category = category;
-            this.entry = entry;
+        for (EntityWrapper e : patchReviewsAsReviewer) {
+            createReview(true, false, e, documentService, directRequestService, reviewService);
         }
 
-        public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess) {
-            this.category = category;
-            this.entry = entry;
-            this.directRequestProcess = directRequestProcess;
-        }
-
-        public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess,
-                             Review review) {
-            this.category = category;
-            this.entry = entry;
-            this.directRequestProcess = directRequestProcess;
-            this.review = review;
-        }
+       // reviewWithDocument = new EntityWrapper(category,)
     }
 
     @Test
@@ -227,8 +153,8 @@ public class ReviewsControllerTest {
                 .andExpect(jsonPath("$.last_page").value(2))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(100)));
-
-        List<Review> list = listReviews.stream().map(e -> e.review).limit(100).toList();
+        var test = listReviews;
+        List<Review> list = listReviews.stream().limit(100).map(p -> p.review).toList();
         for (int i = 0; i < list.size(); i++) {
             Review review = list.get(i);
 
@@ -284,7 +210,7 @@ public class ReviewsControllerTest {
         Review review = listReviews.get(index).review;
 
         JSONObject patch = new JSONObject();
-        String answer = "Hello, this is my answer.";
+        String answer = "answer";
         patch.put("id", review.getId());
         patch.put("answers_from_authors", answer);
 
@@ -313,14 +239,28 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void patchReviewAsReviewer() throws Exception {
-        int index = 0;
-        Entry entry = listReviews.get(index).entry;
-        Review review = listReviews.get(index).review;
+        int index = 1;
+        Entry entry = patchReviewsAsReviewer.get(index).entry;
+        Review review = patchReviewsAsReviewer.get(index).review;
 
         JSONObject patch = new JSONObject();
-        String answer = "Hello, this is my answer.";
+
+        String confidenceLevel = Review.ConfidenceLevel.HIGH.toString();
+        String summary = "summary";
+        String mainWeaknesses = "mainWeaknesses";
+        String mainStrengths = "mainStrengths";
+        String questionsForAuthors = "questions";
+        String otherComments = "otherComments";
+        Float score = 2.f;
+
         patch.put("id", review.getId());
-        patch.put("answers_from_authors", answer);
+        patch.put("confidence_level", confidenceLevel);
+        patch.put("summary", summary);
+        patch.put("main_weaknesses", mainWeaknesses);
+        patch.put("main_strengths", mainStrengths);
+        patch.put("questions_for_authors", questionsForAuthors);
+        patch.put("other_comments", otherComments);
+        patch.put("score", score);
 
         mockMvc.perform(
                 patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
@@ -334,14 +274,14 @@ public class ReviewsControllerTest {
                 .andExpect(jsonPath("$.reviewer_id").value(review.getReviewerId()))
                 .andExpect(jsonPath("$.entry_id").value(review.getEntryId()))
                 .andExpect(jsonPath("$.review_document_id").value(review.getReviewDocumentId()))
-                .andExpect(jsonPath("$.confidence_level").value(review.getConfidenceLevel().toString()))
-                .andExpect(jsonPath("$.summary").value(review.getSummary()))
-                .andExpect(jsonPath("$.main_weaknesses").value(review.getMainWeakness()))
-                .andExpect(jsonPath("$.main_strengths").value(review.getMainStrengths()))
-                .andExpect(jsonPath("$.questions_for_authors").value(review.getQuestionsForAuthors()))
-                .andExpect(jsonPath("$.answers_from_authors").value(answer))
-                .andExpect(jsonPath("$.other_comments").value(review.getOtherComments()))
-                .andExpect(jsonPath("$.score").value(review.getScore()));
+                .andExpect(jsonPath("$.confidence_level").value(confidenceLevel))
+                .andExpect(jsonPath("$.summary").value(summary))
+                .andExpect(jsonPath("$.main_weaknesses").value(mainWeaknesses))
+                .andExpect(jsonPath("$.main_strengths").value(mainStrengths))
+                .andExpect(jsonPath("$.questions_for_authors").value(questionsForAuthors))
+                .andExpect(jsonPath("$.answers_from_authors").value(review.getAnswersFromAuthors()))
+                .andExpect(jsonPath("$.other_comments").value(otherComments))
+                .andExpect(jsonPath("$.score").value(score));
     }
 
     @Test
@@ -396,5 +336,89 @@ public class ReviewsControllerTest {
     @Order(1)
     void listEntriesByReviewer() throws Exception {
 
+    }
+
+    private static void createReview(Boolean isReviewer, Boolean hasReviewDocument, EntityWrapper wrapper,
+                                     DocumentService documentService, DirectRequestService directRequestService,
+                                     ReviewService reviewService) {
+
+        directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.ACCEPTED)
+                        .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
+                        .directRequestProcessId(wrapper.directRequestProcess.getId())
+                        .build().toDto());
+
+        Review review;
+        if (hasReviewDocument) {
+            review = reviewService.create(
+                    Review.builder()
+                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
+                            .entryId(wrapper.entry.getId())
+                            .reviewDocumentId(documentService.create(reviewDocumentDto).getId())
+                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                            .build().toDto());
+        } else {
+            review = reviewService.create(
+                    Review.builder()
+                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
+                            .entryId(wrapper.entry.getId())
+                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                            .build().toDto());
+        }
+        wrapper.review = review;
+    }
+
+    private static void createEntryAndDrp(Boolean isResearcher, String entryName, EntityWrapper wrapper,
+                                             EntryService entryService, DocumentService documentService,
+                                             DirectRequestProcessService drpService) {
+        Entry entry = entryService.create(
+                Entry.builder()
+                        .researcherId(isResearcher ? userId.toString() : UUID.randomUUID().toString())
+                        .name(entryName)
+                        .authors("Alan Turing")
+                        .documentId((documentService.create(reviewDocumentDto)).getId())
+                        .categoryId(wrapper.category.getId())
+                        .build().toDto());
+
+        DirectRequestProcess drp = drpService.create(drpService.create(
+                DirectRequestProcess.builder()
+                        .entryId(entry.getId())
+                        .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
+                        .build().toDto()).toDto());
+        wrapper.entry = entry;
+        wrapper.directRequestProcess = drp;
+    }
+
+    private static class EntityWrapper {
+
+        private final Category category;
+        private Entry entry;
+        private DirectRequestProcess directRequestProcess;
+        private Review review;
+        private final List<Message> messages = new ArrayList<>();
+
+        public EntityWrapper(Category category) {
+            this.category = category;
+        }
+
+        public EntityWrapper(Category category, Entry entry) {
+            this.category = category;
+            this.entry = entry;
+        }
+
+        public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess) {
+            this.category = category;
+            this.entry = entry;
+            this.directRequestProcess = directRequestProcess;
+        }
+
+        public EntityWrapper(Category category, Entry entry, DirectRequestProcess directRequestProcess,
+                             Review review) {
+            this.category = category;
+            this.entry = entry;
+            this.directRequestProcess = directRequestProcess;
+            this.review = review;
+        }
     }
 }
