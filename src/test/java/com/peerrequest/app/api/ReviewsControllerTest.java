@@ -25,18 +25,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.util.AssertionErrors.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.in;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -71,6 +71,9 @@ public class ReviewsControllerTest {
     private static final List<EntityWrapper> patchReviewsAsReviewer = new ArrayList<>();
 
     private static EntityWrapper reviewWithDocument;
+
+    private static EntityWrapper reviewMessageReviewer;
+    private static EntityWrapper reviewMessageResearcher;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -110,29 +113,49 @@ public class ReviewsControllerTest {
 
         // creates 120 reviews with current user as researcher to list, get and patch them as researcher
         EntityWrapper wrapperListReviews = new EntityWrapper(category);
-        createEntryAndDrp(true, "User Entry Review", wrapperListReviews, entryService, documentService, drpService);
+        createEntryAndDrp(true, "User is Researcher + Review", wrapperListReviews, entryService, documentService, drpService);
 
         for (int i = 0; i < 120; i++) {
             EntityWrapper wrapper = new EntityWrapper(wrapperListReviews.category,
                     wrapperListReviews.entry, wrapperListReviews.directRequestProcess);
-            createReview(false, false, wrapper, documentService, directRequestService, reviewService);
+            createReview(false, wrapper, documentService, directRequestService, reviewService);
             listReviews.add(wrapper);
         }
+
 
         // creates 10 reviews with user as reviewer to patch them as reviewer
         for (int i = 0; i < 10; i++) {
             EntityWrapper wrapper = new EntityWrapper(category);
-            createEntryAndDrp(false, "Not User Entry + Review Patch " + i, wrapper,
+            createEntryAndDrp(false, "User is Reviewer + Review Patch " + i, wrapper,
                     entryService, documentService, drpService);
-            createReview(true, false, wrapper, documentService, directRequestService, reviewService);
+            createReview(false, wrapper, documentService, directRequestService, reviewService);
             patchReviewsAsReviewer.add(wrapper);
         }
 
+
         // creates a review to get and upload a review document. To notify the researcher
         reviewWithDocument = new EntityWrapper(category);
-        createEntryAndDrp(false, "Not User Entry + Review + Document", reviewWithDocument,
+        createEntryAndDrp(false, "User is Reviewer + Review + Document", reviewWithDocument,
                 entryService, documentService, drpService);
-        createReview(true, true, reviewWithDocument, documentService, directRequestService, reviewService);
+        createReview(true, reviewWithDocument, documentService, directRequestService, reviewService);
+
+
+        // creates a review with user as researcher (other as reviewer) to create, get and delete messages
+        reviewMessageReviewer = new EntityWrapper(category);
+        createEntryAndDrp(false, "User is Reviewer + Review + Messages", reviewMessageReviewer,
+                entryService, documentService, drpService);
+        createReview(false, reviewMessageReviewer, documentService, directRequestService, reviewService);
+
+        reviewMessageResearcher = new EntityWrapper(category);
+        createEntryAndDrp(true, "User is Researcher + Review + Messages", reviewMessageResearcher,
+                entryService, documentService, drpService);
+        createReview(false, reviewMessageResearcher, documentService, directRequestService, reviewService);
+        // first half are user messages, second half are messages from the other role
+        int size = 120;
+        for (int i = 1; i <= size; i++) {
+            createEntityMessage(i < (size/2), "message " + i, reviewMessageReviewer, reviewService);
+            createEntityMessage(i < (size/2), "message " + i, reviewMessageResearcher, reviewService);
+        }
     }
 
     @Test
@@ -150,7 +173,7 @@ public class ReviewsControllerTest {
                 .andExpect(jsonPath("$.last_page").value(2))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(100)));
-        var test = listReviews;
+
         List<Review> list = listReviews.stream().limit(100).map(p -> p.review).toList();
         for (int i = 0; i < list.size(); i++) {
             Review review = list.get(i);
@@ -382,19 +405,80 @@ public class ReviewsControllerTest {
     @Test
     @Order(1)
     void listMessages() throws Exception {
+        EntityWrapper wrapper = reviewMessageReviewer;
+        Entry entry = wrapper.entry;
+        Review review = wrapper.review;
 
+        var action = mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(100))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(2))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(100)));
+
+        List<Message> list = wrapper.messages.stream().limit(100).toList();
+        for (int i = 0; i < list.size(); i++) {
+            Message message = list.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(message.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].review_id").value(message.getReviewId()));
+            action.andExpect(jsonPath("$.content[" + i + "].creator_id").value(message.getCreatorId()));
+            action.andExpect(jsonPath("$.content[" + i + "].content").value(message.getContent()));
+
+            String timeStampString = JsonPath.read(action.andReturn().getResponse().getContentAsString(),
+                    "$.content[" + i + "].timestamp");
+
+            assertTrue("timestamp does not match", areDatesEqual(timeStampString, message.getTimeStamp()));
+        }
     }
 
     @Test
-    @Order(1)
-    void deleteMessage() throws Exception {
+    @Order(2)
+    void deleteMessage(@Autowired ReviewService reviewService) throws Exception {
+        Entry entry = reviewMessageResearcher.entry;
+        Review review = reviewMessageResearcher.review;
+        Message message = reviewMessageResearcher.messages.get(0);
 
+        var action = mockMvc.perform(
+                delete("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages/" + message.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        assertTrue("message was not deleted", reviewService.getMessage(message.getId()).isEmpty());
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void createMessage() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
 
+        ZonedDateTime timestamp = ZonedDateTime.now();
+        String content = "content";
+        JSONObject toPost = new JSONObject();
+        toPost.put("timestamp", timestamp);
+        toPost.put("content", content);
+
+        mockMvc.perform(
+                post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.review_id").value(review.getId()))
+                .andExpect(jsonPath("$.creator_id").value(userId.toString()))
+                .andExpect(jsonPath("$.content").value(content))
+                .andReturn();
     }
 
     @Test
@@ -407,37 +491,6 @@ public class ReviewsControllerTest {
     @Order(1)
     void listEntriesByReviewer() throws Exception {
 
-    }
-
-    private static void createReview(Boolean isReviewer, Boolean hasReviewDocument, EntityWrapper wrapper,
-                                     DocumentService documentService, DirectRequestService directRequestService,
-                                     ReviewService reviewService) {
-
-        directRequestService.create(
-                DirectRequest.builder()
-                        .state(DirectRequest.RequestState.ACCEPTED)
-                        .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                        .directRequestProcessId(wrapper.directRequestProcess.getId())
-                        .build().toDto());
-
-        Review review;
-        if (hasReviewDocument) {
-            review = reviewService.create(
-                    Review.builder()
-                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                            .entryId(wrapper.entry.getId())
-                            .reviewDocumentId(documentService.create(reviewDocumentDto).getId())
-                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
-                            .build().toDto());
-        } else {
-            review = reviewService.create(
-                    Review.builder()
-                            .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
-                            .entryId(wrapper.entry.getId())
-                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
-                            .build().toDto());
-        }
-        wrapper.review = review;
     }
 
     private static void createEntryAndDrp(Boolean isResearcher, String entryName, EntityWrapper wrapper,
@@ -459,6 +512,61 @@ public class ReviewsControllerTest {
                         .build().toDto()).toDto());
         wrapper.entry = entry;
         wrapper.directRequestProcess = drp;
+    }
+
+    private static void createReview(Boolean hasReviewDocument, EntityWrapper wrapper,
+                                     DocumentService documentService, DirectRequestService directRequestService,
+                                     ReviewService reviewService) {
+
+        boolean isUserReviewer = !wrapper.entry.getResearcherId().equals(userId.toString());
+
+        directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.ACCEPTED)
+                        .reviewerId(isUserReviewer ? userId.toString() : UUID.randomUUID().toString())
+                        .directRequestProcessId(wrapper.directRequestProcess.getId())
+                        .build().toDto());
+
+        Review review;
+        if (hasReviewDocument) {
+            review = reviewService.create(
+                    Review.builder()
+                            .reviewerId(isUserReviewer ? userId.toString() : UUID.randomUUID().toString())
+                            .entryId(wrapper.entry.getId())
+                            .reviewDocumentId(documentService.create(reviewDocumentDto).getId())
+                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                            .build().toDto());
+        } else {
+            review = reviewService.create(
+                    Review.builder()
+                            .reviewerId(isUserReviewer ? userId.toString() : UUID.randomUUID().toString())
+                            .entryId(wrapper.entry.getId())
+                            .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                            .build().toDto());
+        }
+        wrapper.review = review;
+    }
+
+    private static void createEntityMessage(Boolean isCreator, String content, EntityWrapper wrapper,
+                                      ReviewService reviewService) {
+        Message message = reviewService.createMessage(
+                Message.builder()
+                        .reviewId(wrapper.review.getId())
+                        .creatorId(isCreator ? userId.toString() : UUID.randomUUID().toString())
+                        .timeStamp(ZonedDateTime.now())
+                        .content(content)
+                        .build().toDto());
+        wrapper.messages.add(message);
+    }
+
+    private boolean areDatesEqual(String firstDateString, ZonedDateTime secondDate) {
+        ZonedDateTime firstDate = ZonedDateTime.parse(firstDateString);
+        return firstDate.getYear() == secondDate.getYear()
+                && firstDate.getMonth() == secondDate.getMonth()
+                && firstDate.getDayOfMonth() == secondDate.getDayOfMonth()
+                && firstDate.getHour() == secondDate.getHour()
+                && firstDate.getMinute() == secondDate.getMinute()
+                && firstDate.getOffset() == secondDate.getOffset();
     }
 
     private static class EntityWrapper {
