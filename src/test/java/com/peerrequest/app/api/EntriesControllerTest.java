@@ -84,13 +84,13 @@ public class EntriesControllerTest {
         // setup data
         category = categoryService.create(
                 Category.builder()
-                .name("Test Category Entry")
-                .year(2000)
-                .label(Category.CategoryLabel.INTERNAL)
-                .minScore(0)
-                .maxScore(5)
-                .researcherId(userId.toString())
-                .build().toDto());
+                        .name("Test Category Entry")
+                        .year(2000)
+                        .label(Category.CategoryLabel.INTERNAL)
+                        .minScore(0)
+                        .maxScore(5).scoreStepSize(1)
+                        .researcherId(userId.toString())
+                        .build().toDto());
         int entriesSize = 210;
         String[] documentIds = new String[entriesSize];
         for (int i = 0; i < entriesSize; i++) {

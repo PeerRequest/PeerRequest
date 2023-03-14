@@ -96,6 +96,7 @@ public class DirectRequestsControllerTest {
                         .label(Category.CategoryLabel.INTERNAL)
                         .minScore(0)
                         .maxScore(5)
+                        .scoreStepSize(1)
                         .researcherId(userId.toString())
                         .build().toDto());
 
