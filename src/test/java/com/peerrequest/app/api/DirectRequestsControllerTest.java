@@ -78,14 +78,14 @@ public class DirectRequestsControllerTest {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
-                        get("/test/auth/login")
-                                .queryParam("user_id", userId.toString())
-                                .queryParam("user_name", "ich")
-                                .queryParam("given_name", "kann")
-                                .queryParam("family_name", "das")
-                                .queryParam("email", "alles@nicht.mehr")
-                                .session(session)
-                                .secure(true))
+                get("/test/auth/login")
+                        .queryParam("user_id", userId.toString())
+                        .queryParam("user_name", "ich")
+                        .queryParam("given_name", "kann")
+                        .queryParam("family_name", "das")
+                        .queryParam("email", "alles@nicht.mehr")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
         // setup data
