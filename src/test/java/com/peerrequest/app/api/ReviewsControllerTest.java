@@ -70,6 +70,8 @@ public class ReviewsControllerTest {
     private static final List<EntityWrapper> listReviews = new ArrayList<>();
     private static final List<EntityWrapper> patchReviewsAsReviewer = new ArrayList<>();
 
+    private static final List<EntityWrapper> listReviewsByReviewer = new ArrayList<>();
+
     private static EntityWrapper reviewWithDocument;
 
     private static EntityWrapper reviewMessageReviewer;
@@ -481,7 +483,7 @@ public class ReviewsControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void patchMessage() throws Exception {
         Entry entry = reviewMessageReviewer.entry;
         Review review = reviewMessageReviewer.review;
@@ -514,7 +516,36 @@ public class ReviewsControllerTest {
     @Test
     @Order(1)
     void listEntriesByReviewer() throws Exception {
+        List<EntityWrapper> wrappers = listReviewsByReviewer;
+        var action = mockMvc.perform(
+                        get("/api/reviews")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(wrappers.size()))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value((wrappers.size() / 100) + 1))
+                .andExpect(jsonPath("$.content").isArray());
 
+        for (int i = 0; i < wrappers.stream().limit(100).toList().size(); i++) {
+            Review review = wrappers.get(i).review;
+
+            action.andExpect(jsonPath("$.content[" + i + "].first.id").value(review.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.reviewer_id").value(review.getReviewerId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.entry_id").value(review.getEntryId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.review_document_id").value(review.getReviewDocumentId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.confidence_level")
+                    .value(review.getConfidenceLevel().toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.summary").value(review.getSummary()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.main_weaknesses").value(review.getMainWeakness()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.main_strengths").value(review.getMainStrengths()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.questions_for_authors")
+                    .value(review.getQuestionsForAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.answers_from_authors")
+                    .value(review.getAnswersFromAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.other_comments").value(review.getOtherComments()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.score").value(review.getScore()));
+        }
     }
 
     private static void createEntryAndDrp(Boolean isResearcher, String entryName, EntityWrapper wrapper,
@@ -569,6 +600,10 @@ public class ReviewsControllerTest {
                             .build().toDto());
         }
         wrapper.review = review;
+
+        if (isUserReviewer) {
+            listReviewsByReviewer.add(wrapper);
+        }
     }
 
     private static void createEntityMessage(Boolean isCreator, String content, EntityWrapper wrapper,
