@@ -331,9 +331,20 @@ public class ReviewsControllerTest {
     }
 
     @Test
-    @Order(1)
-    void deleteReviewDocument() throws Exception {
+    @Order(3)
+    void deleteReviewDocument(@Autowired ReviewService reviewService,
+                              @Autowired DocumentService documentService) throws Exception {
+        Entry entry = reviewWithDocument.entry;
+        Review review = reviewWithDocument.review;
 
+        mockMvc.perform(
+                delete("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        assertNull("document was not deleted", reviewService.get(review.getId()).get().getReviewDocumentId());
     }
 
     @Test
