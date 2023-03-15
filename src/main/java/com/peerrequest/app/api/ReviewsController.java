@@ -93,12 +93,10 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
 
+        boolean isAnswersSet = false;
         try {
             checkAuthReviewer(this.reviewService.get(dto.id().get()), user);
-            if (dto.answersFromAuthors() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "you may not change answers_from_authors");
-            }
+            isAnswersSet = dto.answersFromAuthors() != null;
         } catch (ResponseStatusException r) {
             checkAuthResearcher(this.entryService.get(entryId), user);
             if (dto.confidenceLevel() != null
@@ -111,6 +109,11 @@ public class ReviewsController extends ServiceBasedController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "you may only change answers_from_authors");
             }
+        }
+
+        if (isAnswersSet) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "you may not change answers_from_authors");
         }
 
         if (dto.reviewerId().isPresent()) {

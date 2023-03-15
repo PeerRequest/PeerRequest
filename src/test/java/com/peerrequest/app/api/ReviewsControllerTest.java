@@ -385,7 +385,7 @@ public class ReviewsControllerTest {
 
         JSONObject patch = new JSONObject();
         patch.put("id", review.getId());
-        patch.put("entry_id", "entryId");
+        patch.put("entry_id", 1L);
         patch.put("answers_from_authors", "answer");
 
         mockMvc.perform(
@@ -486,6 +486,27 @@ public class ReviewsControllerTest {
                 .andExpect(jsonPath("$.answers_from_authors").value(review.getAnswersFromAuthors()))
                 .andExpect(jsonPath("$.other_comments").value(otherComments))
                 .andExpect(jsonPath("$.score").value(score));
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsReviewerFailNotAllowed() throws Exception {
+        int index = 1;
+        final Entry entry = patchReviewsAsReviewer.get(index).entry;
+        Review review = patchReviewsAsReviewer.get(index).review;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", review.getId());
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                        patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
