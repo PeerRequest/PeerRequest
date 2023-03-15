@@ -6,12 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.peerrequest.app.PeerRequestBackend;
-import com.peerrequest.app.data.Category;
-import com.peerrequest.app.data.Document;
-import com.peerrequest.app.data.Entry;
-import com.peerrequest.app.services.CategoryService;
-import com.peerrequest.app.services.DocumentService;
-import com.peerrequest.app.services.EntryService;
+import com.peerrequest.app.data.*;
+import com.peerrequest.app.services.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,21 +50,30 @@ public class EntriesControllerTest {
     @MockBean
     JavaMailSender mailSender;
 
+    @MockBean
+    UserService userService;
+
     @Autowired
     private MockMvc mockMvc;
-    private static Category internalCategory;
-    private static Category externalCategory;
-    private static Document.Dto document;
-    private static final List<Entry> internalEntries = new ArrayList<>();
-    private static UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
-
+    private static Category internalCategory;
+    private static Category externalCategory;
+    private static Category authCategory;
+    private static Document.Dto document;
+    private static final List<Entry> internalEntries = new ArrayList<>();
     private static final List<Entry> totalUserEntries = new ArrayList<>();
+    private static Entry authEntryReviewer;
+    private static Entry authEntryNotAllowed;
+    private static Entry deleteNotificatonEntry;
+    private static final UUID userId = UUID.randomUUID();
     private static final int internalUserEntriesSize = 10;
+
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
-                             @Autowired DocumentService documentService, @Autowired MockMvc mockMvc) throws Exception {
+                      @Autowired DocumentService documentService, @Autowired DirectRequestProcessService drpService,
+                      @Autowired DirectRequestService directRequestService, @Autowired ReviewService reviewService,
+                      @Autowired MockMvc mockMvc) throws Exception {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
@@ -101,6 +106,15 @@ public class EntriesControllerTest {
                         .maxScore(5).scoreStepSize(1)
                         .researcherId(UUID.randomUUID().toString())
                         .build().toDto());
+        authCategory = categoryService.create(
+                Category.builder()
+                        .name("Test Auth Category Entry")
+                        .year(2000)
+                        .label(Category.CategoryLabel.INTERNAL)
+                        .minScore(0)
+                        .maxScore(5).scoreStepSize(1)
+                        .researcherId(UUID.randomUUID().toString())
+                        .build().toDto());
         File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
         document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
                 Optional.of("loremipsum"));
@@ -122,6 +136,38 @@ public class EntriesControllerTest {
                 totalUserEntries.add(entry);
             }
         }
+        authEntryReviewer = entryService.create(
+                Entry.builder()
+                .researcherId(UUID.randomUUID().toString())
+                .name("Test internal Entry Auth Reviewer")
+                .authors("Alan Turing")
+                .documentId(documentService.create(document).getId())
+                .categoryId(authCategory.getId())
+                .build().toDto());
+        setUpAuthCheckData(authEntryReviewer, true, DirectRequest.RequestState.PENDING, drpService,
+                directRequestService, reviewService);
+
+        authEntryNotAllowed = entryService.create(
+                Entry.builder()
+                        .researcherId(UUID.randomUUID().toString())
+                        .name("Test internal Auth Not Allowed")
+                        .authors("Alan Turing")
+                        .documentId(documentService.create(document).getId())
+                        .categoryId(authCategory.getId())
+                        .build().toDto());
+        setUpAuthCheckData(authEntryNotAllowed, false, DirectRequest.RequestState.DECLINED, drpService,
+                directRequestService, reviewService);
+
+        deleteNotificatonEntry = entryService.create(
+                Entry.builder()
+                        .researcherId(userId.toString())
+                        .name("Test internal Delete Notification")
+                        .authors("Alan Turing")
+                        .documentId(documentService.create(document).getId())
+                        .categoryId(authCategory.getId())
+                        .build().toDto());
+        setUpEntryDeleteNotificationData(deleteNotificatonEntry, drpService, directRequestService, reviewService);
+        totalUserEntries.add(deleteNotificatonEntry);
     }
 
     @AfterEach
@@ -194,6 +240,7 @@ public class EntriesControllerTest {
             action.andExpect(jsonPath("$.content[" + i + "].category_id").value(e.getCategoryId()));
         }
     }
+
     @Test
     @Order(1)
     void getEntry() throws Exception {
@@ -211,6 +258,47 @@ public class EntriesControllerTest {
         action.andExpect(jsonPath("$.authors").value(e.getAuthors()));
         action.andExpect(jsonPath("$.document_id").value(e.getDocumentId()));
         action.andExpect(jsonPath("$.category_id").value(e.getCategoryId()));
+    }
+
+    @Test
+    @Order(1)
+    void getEntryFailBadEntryId() throws Exception {
+        mockMvc.perform(
+                get("/api/categories/" + internalCategory.getId() + "/entries/" + -1L)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void getEntryAsReviewer() throws Exception {
+        Entry e = authEntryReviewer;
+
+        var action = mockMvc.perform(
+                get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        action.andExpect(jsonPath("$.id").value(e.getId()));
+        action.andExpect(jsonPath("$.researcher_id").value(e.getResearcherId()));
+        action.andExpect(jsonPath("$.name").value(e.getName()));
+        action.andExpect(jsonPath("$.authors").value(e.getAuthors()));
+        action.andExpect(jsonPath("$.document_id").value(e.getDocumentId()));
+        action.andExpect(jsonPath("$.category_id").value(e.getCategoryId()));
+    }
+
+    @Test
+    @Order(1)
+    void getEntryFailNotAllowed() throws Exception {
+        Entry e = authEntryNotAllowed;
+
+        mockMvc.perform(
+                get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -370,8 +458,10 @@ public class EntriesControllerTest {
     @Test
     @Order(2)
     void patchEntriesFailResearcherIdSet() throws Exception {
+        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
         JSONObject patch = new JSONObject();
-        patch.put("researcherId", "reseracherId");
+        patch.put("id", e.getId());
+        patch.put("researcher_id", "researcherId");
         patch.put("name", "new name");
         patch.put("authors", "new authors");
 
@@ -388,7 +478,8 @@ public class EntriesControllerTest {
     @Order(2)
     void patchEntriesFailDocumentIdSet() throws Exception {
         JSONObject patch = new JSONObject();
-        patch.put("documentId", "documentId");
+        patch.put("id", -1L);
+        patch.put("document_id", "documentId");
         patch.put("name", "new name");
         patch.put("authors", "new authors");
 
@@ -405,7 +496,7 @@ public class EntriesControllerTest {
     @Order(2)
     void patchEntriesFailBadEntryId() throws Exception {
         JSONObject patch = new JSONObject();
-        patch.put("Id", "entryId");
+        patch.put("id", -1L);
         patch.put("name", "new name");
         patch.put("authors", "new authors");
 
@@ -415,7 +506,7 @@ public class EntriesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .session(session)
                         .secure(true))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -477,12 +568,22 @@ public class EntriesControllerTest {
     }
 
     @Test
+    @Order(2)
+    void deleteEntryNotification() throws Exception {
+        mockMvc.perform(
+                delete("/api/categories/" + internalCategory.getId() + "/entries/" + deleteNotificatonEntry.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @Order(1)
     void listEntriesByResearcher() throws Exception {
         var action = mockMvc.perform(
-                        get("/api/entries")
-                                .session(session)
-                                .secure(true))
+                get("/api/entries")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(EntriesController.maxPageSize))
                 .andExpect(jsonPath("$.current_page").value(1))
@@ -507,10 +608,10 @@ public class EntriesControllerTest {
     void listEntriesByResearcherWithLimit() throws Exception {
         int limit = 2;
         var action = mockMvc.perform(
-                        get("/api/entries")
-                                .param("limit", String.valueOf(limit))
-                                .session(session)
-                                .secure(true))
+                get("/api/entries")
+                        .param("limit", String.valueOf(limit))
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(limit))
                 .andExpect(jsonPath("$.current_page").value(1))
@@ -534,10 +635,71 @@ public class EntriesControllerTest {
     @Order(1)
     void listEntriesByResearcheFailBadLimit() throws Exception {
         mockMvc.perform(
-                        get("/api/entries")
-                                .param("limit", String.valueOf(0))
-                                .session(session)
-                                .secure(true))
+                get("/api/entries")
+                        .param("limit", String.valueOf(0))
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isBadRequest());
+    }
+
+    private static void setUpAuthCheckData(Entry entry, boolean isReviewer, DirectRequest.RequestState state,
+                                           DirectRequestProcessService drpService,
+                                           DirectRequestService directRequestService, ReviewService reviewService) {
+
+        DirectRequestProcess drp = drpService.create(drpService.create(
+                DirectRequestProcess.builder()
+                        .entryId(entry.getId())
+                        .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
+                        .build().toDto()).toDto());
+
+        directRequestService.create(
+                DirectRequest.builder()
+                        .state(state)
+                        .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
+                        .directRequestProcessId(drp.getId())
+                        .build().toDto());
+
+        if (state.equals(DirectRequest.RequestState.PENDING) || state.equals(DirectRequest.RequestState.DECLINED)) {
+            return;
+        }
+
+        reviewService.create(
+                Review.builder()
+                        .reviewerId(isReviewer ? userId.toString() : UUID.randomUUID().toString())
+                        .entryId(entry.getId())
+                        .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                        .build().toDto());
+    }
+
+    private static void setUpEntryDeleteNotificationData(Entry entry, DirectRequestProcessService drpService,
+                                             DirectRequestService directRequestService, ReviewService reviewService) {
+        DirectRequestProcess drp = drpService.create(drpService.create(
+                DirectRequestProcess.builder()
+                        .entryId(entry.getId())
+                        .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
+                        .build().toDto()).toDto());
+
+        directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.PENDING)
+                        .reviewerId(UUID.randomUUID().toString())
+                        .directRequestProcessId(drp.getId())
+                        .build().toDto());
+
+        String reviewerId = UUID.randomUUID().toString();
+
+        directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.ACCEPTED)
+                        .reviewerId(reviewerId)
+                        .directRequestProcessId(drp.getId())
+                        .build().toDto());
+
+        reviewService.create(
+                Review.builder()
+                        .reviewerId(reviewerId)
+                        .entryId(entry.getId())
+                        .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                        .build().toDto());
     }
 }
