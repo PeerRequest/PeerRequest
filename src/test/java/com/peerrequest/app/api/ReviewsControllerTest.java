@@ -511,7 +511,7 @@ public class ReviewsControllerTest {
 
     @Test
     @Order(1)
-    void getReviewDocument(@Autowired DocumentService documentService) throws Exception {
+    void getReviewDocument() throws Exception {
         Entry entry = reviewWithDocument.entry;
         Review review = reviewWithDocument.review;
 
@@ -522,6 +522,33 @@ public class ReviewsControllerTest {
                         .secure(true))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(reviewDocumentDto.file().get()));
+    }
+
+    @Test
+    @Order(1)
+    void getReviewDocumentFailBadReviewId() throws Exception {
+        Entry entry = reviewWithDocument.entry;
+
+        mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + -1L + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void getReviewDocumentFailNoDocument() throws Exception {
+        Entry entry = patchReviewsAsReviewer.get(0).entry;
+        Review review = patchReviewsAsReviewer.get(0).review;
+
+        mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
     }
 
     @Test
