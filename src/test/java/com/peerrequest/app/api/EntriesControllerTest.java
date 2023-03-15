@@ -145,6 +145,45 @@ public class EntriesControllerTest {
         }
     }
 
+    @Test()
+    @Order(1)
+    void listEntriesFailWithLimit() throws Exception {
+        mockMvc.perform(
+                get("/api/categories/" + category.getId() + "/entries")
+                        .session(session)
+                        .secure(true)
+                        .param("limit", String.valueOf(0)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test()
+    @Order(1)
+    void listEntriesWithLimit() throws Exception {
+        int limit = 5;
+        var action = mockMvc.perform(
+                        get("/api/categories/" + category.getId() + "/entries")
+                                .session(session)
+                                .secure(true)
+                                .param("limit", String.valueOf(limit)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(limit))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(entries.size() / limit))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(limit)));
+
+        List<Entry> list = entries.stream().limit(limit).toList();
+        for (int i = 0; i < list.size(); i++) {
+            Entry e = list.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(e.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].researcher_id").value(e.getResearcherId()));
+            action.andExpect(jsonPath("$.content[" + i + "].name").value(e.getName()));
+            action.andExpect(jsonPath("$.content[" + i + "].authors").value(e.getAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].document_id").value(e.getDocumentId()));
+            action.andExpect(jsonPath("$.content[" + i + "].category_id").value(e.getCategoryId()));
+        }
+    }
     @Test
     @Order(1)
     void getEntry() throws Exception {

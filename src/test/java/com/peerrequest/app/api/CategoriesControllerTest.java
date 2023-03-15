@@ -198,12 +198,10 @@ class CategoriesControllerTest {
     @Transactional
     @Order(1)
     void listCategoriesFailWithLimit() throws Exception {
-        Optional<Integer> limitOption = Optional.of(0);
-
         mockMvc.perform(get("/api/categories")
                         .session(session)
                         .secure(true)
-                        .param("limit", String.valueOf(limitOption.get())))
+                        .param("limit", String.valueOf(0)))
                 .andExpect(status().isBadRequest());
     }
 
