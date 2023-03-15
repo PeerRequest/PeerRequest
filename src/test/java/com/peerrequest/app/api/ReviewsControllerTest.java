@@ -709,6 +709,7 @@ public class ReviewsControllerTest {
             assertTrue("timestamp does not match", areDatesEqual(timeStampString, message.getTimeStamp()));
         }
     }
+
     @Test
     @Order(1)
     void listMessagesFailBadLimit() throws Exception {
@@ -724,7 +725,6 @@ public class ReviewsControllerTest {
                         .secure(true))
                 .andExpect(status().isBadRequest());
     }
-
 
     @Test
     @Order(1)

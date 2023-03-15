@@ -359,7 +359,7 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
-            limit.get(),
+            limit.orElse(maxPageSize),
             user.getAttribute("sub"));
 
         List<Pair<Review.Dto, Entry.Dto>> pairList = new ArrayList<>();
