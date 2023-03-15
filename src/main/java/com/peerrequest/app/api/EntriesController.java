@@ -29,7 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class EntriesController extends ServiceBasedController {
-    private final int maxPageSize = 100;
+    public static final int maxPageSize = 100;
 
     @GetMapping("/categories/{category_id}/entries")
     Paged<List<Entry.Dto>> listEntries(@RequestParam("limit") Optional<Integer> limit,
