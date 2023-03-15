@@ -782,7 +782,7 @@ public class ReviewsControllerTest {
 
     @Test
     @Order(2)
-    void createMessage() throws Exception {
+    void createMessageReviewer() throws Exception {
         Entry entry = reviewMessageReviewer.entry;
         Review review = reviewMessageReviewer.review;
 
@@ -805,6 +805,145 @@ public class ReviewsControllerTest {
                 .andExpect(jsonPath("$.creator_id").value(userId.toString()))
                 .andExpect(jsonPath("$.content").value(content))
                 .andReturn();
+    }
+
+    @Test
+    @Order(2)
+    void createMessageResearcher() throws Exception {
+        Entry entry = reviewMessageResearcher.entry;
+        Review review = reviewMessageResearcher.review;
+
+        ZonedDateTime timestamp = ZonedDateTime.now();
+        String content = "content";
+        JSONObject toPost = new JSONObject();
+        toPost.put("timestamp", timestamp);
+        toPost.put("content", content);
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toPost.toString())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.review_id").value(review.getId()))
+                .andExpect(jsonPath("$.creator_id").value(userId.toString()))
+                .andExpect(jsonPath("$.content").value(content))
+                .andReturn();
+    }
+
+    @Test
+    @Order(2)
+    void createMessageReviewerFailIdSet() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("id",-1L);
+        toPost.put("timestamp", ZonedDateTime.now());
+        toPost.put("content", "content");
+
+        mockMvc.perform(
+                post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createMessageReviewerFailReviewIdSet() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("review_id",-1L);
+        toPost.put("timestamp", ZonedDateTime.now());
+        toPost.put("content", "content");
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toPost.toString())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createMessageReviewerFailCreatorIdSet() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("creator_id","c");
+        toPost.put("timestamp", ZonedDateTime.now());
+        toPost.put("content", "content");
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toPost.toString())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createMessageReviewerFailNoTimestamp() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("content", "content");
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toPost.toString())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createMessageReviewerFailNoContent() throws Exception {
+        Entry entry = reviewMessageReviewer.entry;
+        Review review = reviewMessageReviewer.review;
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("timestamp", ZonedDateTime.now());
+
+
+        mockMvc.perform(
+                post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+
+        toPost.put("content", "");
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toPost.toString())
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
