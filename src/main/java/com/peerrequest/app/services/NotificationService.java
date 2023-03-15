@@ -27,7 +27,7 @@ public class NotificationService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${spring.mail.from}")
+    @Value("${spring.mail.from:\"test@peerrequest\"}")
     private String from;
 
 
