@@ -38,7 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewsController extends ServiceBasedController {
 
     public static final String DELETE_REVIEW_DOCUMENT = "";
-    private final int maxPageSize = 100;
+    public static final int maxPageSize = 100;
     private final EntryRepository entryRepository;
 
     public ReviewsController(EntryRepository entryRepository) {

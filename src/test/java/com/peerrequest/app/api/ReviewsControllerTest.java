@@ -166,13 +166,67 @@ public class ReviewsControllerTest {
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page_size").value(100))
+                .andExpect(jsonPath("$.page_size").value(ReviewsController.maxPageSize))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(2))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(listReviews.size() / (double) ReviewsController.maxPageSize)))
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(100)));
+                .andExpect(jsonPath("$.content", hasSize(ReviewsController.maxPageSize)));
 
-        List<Review> list = listReviews.stream().limit(100).map(p -> p.review).toList();
+        List<Review> list = listReviews.stream().limit(ReviewsController.maxPageSize).map(p -> p.review).toList();
+        for (int i = 0; i < list.size(); i++) {
+            Review review = list.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(review.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].reviewer_id").value(review.getReviewerId()));
+            action.andExpect(jsonPath("$.content[" + i + "].entry_id").value(review.getEntryId()));
+            action.andExpect(jsonPath("$.content[" + i + "].review_document_id").value(review.getReviewDocumentId()));
+            action.andExpect(jsonPath("$.content[" + i + "].confidence_level")
+                    .value(review.getConfidenceLevel().toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].summary").value(review.getSummary()));
+            action.andExpect(jsonPath("$.content[" + i + "].main_weaknesses").value(review.getMainWeakness()));
+            action.andExpect(jsonPath("$.content[" + i + "].main_strengths").value(review.getMainStrengths()));
+            action.andExpect(jsonPath("$.content[" + i + "].questions_for_authors")
+                    .value(review.getQuestionsForAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].answers_from_authors")
+                    .value(review.getAnswersFromAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].other_comments").value(review.getOtherComments()));
+            action.andExpect(jsonPath("$.content[" + i + "].score").value(review.getScore()));
+        }
+    }
+
+    @Test
+    @Order(1)
+    void listReviewsFailBadLimit() throws Exception {
+        Entry entry = listReviews.get(0).entry;
+        mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .param("limit", String.valueOf(0))
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(1)
+    void listReviewsWithLimit() throws Exception {
+        int limit = 5;
+        Entry entry = listReviews.get(0).entry;
+        var action = mockMvc.perform(
+                        get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews")
+                                .param("limit", String.valueOf(limit))
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(limit))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(Math.ceil(listReviews.size() / (double) limit)))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(limit)));
+
+        List<Review> list = listReviews.stream().limit(limit).map(p -> p.review).toList();
         for (int i = 0; i < list.size(); i++) {
             Review review = list.get(i);
 
