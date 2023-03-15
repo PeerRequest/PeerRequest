@@ -1,3 +1,4 @@
+/// <reference types="cypress"/>
 describe('Categories', () => {
 
     before(() => {
