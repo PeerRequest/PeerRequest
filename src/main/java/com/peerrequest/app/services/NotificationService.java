@@ -37,7 +37,11 @@ public class NotificationService {
         mail.setText(message);
         mail.setSubject(subject);
         mail.setFrom(from);
-        mailSender.send(mail);
+        try {
+            mailSender.send(mail);
+        } catch (Exception ignored) {
+            // in the case that the mail server does not exist, no error handling in this case
+        }
     }
 
     /**
