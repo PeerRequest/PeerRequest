@@ -649,9 +649,8 @@ public class ReviewsControllerTest {
     @Test
     @Order(1)
     void notifyReviewAsResearcher() throws Exception {
-        int index = 0;
-        Entry entry = patchReviewsAsReviewer.get(index).entry;
-        Review review = patchReviewsAsReviewer.get(index).review;
+        Entry entry = reviewMessageResearcher.entry;
+        Review review = reviewMessageResearcher.review;
 
         mockMvc.perform(
                 post("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
@@ -659,6 +658,21 @@ public class ReviewsControllerTest {
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(1)
+    void notifyReviewAsResearcherFailBadEntryId() throws Exception {
+        int index = 0;
+        Entry entry = patchReviewsAsReviewer.get(index).entry;
+        Review review = patchReviewsAsReviewer.get(index).review;
+
+        mockMvc.perform(
+                        post("/api/categories/" + entry.getCategoryId() + "/entries/" + -1L
+                                + "/reviews/" + review.getId() + "/notify")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isNotFound());
     }
 
     @Test
