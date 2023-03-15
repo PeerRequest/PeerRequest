@@ -197,7 +197,7 @@ class CategoriesControllerTest {
     @Test
     @Transactional
     @Order(1)
-    void listCategoriesWithBadLimit() throws Exception {
+    void listCategoriesFailWithLimit() throws Exception {
         Optional<Integer> limitOption = Optional.of(0);
 
         mockMvc.perform(get("/api/categories")
@@ -210,7 +210,7 @@ class CategoriesControllerTest {
     @Test
     @Transactional
     @Order(1)
-    void getCategoryFailure() throws Exception {
+    void getCategoryFail() throws Exception {
         long categoryId = -1L;
         mockMvc.perform(
                         get("/api/categories/" + categoryId)
@@ -294,7 +294,7 @@ class CategoriesControllerTest {
     @Test
     @Transactional
     @Order(3)
-    void deleteCategoryNotFound() throws Exception {
+    void deleteCategoryFailNotFound() throws Exception {
         long categoryId = -1L;
         mockMvc.perform(
                         delete("/api/categories/" + categoryId)
@@ -306,7 +306,7 @@ class CategoriesControllerTest {
     @Test
     @Transactional
     @Order(3)
-    void deleteCategoryExternalForbidden() throws Exception {
+    void deleteCategoryFailExternalForbidden() throws Exception {
         long categoryId = externalCategories.get((externalCategories.size() / 2) + 1).getId();
         mockMvc.perform(
                 delete("/api/categories/" + categoryId)
