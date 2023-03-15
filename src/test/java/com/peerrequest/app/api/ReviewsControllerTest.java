@@ -310,6 +310,138 @@ public class ReviewsControllerTest {
 
     @Test
     @Order(2)
+    void patchReviewAsResearcherFailNoId() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+
+        JSONObject patch = new JSONObject();
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsResearcherFailNotAllowed() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+        Review review = listReviews.get(index).review;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", review.getId());
+        patch.put("confidence_level", Review.ConfidenceLevel.HIGH.toString());
+        patch.put("summary", "summary");
+        patch.put("main_weaknesses", "mainWeaknesses");
+        patch.put("main_strengths", "mainStrengths");
+        patch.put("questions_for_authors", "questions");
+        patch.put("other_comments", "otherComments");
+        patch.put("score", 2.f);
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsResearcherFailReviewerIdSet() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+        Review review = listReviews.get(index).review;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", review.getId());
+        patch.put("reviewer_id", "reviewerId");
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsResearcherFailEntryIdSet() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+        Review review = listReviews.get(index).review;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", review.getId());
+        patch.put("entry_id", "entryId");
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsResearcherFailDocumentIdSet() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+        Review review = listReviews.get(index).review;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", review.getId());
+        patch.put("review_document_id", "documentId");
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchReviewAsResearcherFailBadReviewId() throws Exception {
+        int index = 0;
+        Entry entry = listReviews.get(index).entry;
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", -1L);
+        patch.put("answers_from_authors", "answer");
+
+        mockMvc.perform(
+                patch("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
     void patchReviewAsReviewer() throws Exception {
         int index = 1;
         final Entry entry = patchReviewsAsReviewer.get(index).entry;
