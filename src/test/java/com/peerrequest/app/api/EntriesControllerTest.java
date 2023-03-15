@@ -224,7 +224,7 @@ public class EntriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(limit))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(internalEntries.size() / limit))
+                .andExpect(jsonPath("$.last_page").value(Math.ceil(internalEntries.size() / (double) limit)))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(limit)));
 
