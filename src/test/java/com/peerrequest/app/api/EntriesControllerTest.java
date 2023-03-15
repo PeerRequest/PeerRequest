@@ -57,14 +57,17 @@ public class EntriesControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    private static Category category;
-    private static List<Entry> entries;
+    private static Category internalCategory;
+    private static Category externalCategory;
+    private static Document.Dto document;
+    private static final List<Entry> internalEntries = new ArrayList<>();
+    private static final List<Entry> externalEntries = new ArrayList<>();
     private static UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
 
-    private static int currentUserEntrySize = 10;
-
+    private static final List<Entry> totalUserEntries = new ArrayList<>();
+    private static final int internalUserEntriesSize = 10;
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
                              @Autowired DocumentService documentService, @Autowired MockMvc mockMvc) throws Exception {
@@ -82,35 +85,61 @@ public class EntriesControllerTest {
                 .andExpect(status().isOk());
 
         // setup data
-        category = categoryService.create(
+        internalCategory = categoryService.create(
                 Category.builder()
-                        .name("Test Category Entry")
+                        .name("Test internal Category Entry")
                         .year(2000)
                         .label(Category.CategoryLabel.INTERNAL)
                         .minScore(0)
                         .maxScore(5).scoreStepSize(1)
                         .researcherId(userId.toString())
                         .build().toDto());
-        int entriesSize = 210;
-        String[] documentIds = new String[entriesSize];
-        for (int i = 0; i < entriesSize; i++) {
-            File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
-            Document.Dto document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
-                    Optional.of("loremipsum " + i));
-            documentIds[i] = documentService.create(document).getId();
-        }
+        externalCategory = categoryService.create(
+                Category.builder()
+                        .name("Test external Category Entry")
+                        .year(2000)
+                        .label(Category.CategoryLabel.EXTERNAL)
+                        .minScore(0)
+                        .maxScore(5).scoreStepSize(1)
+                        .researcherId(userId.toString())
+                        .build().toDto());
+        File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
+        document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
+                Optional.of("loremipsum"));
+
+        int internalEntriesSize = 210;
         // first 10 entries will be created by the current test user
         // 105 with authors, 105 without
-        entries = new ArrayList<>();
-        for (int i = 1; i <= entriesSize; i++) {
-            var c = Entry.builder()
-                    .researcherId((i <= currentUserEntrySize ? userId : UUID.randomUUID()).toString())
-                    .name("Test Entry " + i)
+        for (int i = 1; i <= internalEntriesSize; i++) {
+            var e = Entry.builder()
+                    .researcherId((i <= internalUserEntriesSize ? userId : UUID.randomUUID()).toString())
+                    .name("Test internal Entry " + i)
                     .authors(i % 2 == 1 ? null : "Alan Turing")
-                    .documentId(documentIds[i - 1])
-                    .categoryId(category.getId())
+                    .documentId(documentService.create(document).getId())
+                    .categoryId(internalCategory.getId())
                     .build();
-            entries.add(entryService.create(c.toDto()));
+            var entry = entryService.create(e.toDto());
+            internalEntries.add(entry);
+            if (i <= internalUserEntriesSize) {
+                totalUserEntries.add(entry);
+            }
+        }
+
+        int externalEntriesSize = 20;
+        int externalUserEntriesSize = 10;
+        for (int i = 1; i < externalEntriesSize; i++) {
+            var e = Entry.builder()
+                    .researcherId((i <= externalUserEntriesSize ? userId : UUID.randomUUID()).toString())
+                    .name("Test external Entry " + i)
+                    .authors("Alan Turing")
+                    .documentId(documentService.create(document).getId())
+                    .categoryId(externalCategory.getId())
+                    .build();
+            var entry = entryService.create(e.toDto());
+            externalEntries.add(entry);
+            if (i <= internalUserEntriesSize) {
+                totalUserEntries.add(entry);
+            }
         }
     }
 
@@ -122,7 +151,7 @@ public class EntriesControllerTest {
     @Order(1)
     void listEntries() throws Exception {
         var action = mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries")
+                        get("/api/categories/" + internalCategory.getId() + "/entries")
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk())
@@ -132,7 +161,7 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(EntriesController.maxPageSize)));
 
-        List<Entry> list = entries.stream().limit(EntriesController.maxPageSize).toList();
+        List<Entry> list = internalEntries.stream().limit(EntriesController.maxPageSize).toList();
         for (int i = 0; i < list.size(); i++) {
             Entry e = list.get(i);
 
@@ -149,7 +178,7 @@ public class EntriesControllerTest {
     @Order(1)
     void listEntriesFailWithLimit() throws Exception {
         mockMvc.perform(
-                get("/api/categories/" + category.getId() + "/entries")
+                get("/api/categories/" + internalCategory.getId() + "/entries")
                         .session(session)
                         .secure(true)
                         .param("limit", String.valueOf(0)))
@@ -161,18 +190,18 @@ public class EntriesControllerTest {
     void listEntriesWithLimit() throws Exception {
         int limit = 5;
         var action = mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries")
+                        get("/api/categories/" + internalCategory.getId() + "/entries")
                                 .session(session)
                                 .secure(true)
                                 .param("limit", String.valueOf(limit)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(limit))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(entries.size() / limit))
+                .andExpect(jsonPath("$.last_page").value(internalEntries.size() / limit))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(limit)));
 
-        List<Entry> list = entries.stream().limit(limit).toList();
+        List<Entry> list = internalEntries.stream().limit(limit).toList();
         for (int i = 0; i < list.size(); i++) {
             Entry e = list.get(i);
 
@@ -187,10 +216,10 @@ public class EntriesControllerTest {
     @Test
     @Order(1)
     void getEntry() throws Exception {
-        Entry e = entries.get(ThreadLocalRandom.current().nextInt(0, currentUserEntrySize));
+        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
 
         var action = mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries/" + e.getId())
+                        get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk());
@@ -206,10 +235,10 @@ public class EntriesControllerTest {
     @Test
     @Order(1)
     void getPaper(@Autowired DocumentService documentService) throws Exception {
-        Entry e = entries.get(ThreadLocalRandom.current().nextInt(0, currentUserEntrySize));
+        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
         Document d = documentService.get(e.getDocumentId()).get();
         var action = mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries/" + e.getId() + "/paper")
+                        get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId() + "/paper")
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk());
@@ -226,7 +255,7 @@ public class EntriesControllerTest {
         MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
                 "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
         mockMvc.perform(MockMvcRequestBuilders
-                        .multipart("/api/categories/" + category.getId() + "/entries")
+                        .multipart("/api/categories/" + internalCategory.getId() + "/entries")
                         .file(document)
                         .param("authors", authors)
                         .param("name", name)
@@ -239,14 +268,14 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.authors").value(authors))
                 .andExpect(jsonPath("$.document_id").isNotEmpty())
-                .andExpect(jsonPath("$.category_id").value(category.getId()));
+                .andExpect(jsonPath("$.category_id").value(internalCategory.getId()));
     }
 
 
     @Test
     @Order(2)
     void patchEntries() throws Exception {
-        Entry e = entries.get(ThreadLocalRandom.current().nextInt(0, currentUserEntrySize));
+        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
         String newName = "new name";
         String newAuthors = "new authors";
         JSONObject patch = new JSONObject();
@@ -255,7 +284,7 @@ public class EntriesControllerTest {
         patch.put("authors", newAuthors);
 
         var action = mockMvc.perform(
-                        patch("/api/categories/" + category.getId() + "/entries")
+                        patch("/api/categories/" + internalCategory.getId() + "/entries")
                                 .content(patch.toString())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .session(session)
@@ -278,10 +307,10 @@ public class EntriesControllerTest {
         var documentId = documentService.create(new Document.Dto(Optional.empty(),
                 Optional.of(FileUtils.readFileToByteArray(file)), Optional.of("loremipsum"))).getId();
         Entry e = entryService.create(new Entry.Dto(Optional.empty(), Optional.of(userId.toString()), "Test delete",
-                Optional.empty(), Optional.of(documentId), Optional.of(category.getId())));
+                Optional.empty(), Optional.of(documentId), Optional.of(internalCategory.getId())));
 
         mockMvc.perform(
-                        delete("/api/categories/" + category.getId() + "/entries/" + e.getId())
+                        delete("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk());
@@ -301,10 +330,10 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.current_page").value(1))
                 .andExpect(jsonPath("$.last_page").value(1))
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(currentUserEntrySize)));
+                .andExpect(jsonPath("$.content", hasSize(totalUserEntries.size())));
 
         //get entries of currently signed-in user
-        List<Entry> list = entries.stream().flatMap(Stream::ofNullable).filter(entry -> entry.getResearcherId()
+        List<Entry> list = internalEntries.stream().flatMap(Stream::ofNullable).filter(entry -> entry.getResearcherId()
                 .equals(userId.toString())).toList();
         for (int i = 0; i < list.size(); i++) {
             Entry e = list.get(i);
