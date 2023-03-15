@@ -112,7 +112,7 @@ public class EntriesControllerTest {
         // 105 with authors, 105 without
         for (int i = 1; i <= internalEntriesSize; i++) {
             var e = Entry.builder()
-                    .researcherId((i <= internalUserEntriesSize ? userId : UUID.randomUUID()).toString())
+                    .researcherId(i <= internalUserEntriesSize ? userId.toString() : UUID.randomUUID().toString())
                     .name("Test internal Entry " + i)
                     .authors(i % 2 == 1 ? null : "Alan Turing")
                     .documentId(documentService.create(document).getId())
@@ -125,11 +125,10 @@ public class EntriesControllerTest {
             }
         }
 
-        int externalEntriesSize = 20;
         int externalUserEntriesSize = 10;
-        for (int i = 1; i < externalEntriesSize; i++) {
+        for (int i = 1; i < externalUserEntriesSize; i++) {
             var e = Entry.builder()
-                    .researcherId((i <= externalUserEntriesSize ? userId : UUID.randomUUID()).toString())
+                    .researcherId(UUID.randomUUID().toString())
                     .name("Test external Entry " + i)
                     .authors("Alan Turing")
                     .documentId(documentService.create(document).getId())
@@ -137,9 +136,6 @@ public class EntriesControllerTest {
                     .build();
             var entry = entryService.create(e.toDto());
             externalEntries.add(entry);
-            if (i <= internalUserEntriesSize) {
-                totalUserEntries.add(entry);
-            }
         }
     }
 
@@ -269,6 +265,43 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.authors").value(authors))
                 .andExpect(jsonPath("$.document_id").isNotEmpty())
                 .andExpect(jsonPath("$.category_id").value(internalCategory.getId()));
+    }
+
+    @Test
+    @Order(2)
+    void createEntriesFailCategoryId() throws Exception {
+        String authors = "Alan Turing";
+        String name = "Test Entry Post";
+        MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
+                "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + -1L + "/entries")
+                        .file(document)
+                        .param("authors", authors)
+                        .param("name", name)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void createEntriesFailExternalNotResearcher() throws Exception {
+
+        String authors = "Alan Turing";
+        String name = "Test Entry Post";
+        MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
+                "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + -1L + "/entries")
+                        .file(document)
+                        .param("authors", authors)
+                        .param("name", name)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
     }
 
 
