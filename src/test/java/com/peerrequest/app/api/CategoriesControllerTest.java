@@ -138,7 +138,8 @@ class CategoriesControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.page_size").value(CategoriesController.maxPageSize))
             .andExpect(jsonPath("$.current_page").value(1))
-            .andExpect(jsonPath("$.last_page").value(totalCategories.size() / CategoriesController.maxPageSize + 1))
+            .andExpect(jsonPath("$.last_page").value(
+                    Math.ceil(totalCategories.size() / (double) CategoriesController.maxPageSize)))
             .andExpect(jsonPath("$.content").isArray())
             .andExpect(jsonPath("$.content", hasSize(CategoriesController.maxPageSize)));
 
@@ -174,7 +175,8 @@ class CategoriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(limitOption.get()))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(totalCategories.size() / limitOption.get()))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(totalCategories.size() / (double) limitOption.get())))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(limitOption.get())));
 
