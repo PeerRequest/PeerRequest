@@ -2,21 +2,24 @@ package com.peerrequest.app.api;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.peerrequest.app.PeerRequestBackend;
-import com.peerrequest.app.data.Category;
-import com.peerrequest.app.services.CategoryService;
+import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.repos.CategoryRepository;
+import com.peerrequest.app.services.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,30 +33,43 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 @SpringBootTest(properties = {"spring.mail.from=mail", "spring.load=false"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = PeerRequestBackend.class)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoriesControllerTest {
     @Autowired
     CategoryService categoryService;
 
     @MockBean
     JavaMailSender mailSender;
+
+    @MockBean
+    UserService userService;
     @MockBean
     ClientRegistrationRepository clientRegistrationRepository;
 
     @Autowired
     private MockMvc mockMvc;
-    private static List<Category> categories;
-    private static UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
+    private static Document.Dto document;
+    private static UUID userId = UUID.randomUUID();
+    private static final List<Category> totalCategories = new ArrayList<>();
+    private static final List<Category> externalCategories = new ArrayList<>();
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @BeforeAll
-    public static void  setUp(@Autowired CategoryService categoryService, @Autowired MockMvc mockMvc) throws Exception {
+    public static void  setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
+                              @Autowired DocumentService documentService, @Autowired ReviewService reviewService,
+                              @Autowired DirectRequestService directRequestService,
+                              @Autowired DirectRequestProcessService drpService,
+                              @Autowired MockMvc mockMvc) throws Exception {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
@@ -67,9 +83,12 @@ class CategoriesControllerTest {
                     .secure(true))
             .andExpect(status().isOk());
 
+        File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
+        document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
+                Optional.of("loremipsum"));
+
         // setup data
         // first 10 categories will be created by the current test user
-        categories = new ArrayList<>();
         for (int i = 1; i <= 200; i++) {
             var c = Category.builder()
                 .name("Test Category " + i)
@@ -80,7 +99,28 @@ class CategoriesControllerTest {
                 .scoreStepSize(1)
                 .researcherId((i <= 10 ? userId : UUID.randomUUID()).toString())
                 .build();
-            categories.add(categoryService.create(c.toDto()));
+            totalCategories.add(categoryService.create(c.toDto()));
+        }
+
+        // first half categories will be created by the current user
+        int externalSize = 10;
+        for (int i = 1; i <= externalSize; i++) {
+            var c = Category.builder()
+                    .name("Test Category External" + i)
+                    .year(2000 + i)
+                    .label(Category.CategoryLabel.EXTERNAL)
+                    .minScore(0)
+                    .maxScore(5)
+                    .scoreStepSize(1)
+                    .researcherId((i <= externalSize / 2 ? userId : UUID.randomUUID()).toString())
+                    .build();
+            var cat = categoryService.create(c.toDto());
+            totalCategories.add(cat);
+            externalCategories.add(cat);
+            if (i <= externalSize / 2) {
+                setUpDeletionData(cat.getId(), entryService, documentService, drpService, directRequestService,
+                        reviewService);
+            }
         }
     }
 
@@ -89,19 +129,20 @@ class CategoriesControllerTest {
     }
 
     @Test
+    @Order(1)
     void listCategories() throws Exception {
         var action = mockMvc.perform(
                 get("/api/categories")
                     .session(session)
                     .secure(true))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.page_size").value(100))
+            .andExpect(jsonPath("$.page_size").value(CategoriesController.maxPageSize))
             .andExpect(jsonPath("$.current_page").value(1))
-            .andExpect(jsonPath("$.last_page").value(2))
+            .andExpect(jsonPath("$.last_page").value(totalCategories.size() / CategoriesController.maxPageSize + 1))
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content", hasSize(100)));
+            .andExpect(jsonPath("$.content", hasSize(CategoriesController.maxPageSize)));
 
-        List<Category> list = categories.stream().limit(100).toList();
+        List<Category> list = totalCategories.stream().limit(CategoriesController.maxPageSize).toList();
         for (int i = 0; i < list.size(); i++) {
             Category c = list.get(i);
 
@@ -119,6 +160,7 @@ class CategoriesControllerTest {
 
     @Test
     @Transactional
+    @Order(1)
     void listCategoriesWithLimit() throws Exception {
 
         Optional<Integer> limitOption = Optional.of(5);
@@ -132,11 +174,11 @@ class CategoriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(limitOption.get()))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(200 / limitOption.get()))
+                .andExpect(jsonPath("$.last_page").value(totalCategories.size() / limitOption.get()))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(limitOption.get())));
 
-        List<Category> list = categories.stream().limit(limitOption.get()).toList();
+        List<Category> list = totalCategories.stream().limit(limitOption.get()).toList();
         for (int i = 0; i < list.size(); i++) {
             Category c = list.get(i);
 
@@ -154,6 +196,7 @@ class CategoriesControllerTest {
 
     @Test
     @Transactional
+    @Order(1)
     void listCategoriesWithBadLimit() throws Exception {
         Optional<Integer> limitOption = Optional.of(0);
 
@@ -164,10 +207,9 @@ class CategoriesControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
-
     @Test
     @Transactional
+    @Order(1)
     void getCategoryFailure() throws Exception {
         long categoryId = -1L;
         mockMvc.perform(
@@ -179,48 +221,103 @@ class CategoriesControllerTest {
 
     @Test
     @Transactional
+    @Order(1)
     void getCategory() throws Exception {
-        Long categoryId = categories.get(0).getId();
+        Category category = totalCategories.get(0);
         var action = mockMvc.perform(
-                        get("/api/categories/" + categoryId.toString())
-                                .session(session)
-                                .secure(true))
+                get("/api/categories/" + category.getId())
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
-
-        action.andExpect(jsonPath("$.id").value(categoryId));
-        action.andExpect(jsonPath("$.researcher_id").value(userId.toString()));
-        action.andExpect(jsonPath("$.name").value("Test Category 1"));
-        action.andExpect(jsonPath("$.year").value(2001));
-        action.andExpect(jsonPath("$.label").value(Category.CategoryLabel.INTERNAL.toString()));
+        action.andExpect(jsonPath("$.id").value(category.getId()));
+        action.andExpect(jsonPath("$.researcher_id").value(category.getResearcherId()));
+        action.andExpect(jsonPath("$.name").value(category.getName()));
+        action.andExpect(jsonPath("$.year").value(category.getYear()));
+        action.andExpect(jsonPath("$.label").value(category.getLabel().toString()));
         action.andExpect(jsonPath("$.deadline").value(nullValue()));
-        action.andExpect(jsonPath("$.min_score").value(0));
-        action.andExpect(jsonPath("$.max_score").value(5));
-        action.andExpect(jsonPath("$.score_step_size").value(1));
+        action.andExpect(jsonPath("$.min_score").value(category.getMinScore()));
+        action.andExpect(jsonPath("$.max_score").value(category.getMaxScore()));
+        action.andExpect(jsonPath("$.score_step_size").value(category.getScoreStepSize()));
     }
 
     @Test
     @Transactional
-    void deleteCategory() throws Exception {
-        Long categoryId = categories.get(0).getId();
+    @Order(3)
+    void deleteCategory(@Autowired CategoryService categoryService) throws Exception {
+        Category category = totalCategories.get(0);
         var action = mockMvc.perform(
-                        delete("/api/categories/" + categoryId.toString())
-                                .session(session)
-                                .secure(true))
+                delete("/api/categories/" + category.getId())
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
-        action.andExpect(jsonPath("$.id").value(categoryId));
-        action.andExpect(jsonPath("$.researcher_id").value(userId.toString()));
-        action.andExpect(jsonPath("$.name").value("Test Category 1"));
-        action.andExpect(jsonPath("$.year").value(2001));
-        action.andExpect(jsonPath("$.label").value(Category.CategoryLabel.INTERNAL.toString()));
+        action.andExpect(jsonPath("$.id").value(category.getId()));
+        action.andExpect(jsonPath("$.researcher_id").value(category.getResearcherId()));
+        action.andExpect(jsonPath("$.name").value(category.getName()));
+        action.andExpect(jsonPath("$.year").value(category.getYear()));
+        action.andExpect(jsonPath("$.label").value(category.getLabel().toString()));
         action.andExpect(jsonPath("$.deadline").value(nullValue()));
-        action.andExpect(jsonPath("$.min_score").value(0));
-        action.andExpect(jsonPath("$.max_score").value(5));
-        action.andExpect(jsonPath("$.score_step_size").value(1));
+        action.andExpect(jsonPath("$.min_score").value(category.getMinScore()));
+        action.andExpect(jsonPath("$.max_score").value(category.getMaxScore()));
+        action.andExpect(jsonPath("$.score_step_size").value(category.getScoreStepSize()));
+
+        var categoryDeleted = categoryService.get(category.getId());
+        assertTrue("category was not deleted", categoryDeleted.isEmpty());
     }
 
     @Test
+    @Transactional
+    @Order(3)
+    void deleteCategoryWithEntities(@Autowired CategoryService categoryService) throws Exception {
+        Category category = externalCategories.get(0);
+        var action = mockMvc.perform(
+                delete("/api/categories/" + category.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        action.andExpect(jsonPath("$.id").value(category.getId()));
+        action.andExpect(jsonPath("$.researcher_id").value(category.getResearcherId()));
+        action.andExpect(jsonPath("$.name").value(category.getName()));
+        action.andExpect(jsonPath("$.year").value(category.getYear()));
+        action.andExpect(jsonPath("$.label").value(category.getLabel().toString()));
+        action.andExpect(jsonPath("$.deadline").value(nullValue()));
+        action.andExpect(jsonPath("$.min_score").value(category.getMinScore()));
+        action.andExpect(jsonPath("$.max_score").value(category.getMaxScore()));
+        action.andExpect(jsonPath("$.score_step_size").value(category.getScoreStepSize()));
+
+        var categoryDeleted = categoryService.get(category.getId());
+        assertTrue("category was not deleted", categoryDeleted.isEmpty());
+    }
+
+    @Test
+    @Transactional
+    @Order(3)
+    void deleteCategoryNotFound() throws Exception {
+        long categoryId = -1L;
+        mockMvc.perform(
+                        delete("/api/categories/" + categoryId)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    @Order(3)
+    void deleteCategoryExternalForbidden() throws Exception {
+        long categoryId = externalCategories.get((externalCategories.size() / 2) + 1).getId();
+        mockMvc.perform(
+                delete("/api/categories/" + categoryId)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    @Order(2)
     void createCategory() throws Exception {
 
         JSONObject toPost = new JSONObject();
@@ -251,8 +348,53 @@ class CategoriesControllerTest {
     }
 
     @Test
+    @Order(2)
+    void createCategoryFailId() throws Exception {
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", "1");
+        toPost.put("name", "Created Category");
+        toPost.put("year", 1337);
+        toPost.put("label", "INTERNAL");
+        toPost.put("min_score", 1.0);
+        toPost.put("max_score", 5.0);
+        toPost.put("score_step_size", 1.0);
+
+        mockMvc.perform(
+                post("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createCategoryFailResearcherId() throws Exception {
+
+        JSONObject toPost = new JSONObject();
+        toPost.put("researcher_id", "1");
+        toPost.put("name", "Created Category");
+        toPost.put("year", 1337);
+        toPost.put("label", "INTERNAL");
+        toPost.put("min_score", 1.0);
+        toPost.put("max_score", 5.0);
+        toPost.put("score_step_size", 1.0);
+
+        mockMvc.perform(
+                post("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test()
+    @Order(2)
     void patchCategory() throws Exception {
-        Long categoryId = categories.get(1).getId();
+        long categoryId = totalCategories.get(1).getId();
 
         JSONObject toPost = new JSONObject();
         toPost.put("id", categoryId);
@@ -278,5 +420,117 @@ class CategoriesControllerTest {
         action.andExpect(jsonPath("$.min_score").value(2.0));
         action.andExpect(jsonPath("$.max_score").value(6.0));
         action.andExpect(jsonPath("$.score_step_size").value(2.0));
+    }
+
+    @Test()
+    @Order(2)
+    void patchCategoryFailId() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("name", "Patched Category");
+
+        mockMvc.perform(
+                patch("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test()
+    @Order(2)
+    void patchCategoryFailResearcherId() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", 1L);
+        toPost.put("researcher_id", "id");
+        toPost.put("name", "Patched Category");
+
+        mockMvc.perform(
+                patch("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test()
+    @Order(2)
+    void patchCategoryFailNotExist() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", -1L);
+        toPost.put("name", "Patched Category");
+
+        mockMvc.perform(
+                    patch("/api/categories")
+                            .session(session)
+                            .secure(true)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(toPost.toString()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test()
+    @Order(2)
+    void patchCategoryFailExternal() throws Exception {
+        long categoryId = externalCategories.get((externalCategories.size() / 2) + 2).getId();
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", categoryId);
+        toPost.put("name", "Patched Category");
+
+        mockMvc.perform(
+                patch("/api/categories")
+                        .session(session)
+                        .secure(true)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString()))
+                .andExpect(status().isForbidden());
+    }
+
+    private static void setUpDeletionData(Long categoryId, EntryService entryService, DocumentService documentService,
+                                          DirectRequestProcessService drpService,
+                                          DirectRequestService directRequestService, ReviewService reviewService) {
+        int entriesSize = 5;
+        for (int i = 0; i < entriesSize; i++) {
+            Entry entry = entryService.create(
+                    Entry.builder()
+                            .researcherId(userId.toString())
+                            .name("Delete Entry " + i)
+                            .authors("Alan Turing")
+                            .documentId((documentService.create(document)).getId())
+                            .categoryId(categoryId)
+                            .build().toDto());
+            if (i == entriesSize - 1) {
+                return;
+            }
+            DirectRequestProcess drp = drpService.create(drpService.create(
+                    DirectRequestProcess.builder()
+                            .entryId(entry.getId())
+                            .openSlots(ThreadLocalRandom.current().nextInt(1, 11))
+                            .build().toDto()).toDto());
+
+            // should be multiple of 3; first third accepted + reviews, second pending, third declined
+            int requestsSize = 9;
+            for (int j = 0; j < requestsSize; j++) {
+                var re = directRequestService.create(
+                        DirectRequest.builder()
+                                .state(j < requestsSize / 3 ? DirectRequest.RequestState.ACCEPTED
+                                        : j < (requestsSize / 3) * 2
+                                        ? DirectRequest.RequestState.PENDING : DirectRequest.RequestState.DECLINED)
+                                .reviewerId(UUID.randomUUID().toString())
+                                .directRequestProcessId(drp.getId())
+                                .build().toDto());
+                if (j >=  requestsSize / 3) {
+                    continue;
+                }
+                var r = reviewService.create(
+                        Review.builder()
+                                .reviewerId(UUID.randomUUID().toString())
+                                .entryId(entry.getId())
+                                .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                                .build().toDto());
+            }
+        }
     }
 }
