@@ -157,7 +157,7 @@ public class EntriesControllerTest {
 
     @Test()
     @Order(1)
-    void listEntriesFailWithLimit() throws Exception {
+    void listEntriesFailBadLimit() throws Exception {
         mockMvc.perform(
                 get("/api/categories/" + internalCategory.getId() + "/entries")
                         .session(session)
@@ -504,16 +504,40 @@ public class EntriesControllerTest {
 
     @Test
     @Order(1)
-    void listEntriesByResearchefr() throws Exception {
+    void listEntriesByResearcherWithLimit() throws Exception {
+        int limit = 2;
         var action = mockMvc.perform(
                         get("/api/entries")
+                                .param("limit", String.valueOf(limit))
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page_size").value(EntriesController.maxPageSize))
+                .andExpect(jsonPath("$.page_size").value(limit))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(totalUserEntries.size() / limit))
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(totalUserEntries.size())));
+                .andExpect(jsonPath("$.content", hasSize(limit)));
+
+        for (int i = 0; i < limit; i++) {
+            Entry e = totalUserEntries.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(e.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].researcher_id").value(e.getResearcherId()));
+            action.andExpect(jsonPath("$.content[" + i + "].name").value(e.getName()));
+            action.andExpect(jsonPath("$.content[" + i + "].authors").value(e.getAuthors()));
+            action.andExpect(jsonPath("$.content[" + i + "].document_id").value(e.getDocumentId()));
+            action.andExpect(jsonPath("$.content[" + i + "].category_id").value(e.getCategoryId()));
+        }
+    }
+
+    @Test
+    @Order(1)
+    void listEntriesByResearcheFailBadLimit() throws Exception {
+        mockMvc.perform(
+                        get("/api/entries")
+                                .param("limit", String.valueOf(0))
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
     }
 }
