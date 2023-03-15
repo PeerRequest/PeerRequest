@@ -83,8 +83,8 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @PostMapping("/categories/{category_id}/entries")
-    Entry.Dto createEntries(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
-                            @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
+    Entry.Dto createEntry(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
+                          @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
         var category = this.categoryService.get(categoryId);
         if (category.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
@@ -122,7 +122,7 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @PatchMapping("/categories/{category_id}/entries")
-    Entry.Dto patchEntries(@RequestBody Entry.Dto dto, @AuthenticationPrincipal OAuth2User user) {
+    Entry.Dto patchEntry(@RequestBody Entry.Dto dto, @AuthenticationPrincipal OAuth2User user) {
         if (dto.id().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
