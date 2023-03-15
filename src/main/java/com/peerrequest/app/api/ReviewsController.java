@@ -144,11 +144,6 @@ public class ReviewsController extends ServiceBasedController {
                                              @PathVariable Long reviewId) {
         var review = this.reviewService.get(reviewId);
         var entry = this.entryService.get(entryId);
-
-        if (review.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review does not exist");
-        }
-
         checkAuthReviewerOrResearcher(review, entry, user);
 
         Optional<Document> document;
@@ -205,9 +200,10 @@ public class ReviewsController extends ServiceBasedController {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
-        var response = this.documentService.delete(review.get().getReviewDocumentId());
 
-        if (response.isEmpty()) {
+        if (review.get().getReviewDocumentId() == null
+                || review.get().getReviewDocumentId().isEmpty()
+                || this.documentService.get(review.get().getReviewDocumentId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review document does not exist");
         }
 

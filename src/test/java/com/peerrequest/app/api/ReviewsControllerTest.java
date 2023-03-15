@@ -606,6 +606,33 @@ public class ReviewsControllerTest {
     }
 
     @Test
+    @Order(3)
+    void deleteReviewDocumentFailBadId() throws Exception {
+        Entry entry = reviewWithDocument.entry;
+
+        mockMvc.perform(
+                delete("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + -1L + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(3)
+    void deleteReviewDocumentFailNoDocument() throws Exception {
+        Entry entry = patchReviewsAsReviewer.get(patchReviewsAsReviewer.size() - 1).entry;
+        Review review = patchReviewsAsReviewer.get(patchReviewsAsReviewer.size() - 1).review;
+
+        mockMvc.perform(
+                delete("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/document")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Order(1)
     void notifyReviewAsReviewer() throws Exception {
         Entry entry = reviewWithDocument.entry;
