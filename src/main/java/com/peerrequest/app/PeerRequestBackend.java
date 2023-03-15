@@ -1,7 +1,16 @@
 package com.peerrequest.app;
 
-import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.*;
+import com.peerrequest.app.data.Category;
+import com.peerrequest.app.data.DirectRequest;
+import com.peerrequest.app.data.DirectRequestProcess;
+import com.peerrequest.app.data.Document;
+import com.peerrequest.app.data.Entry;
+import com.peerrequest.app.data.Review;
+import com.peerrequest.app.data.repos.CategoryRepository;
+import com.peerrequest.app.data.repos.DirectRequestProcessRepository;
+import com.peerrequest.app.data.repos.DirectRequestRepository;
+import com.peerrequest.app.data.repos.EntryRepository;
+import com.peerrequest.app.data.repos.ReviewRepository;
 import com.peerrequest.app.services.DocumentService;
 import com.peerrequest.app.services.UserService;
 import java.io.File;
@@ -36,9 +45,6 @@ public class  PeerRequestBackend {
     }
 
     private static void mockData(ConfigurableApplicationContext context) {
-
-
-
         CategoryRepository categoryRepository = context.getBean(CategoryRepository.class);
         if (categoryRepository.findAll().iterator().hasNext()) {
             return;
@@ -158,7 +164,7 @@ public class  PeerRequestBackend {
         private final Boolean loadMockData;
 
         @Autowired
-        public MockConfig(@Value("${spring.load}") Boolean b) {
+        public MockConfig(@Value("${spring.load:FALSE}") Boolean b) {
             this.loadMockData = b;
         }
     }
