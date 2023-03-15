@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -61,7 +60,6 @@ public class EntriesControllerTest {
     private static Category externalCategory;
     private static Document.Dto document;
     private static final List<Entry> internalEntries = new ArrayList<>();
-    private static final List<Entry> externalEntries = new ArrayList<>();
     private static UUID userId = UUID.randomUUID();
 
     private static MockHttpSession session;
@@ -101,7 +99,7 @@ public class EntriesControllerTest {
                         .label(Category.CategoryLabel.EXTERNAL)
                         .minScore(0)
                         .maxScore(5).scoreStepSize(1)
-                        .researcherId(userId.toString())
+                        .researcherId(UUID.randomUUID().toString())
                         .build().toDto());
         File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
         document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
@@ -123,19 +121,6 @@ public class EntriesControllerTest {
             if (i <= internalUserEntriesSize) {
                 totalUserEntries.add(entry);
             }
-        }
-
-        int externalUserEntriesSize = 10;
-        for (int i = 1; i < externalUserEntriesSize; i++) {
-            var e = Entry.builder()
-                    .researcherId(UUID.randomUUID().toString())
-                    .name("Test external Entry " + i)
-                    .authors("Alan Turing")
-                    .documentId(documentService.create(document).getId())
-                    .categoryId(externalCategory.getId())
-                    .build();
-            var entry = entryService.create(e.toDto());
-            externalEntries.add(entry);
         }
     }
 
@@ -212,7 +197,7 @@ public class EntriesControllerTest {
     @Test
     @Order(1)
     void getEntry() throws Exception {
-        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
+        Entry e = totalUserEntries.get(ThreadLocalRandom.current().nextInt(0, totalUserEntries.size()));
 
         var action = mockMvc.perform(
                         get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
@@ -231,7 +216,7 @@ public class EntriesControllerTest {
     @Test
     @Order(1)
     void getPaper(@Autowired DocumentService documentService) throws Exception {
-        Entry e = internalEntries.get(ThreadLocalRandom.current().nextInt(0, internalUserEntriesSize));
+        Entry e = totalUserEntries.get(ThreadLocalRandom.current().nextInt(0, totalUserEntries.size()));
         Document d = documentService.get(e.getDocumentId()).get();
         var action = mockMvc.perform(
                         get("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId() + "/paper")
@@ -288,21 +273,55 @@ public class EntriesControllerTest {
     @Test
     @Order(2)
     void createEntriesFailExternalNotResearcher() throws Exception {
-
         String authors = "Alan Turing";
         String name = "Test Entry Post";
         MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
                 "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
         mockMvc.perform(MockMvcRequestBuilders
-                        .multipart("/api/categories/" + -1L + "/entries")
+                        .multipart("/api/categories/" + externalCategory.getId() + "/entries")
                         .file(document)
                         .param("authors", authors)
                         .param("name", name)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .session(session)
                         .secure(true))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
+
+    @Test
+    @Order(2)
+    void createEntriesFailNoName() throws Exception {
+        String authors = "Alan Turing";
+        MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
+                "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + internalCategory.getId() + "/entries")
+                        .file(document)
+                        .param("authors", authors)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void createEntriesFailDocumentIdSet() throws Exception {
+        String name = "Test Entry Post";
+        String documentId = "documentId";
+        MockMultipartFile document = new MockMultipartFile("file", "loremipsum.pdf",
+                "application/pdf", FileUtils.readFileToByteArray(ResourceUtils.getFile("classpath:loremipsum.pdf")));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/categories/" + internalCategory.getId() + "/entries")
+                        .file(document)
+                        .param("name", name)
+                        .param("documentId", documentId)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
 
 
     @Test
@@ -334,6 +353,90 @@ public class EntriesControllerTest {
 
     @Test
     @Order(2)
+    void patchEntriesFailNoId() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("name", "new name");
+        patch.put("authors", "new authors");
+
+        mockMvc.perform(
+                patch("/api/categories/" + internalCategory.getId() + "/entries")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchEntriesFailResearcherIdSet() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("researcherId", "reseracherId");
+        patch.put("name", "new name");
+        patch.put("authors", "new authors");
+
+        mockMvc.perform(
+                patch("/api/categories/" + internalCategory.getId() + "/entries")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchEntriesFailDocumentIdSet() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("documentId", "documentId");
+        patch.put("name", "new name");
+        patch.put("authors", "new authors");
+
+        mockMvc.perform(
+                patch("/api/categories/" + internalCategory.getId() + "/entries")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchEntriesFailBadEntryId() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("Id", "entryId");
+        patch.put("name", "new name");
+        patch.put("authors", "new authors");
+
+        mockMvc.perform(
+                patch("/api/categories/" + internalCategory.getId() + "/entries")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchEntriesFailNotResearcher() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("id", internalEntries.get(internalEntries.size() - 1).getId());
+        patch.put("name", "new name");
+        patch.put("authors", "new authors");
+
+        mockMvc.perform(
+                patch("/api/categories/" + internalCategory.getId() + "/entries")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(2)
     void deleteEntry(@Autowired EntryService entryService,
                      @Autowired DocumentService documentService) throws Exception {
         File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
@@ -343,12 +446,34 @@ public class EntriesControllerTest {
                 Optional.empty(), Optional.of(documentId), Optional.of(internalCategory.getId())));
 
         mockMvc.perform(
-                        delete("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
-                                .session(session)
-                                .secure(true))
+                delete("/api/categories/" + internalCategory.getId() + "/entries/" + e.getId())
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
         assertTrue("entry was not deleted", entryService.get(e.getId()).isEmpty());
+    }
+
+    @Test
+    @Order(2)
+    void deleteEntryFailBadEntryId() throws Exception {
+        mockMvc.perform(
+                delete("/api/categories/" + internalCategory.getId() + "/entries/" + -1L)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void deleteEntryFailNotResearcher() throws Exception {
+        long entryId = internalEntries.get(internalEntries.size() - 1).getId();
+
+        mockMvc.perform(
+                delete("/api/categories/" + internalCategory.getId() + "/entries/" + entryId)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -365,11 +490,8 @@ public class EntriesControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(totalUserEntries.size())));
 
-        //get entries of currently signed-in user
-        List<Entry> list = internalEntries.stream().flatMap(Stream::ofNullable).filter(entry -> entry.getResearcherId()
-                .equals(userId.toString())).toList();
-        for (int i = 0; i < list.size(); i++) {
-            Entry e = list.get(i);
+        for (int i = 0; i < totalUserEntries.size(); i++) {
+            Entry e = totalUserEntries.get(i);
 
             action.andExpect(jsonPath("$.content[" + i + "].id").value(e.getId()));
             action.andExpect(jsonPath("$.content[" + i + "].researcher_id").value(e.getResearcherId()));
@@ -378,5 +500,20 @@ public class EntriesControllerTest {
             action.andExpect(jsonPath("$.content[" + i + "].document_id").value(e.getDocumentId()));
             action.andExpect(jsonPath("$.content[" + i + "].category_id").value(e.getCategoryId()));
         }
+    }
+
+    @Test
+    @Order(1)
+    void listEntriesByResearchefr() throws Exception {
+        var action = mockMvc.perform(
+                        get("/api/entries")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(EntriesController.maxPageSize))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(1))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(totalUserEntries.size())));
     }
 }
