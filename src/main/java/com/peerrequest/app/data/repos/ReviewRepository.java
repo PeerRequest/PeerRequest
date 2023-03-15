@@ -15,7 +15,7 @@ import org.springframework.data.repository.query.Param;
 public interface ReviewRepository extends CrudRepository<Review, Long>, JpaRepository<Review, Long> {
     List<Review> findByEntryId(@Param("entry_id") Long entryId);
 
-    Page<Review> findByEntryId(Long entryId, Pageable pageable);
+    Page<Review> findByEntryIdOrderById(Long entryId, Pageable pageable);
 
     Page<Review> findByReviewerId(String reviewerId, Pageable pageable);
 

@@ -71,26 +71,26 @@ public class EntriesControllerTest {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
-                        get("/test/auth/login")
-                                .queryParam("user_id", userId.toString())
-                                .queryParam("user_name", "ich")
-                                .queryParam("given_name", "kann")
-                                .queryParam("family_name", "das")
-                                .queryParam("email", "alles@nicht.mehr")
-                                .session(session)
-                                .secure(true))
+                get("/test/auth/login")
+                        .queryParam("user_id", userId.toString())
+                        .queryParam("user_name", "ich")
+                        .queryParam("given_name", "kann")
+                        .queryParam("family_name", "das")
+                        .queryParam("email", "alles@nicht.mehr")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
         // setup data
         category = categoryService.create(
                 Category.builder()
-                .name("Test Category Entry")
-                .year(2000)
-                .label(Category.CategoryLabel.INTERNAL)
-                .minScore(0)
-                .maxScore(5)
-                .researcherId(userId.toString())
-                .build().toDto());
+                        .name("Test Category Entry")
+                        .year(2000)
+                        .label(Category.CategoryLabel.INTERNAL)
+                        .minScore(0)
+                        .maxScore(5).scoreStepSize(1)
+                        .researcherId(userId.toString())
+                        .build().toDto());
         int entriesSize = 210;
         String[] documentIds = new String[entriesSize];
         for (int i = 0; i < entriesSize; i++) {

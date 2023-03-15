@@ -37,6 +37,7 @@ import org.springframework.web.server.ResponseStatusException;
 @ApiControllerPrefix
 public class ReviewsController extends ServiceBasedController {
 
+    public static final String DELETE_REVIEW_DOCUMENT = "";
     private final int maxPageSize = 100;
     private final EntryRepository entryRepository;
 
@@ -210,9 +211,10 @@ public class ReviewsController extends ServiceBasedController {
         }
 
         var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
-            review.get().getEntryId(), null);
+            review.get().getEntryId(), DELETE_REVIEW_DOCUMENT);
 
         this.reviewService.update(reviewId, updateReview.toDto());
+
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -348,9 +350,9 @@ public class ReviewsController extends ServiceBasedController {
     }
 
     @GetMapping("/reviews")
-    Paged<List<Pair<Review.Dto, Entry.Dto>>> listEntriesByResearcher(@RequestParam("limit") Optional<Integer> limit,
-                                                    @RequestParam("page") Optional<Integer> page,
-                                                    @AuthenticationPrincipal OAuth2User user) {
+    Paged<List<Pair<Review.Dto, Entry.Dto>>> listReviewsByReviewer(@RequestParam("limit") Optional<Integer> limit,
+                                                                   @RequestParam("page") Optional<Integer> page,
+                                                                   @AuthenticationPrincipal OAuth2User user) {
         if (limit.isPresent()) {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");

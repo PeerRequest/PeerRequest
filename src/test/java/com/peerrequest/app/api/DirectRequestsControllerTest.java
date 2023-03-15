@@ -78,14 +78,14 @@ public class DirectRequestsControllerTest {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
-                        get("/test/auth/login")
-                                .queryParam("user_id", userId.toString())
-                                .queryParam("user_name", "ich")
-                                .queryParam("given_name", "kann")
-                                .queryParam("family_name", "das")
-                                .queryParam("email", "alles@nicht.mehr")
-                                .session(session)
-                                .secure(true))
+                get("/test/auth/login")
+                        .queryParam("user_id", userId.toString())
+                        .queryParam("user_name", "ich")
+                        .queryParam("given_name", "kann")
+                        .queryParam("family_name", "das")
+                        .queryParam("email", "alles@nicht.mehr")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isOk());
 
         // setup data
@@ -96,6 +96,7 @@ public class DirectRequestsControllerTest {
                         .label(Category.CategoryLabel.INTERNAL)
                         .minScore(0)
                         .maxScore(5)
+                        .scoreStepSize(1)
                         .researcherId(userId.toString())
                         .build().toDto());
 
