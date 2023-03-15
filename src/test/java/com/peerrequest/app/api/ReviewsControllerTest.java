@@ -688,13 +688,67 @@ public class ReviewsControllerTest {
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page_size").value(100))
+                .andExpect(jsonPath("$.page_size").value(ReviewsController.messagesMaxPageSize))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(2))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(wrapper.messages.size() / (double) ReviewsController.messagesMaxPageSize)))
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(100)));
+                .andExpect(jsonPath("$.content", hasSize(ReviewsController.messagesMaxPageSize)));
 
-        List<Message> list = wrapper.messages.stream().limit(100).toList();
+        List<Message> list = wrapper.messages.stream().limit(ReviewsController.messagesMaxPageSize).toList();
+        for (int i = 0; i < list.size(); i++) {
+            Message message = list.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].id").value(message.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].review_id").value(message.getReviewId()));
+            action.andExpect(jsonPath("$.content[" + i + "].creator_id").value(message.getCreatorId()));
+            action.andExpect(jsonPath("$.content[" + i + "].content").value(message.getContent()));
+
+            String timeStampString = JsonPath.read(action.andReturn().getResponse().getContentAsString(),
+                    "$.content[" + i + "].timestamp");
+            assertTrue("timestamp does not match", areDatesEqual(timeStampString, message.getTimeStamp()));
+        }
+    }
+    @Test
+    @Order(1)
+    void listMessagesFailBadLimit() throws Exception {
+        EntityWrapper wrapper = reviewMessageReviewer;
+        Entry entry = wrapper.entry;
+        Review review = wrapper.review;
+
+        mockMvc.perform(
+                get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                        + "/reviews/" + review.getId() + "/messages")
+                        .param("limit", String.valueOf(0))
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    @Order(1)
+    void listMessagesWithLimit() throws Exception {
+        int limit = 5;
+        EntityWrapper wrapper = reviewMessageReviewer;
+        Entry entry = wrapper.entry;
+        Review review = wrapper.review;
+
+        var action = mockMvc.perform(
+                        get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId()
+                                + "/reviews/" + review.getId() + "/messages")
+                                .param("limit", String.valueOf(limit))
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(limit))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(wrapper.messages.size() / (double) limit)))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(limit)));
+
+        List<Message> list = wrapper.messages.stream().limit(limit).toList();
         for (int i = 0; i < list.size(); i++) {
             Message message = list.get(i);
 

@@ -39,6 +39,7 @@ public class ReviewsController extends ServiceBasedController {
 
     public static final String DELETE_REVIEW_DOCUMENT = "";
     public static final int maxPageSize = 100;
+    public static final int messagesMaxPageSize = 100;
     private final EntryRepository entryRepository;
 
     public ReviewsController(EntryRepository entryRepository) {
@@ -251,17 +252,17 @@ public class ReviewsController extends ServiceBasedController {
         checkAuthReviewerOrResearcher(this.reviewService.get(reviewId), this.entryService.get(entryId), user);
 
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), messagesMaxPageSize));
         }
 
         Message.Dto messageFilter = new Message.Dto(Optional.empty(),
             Optional.of(reviewId), Optional.empty(), null, null);
 
-        var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
-            messageFilter);
+        var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0),
+                limit.orElse(messagesMaxPageSize), messageFilter);
         return new Paged<>(
             messagePage.getSize(),
             messagePage.getNumber() + 1,
@@ -354,11 +355,11 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), messagesMaxPageSize));
         }
 
         var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
-            Math.min(limit.orElse(maxPageSize), maxPageSize),
+            limit.get(),
             user.getAttribute("sub"));
 
         List<Pair<Review.Dto, Entry.Dto>> pairList = new ArrayList<>();
