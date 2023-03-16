@@ -111,11 +111,11 @@
     {:else }
         <TableBodyCell>
             {#if current_user !== null && current_user.id === paper.researcher_id }
-                <A href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</A>
+                <A aria-label="paper_name" href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</A>
             {:else if isReviewer && review_id !== ""}
-                <A href="/categories/{paper.category_id}/entries/{paper.id}/reviews/{review_id}">{paper.name}</A>
+                <A aria-label="paper_name" href="/categories/{paper.category_id}/entries/{paper.id}/reviews/{review_id}">{paper.name}</A>
             {:else }
-                {paper.name}
+                <div aria-label="paper_name">{paper.name}</div>
             {/if}
         </TableBodyCell>
 
