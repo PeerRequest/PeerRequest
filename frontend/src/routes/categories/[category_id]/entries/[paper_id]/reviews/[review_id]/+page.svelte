@@ -114,6 +114,7 @@
     }
 
     function notifyOtherParty() {
+        triggerNotification()
         fetch("/api/categories/" + category.id + "/entries/" + review.entry_id + "/reviews/" + review.id + "/notify", {
             method: "POST"
         })
@@ -123,9 +124,7 @@
                 if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
-                } else {
-                    triggerNotification()
-                }
+                } else {}
             })
             .catch(err => console.log(err));
     }
