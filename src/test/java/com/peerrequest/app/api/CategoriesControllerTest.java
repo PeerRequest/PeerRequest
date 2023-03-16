@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.CategoryRepository;
 import com.peerrequest.app.services.*;
 import java.io.File;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +57,6 @@ class CategoriesControllerTest {
     private static UUID userId = UUID.randomUUID();
     private static final List<Category> totalCategories = new ArrayList<>();
     private static final List<Category> externalCategories = new ArrayList<>();
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     @BeforeAll
     public static void  setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -69,15 +67,15 @@ class CategoriesControllerTest {
         // login and set current user
         session = new MockHttpSession();
         mockMvc.perform(
-                get("/test/auth/login")
-                    .queryParam("user_id", userId.toString())
-                    .queryParam("user_name", "ich")
-                    .queryParam("given_name", "kann")
-                    .queryParam("family_name", "das")
-                    .queryParam("email", "alles@nicht.mehr")
-                    .session(session)
-                    .secure(true))
-            .andExpect(status().isOk());
+                        get("/test/auth/login")
+                                .queryParam("user_id", userId.toString())
+                                .queryParam("user_name", "ich")
+                                .queryParam("given_name", "kann")
+                                .queryParam("family_name", "das")
+                                .queryParam("email", "alles@nicht.mehr")
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isOk());
 
         File file = ResourceUtils.getFile("classpath:loremipsum.pdf");
         document = new Document.Dto(Optional.empty(), Optional.of(FileUtils.readFileToByteArray(file)),
@@ -87,14 +85,14 @@ class CategoriesControllerTest {
         // first 10 categories will be created by the current test user
         for (int i = 1; i <= 200; i++) {
             var c = Category.builder()
-                .name("Test Category " + i)
-                .year(2000 + i)
-                .label(Category.CategoryLabel.INTERNAL)
-                .minScore(0)
-                .maxScore(5)
-                .scoreStepSize(1)
-                .researcherId((i <= 10 ? userId : UUID.randomUUID()).toString())
-                .build();
+                    .name("Test Category " + i)
+                    .year(2000 + i)
+                    .label(Category.CategoryLabel.INTERNAL)
+                    .minScore(0)
+                    .maxScore(5)
+                    .scoreStepSize(1)
+                    .researcherId((i <= 10 ? userId : UUID.randomUUID()).toString())
+                    .build();
             totalCategories.add(categoryService.create(c.toDto()));
         }
 
@@ -206,7 +204,7 @@ class CategoriesControllerTest {
     @Test
     @Transactional
     @Order(1)
-    void getCategoryFail() throws Exception {
+    void getCategoryFailBadId() throws Exception {
         long categoryId = -1L;
         mockMvc.perform(
                         get("/api/categories/" + categoryId)
@@ -397,6 +395,7 @@ class CategoriesControllerTest {
         toPost.put("name", "Patched Category");
         toPost.put("year", 1338);
         toPost.put("label", "INTERNAL");
+        toPost.put("deadline", ZonedDateTime.now());
         toPost.put("min_score", 2.0);
         toPost.put("max_score", 6.0);
         toPost.put("score_step_size", 2.0);
@@ -509,7 +508,7 @@ class CategoriesControllerTest {
             // should be multiple of 3; first third accepted + reviews, second pending, third declined
             int requestsSize = 9;
             for (int j = 0; j < requestsSize; j++) {
-                var re = directRequestService.create(
+                directRequestService.create(
                         DirectRequest.builder()
                                 .state(j < requestsSize / 3 ? DirectRequest.RequestState.ACCEPTED
                                         : j < (requestsSize / 3) * 2
@@ -524,7 +523,16 @@ class CategoriesControllerTest {
                         Review.builder()
                                 .reviewerId(UUID.randomUUID().toString())
                                 .entryId(entry.getId())
+                                .reviewDocumentId(documentService.create(document).getId())
                                 .confidenceLevel(Review.ConfidenceLevel.MEDIUM)
+                                .build().toDto());
+
+                reviewService.createMessage(
+                        Message.builder()
+                                .reviewId(r.getId())
+                                .creatorId(userId.toString())
+                                .timeStamp(ZonedDateTime.now())
+                                .content("test")
                                 .build().toDto());
             }
         }
