@@ -1,5 +1,5 @@
 /// <reference types="cypress"/>
-describe('Categories', () => {
+describe('TC 180: Create a category', () => {
 
     before(() => {
         cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max' +

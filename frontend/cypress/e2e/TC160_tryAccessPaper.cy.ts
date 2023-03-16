@@ -1,4 +1,6 @@
 /// <reference types="cypress"/>
+
+// for some reason, "Good Paper" is listed as a paper submitted by Mortgage Backed.
 describe('TC 160: Trying to access the content of a research paper as a non-reviewer', () => {
 
     before(() => {
