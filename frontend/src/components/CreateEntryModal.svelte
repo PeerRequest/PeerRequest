@@ -195,7 +195,7 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4">Enter Paper Authors</Heading>
-            <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
+            <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg placeholder-gray-500 placeholder-opacity-50" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
 
