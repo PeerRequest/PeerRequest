@@ -318,9 +318,6 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         String reviewerId = request.get().getReviewerId();
-        if (!user.getAttribute("sub").toString().equals(reviewerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the reviewer may change the state");
-        }
 
         if (request.get().getState() != DirectRequest.RequestState.PENDING) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "request answer is already set");

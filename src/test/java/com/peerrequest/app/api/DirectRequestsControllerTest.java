@@ -893,6 +893,137 @@ public class DirectRequestsControllerTest {
     }
 
     @Test
+    @Order(2)
+    void patchDirectRequestFailIdSet() throws Exception {
+        int index = 1;
+        DirectRequestProcess drp = drpPatch.get(index);
+
+        JSONObject patch = new JSONObject();
+        patch.put("id", -1L);
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + drp.getEntryId()
+                        + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailNoDrp() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + entryWithoutDrp.getId()
+                        + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailNoRequest() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailNotPending() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(drpPatch.size() - 1).getEntryId() + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailDrpIdSet() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("direct_request_process_id", -1L);
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(0).getEntryId() + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailReviewerSet() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("reviewer_id", -1L);
+        patch.put("state", DirectRequest.RequestState.DECLINED.toString());
+
+        mockMvc.perform(
+                        patch("/api/categories/" + category.getId() + "/entries/"
+                                + drpPatch.get(0).getEntryId() + "/process/requests")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailNoState() throws Exception {
+        JSONObject patch = new JSONObject();
+        mockMvc.perform(
+                        patch("/api/categories/" + category.getId() + "/entries/"
+                                + drpPatch.get(2).getEntryId() + "/process/requests")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestFailStatePending() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("state", DirectRequest.RequestState.PENDING.toString());
+        mockMvc.perform(
+                        patch("/api/categories/" + category.getId() + "/entries/"
+                                + drpPatch.get(2).getEntryId() + "/process/requests")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @Order(1)
     void listRequestsByResearcher() throws Exception {
         var action = mockMvc.perform(
