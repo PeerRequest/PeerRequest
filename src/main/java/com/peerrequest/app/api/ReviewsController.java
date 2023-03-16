@@ -394,7 +394,7 @@ public class ReviewsController extends ServiceBasedController {
         }
         if (!entry.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "you may not have the permission to access this reviews");
+                "you may not have the permission to access this review");
         }
     }
 
