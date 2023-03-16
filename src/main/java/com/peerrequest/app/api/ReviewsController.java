@@ -38,13 +38,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewsController extends ServiceBasedController {
 
     public static final String DELETE_REVIEW_DOCUMENT = "";
-    public static final int maxPageSize = 100;
-    public static final int messagesMaxPageSize = 100;
-    private final EntryRepository entryRepository;
+    public static final int MAX_PAGE_SIZE = 100;
+    public static final int MESSAGES_MAX_PAGE_SIZE = 100;
 
-    public ReviewsController(EntryRepository entryRepository) {
-        this.entryRepository = entryRepository;
-    }
+    public ReviewsController(EntryRepository entryRepository) {}
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews")
     Paged<List<Review.Dto>> listReviews(@AuthenticationPrincipal OAuth2User user,
@@ -57,20 +54,20 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         Review.Dto filterReview = new Review.Dto(null, null, Optional.of(entryId),
             null, null, null, null, null, null, null, null, null);
 
-        var reviewPage = this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+        var reviewPage = this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE),
             filterReview);
 
         return new Paged<>(
             reviewPage.getSize(),
             reviewPage.getNumber() + 1,
             reviewPage.getTotalPages(),
-            this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterReview)
+            this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), filterReview)
                 .stream()
                 .map(Review::toDto).toList());
     }
@@ -255,14 +252,14 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), messagesMaxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MESSAGES_MAX_PAGE_SIZE));
         }
 
         Message.Dto messageFilter = new Message.Dto(Optional.empty(),
             Optional.of(reviewId), Optional.empty(), null, null);
 
         var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0),
-                limit.orElse(messagesMaxPageSize), messageFilter);
+                limit.orElse(MESSAGES_MAX_PAGE_SIZE), messageFilter);
         return new Paged<>(
             messagePage.getSize(),
             messagePage.getNumber() + 1,
@@ -355,12 +352,11 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), messagesMaxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
-            limit.orElse(maxPageSize),
-            user.getAttribute("sub"));
+            limit.orElse(MAX_PAGE_SIZE), user.getAttribute("sub"));
 
         List<Pair<Review.Dto, Entry.Dto>> pairList = new ArrayList<>();
 

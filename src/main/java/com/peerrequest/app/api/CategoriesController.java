@@ -27,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class CategoriesController extends ServiceBasedController {
-    public static final int maxPageSize = 100;
+    public static final int MAX_PAGE_SIZE = 100;
 
     @GetMapping("/categories")
     Paged<List<Category.Dto>> listCategories(@RequestParam Optional<Integer> limit,
@@ -36,16 +36,16 @@ public class CategoriesController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
-        var categoryPage = this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null);
+        var categoryPage = this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), null);
 
         return new Paged<>(
             categoryPage.getSize(),
             categoryPage.getNumber() + 1,
             categoryPage.getTotalPages(),
-            this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null)
+            this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), null)
                 .stream()
                 .map(Category::toDto)
                 .toList());
