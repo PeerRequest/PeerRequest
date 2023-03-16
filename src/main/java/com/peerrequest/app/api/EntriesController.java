@@ -29,7 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class EntriesController extends ServiceBasedController {
-    private final int maxPageSize = 100;
+    public static final int MAX_PAGE_SIZE = 100;
 
     @GetMapping("/categories/{category_id}/entries")
     Paged<List<Entry.Dto>> listEntries(@RequestParam("limit") Optional<Integer> limit,
@@ -39,13 +39,13 @@ public class EntriesController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         Entry.Dto filterEntry = new Entry.Dto(
             null, null, null, null, null, Optional.of(categoryId));
 
-        var entryPage = this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+        var entryPage = this.entryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE),
             filterEntry);
         return new Paged<>(
             entryPage.getSize(),
@@ -56,31 +56,9 @@ public class EntriesController extends ServiceBasedController {
 
     @GetMapping("/categories/{category_id}/entries/{entry_id}")
     Entry.Dto getEntry(@PathVariable(name = "entry_id") Long id, @AuthenticationPrincipal OAuth2User user) {
-        var option = this.entryService.get(id);
-        if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
-        }
 
-        if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
-            boolean isReviewer = false;
-            var directRequestProcess = this.directRequestProcessService.getByEntry(option.get().getId());
-
-            if (directRequestProcess.isPresent()) {
-                for (var requests :
-                        this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
-                    if (requests.getReviewerId().equals(user.getAttribute("sub").toString())) {
-                        if (requests.getState() != DirectRequest.RequestState.DECLINED) {
-                            isReviewer = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!isReviewer) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "only the reviewer and the researcher may view the paper");
-            }
-        }
+        Optional<Entry> option = this.entryService.get(id);
+        checkAuthReviewerOrResearcher(option, user);
 
         return option.get().toDto();
     }
@@ -88,31 +66,8 @@ public class EntriesController extends ServiceBasedController {
     @GetMapping("/categories/{category_id}/entries/{entry_id}/paper")
     ResponseEntity<byte[]> getPaper(@PathVariable(name = "entry_id") Long id,
                                     @AuthenticationPrincipal OAuth2User user) {
-        var option = this.entryService.get(id);
-        if (option.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
-        }
-
-        if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
-            boolean isReviewer = false;
-            var directRequestProcess = this.directRequestProcessService.getByEntry(option.get().getId());
-
-            if (directRequestProcess.isPresent()) {
-                for (var requests :
-                        this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
-                    if (requests.getReviewerId().equals(user.getAttribute("sub").toString())) {
-                        if (requests.getState() != DirectRequest.RequestState.DECLINED) {
-                            isReviewer = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!isReviewer) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "only the reviewer and the researcher may view the paper");
-            }
-        }
+        Optional<Entry> option = this.entryService.get(id);
+        checkAuthReviewerOrResearcher(option, user);
 
         var document = this.documentService.get(option.get().getDocumentId());
 
@@ -128,8 +83,8 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @PostMapping("/categories/{category_id}/entries")
-    Entry.Dto createEntries(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
-                            @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
+    Entry.Dto createEntry(@ModelAttribute("entry") Entry.Dto dto, @RequestParam("file") MultipartFile file,
+                          @AuthenticationPrincipal OAuth2User user, @PathVariable("category_id") Long categoryId) {
         var category = this.categoryService.get(categoryId);
         if (category.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
@@ -159,7 +114,7 @@ public class EntriesController extends ServiceBasedController {
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "document upload went wrong");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "paper upload went wrong");
         }
 
         var entry = Entry.fromDto(dto, user.getAttribute("sub"), categoryId, documentId);
@@ -167,7 +122,7 @@ public class EntriesController extends ServiceBasedController {
     }
 
     @PatchMapping("/categories/{category_id}/entries")
-    Entry.Dto patchEntries(@RequestBody Entry.Dto dto, @AuthenticationPrincipal OAuth2User user) {
+    Entry.Dto patchEntry(@RequestBody Entry.Dto dto, @AuthenticationPrincipal OAuth2User user) {
         if (dto.id().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
@@ -223,16 +178,42 @@ public class EntriesController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
-        var entryPage = this.entryService.listByResearcher(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+        var entryPage = this.entryService.listByResearcher(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE),
             user.getAttribute("sub"));
         return new Paged<>(
             entryPage.getSize(),
             entryPage.getNumber() + 1,
             entryPage.getTotalPages(),
             entryPage.stream().map(Entry::toDto).toList());
+    }
+
+    private void checkAuthReviewerOrResearcher(Optional<Entry> option, OAuth2User user) {
+        if (option.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "entry does not exist");
+        }
+        if (!user.getAttribute("sub").toString().equals(option.get().getResearcherId())) {
+            boolean isReviewer = false;
+            var directRequestProcess = this.directRequestProcessService.getByEntry(option.get().getId());
+
+            if (directRequestProcess.isPresent()) {
+                for (var requests :
+                        this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
+                    if (requests.getReviewerId().equals(user.getAttribute("sub").toString())) {
+                        if (requests.getState() != DirectRequest.RequestState.DECLINED) {
+                            isReviewer = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!isReviewer) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "only the reviewer and the researcher may view the paper");
+            }
+        }
     }
 
     private void sendDeleteEntryNotifications(Long entryId, String emitterId) {

@@ -27,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @ApiControllerPrefix
 public class CategoriesController extends ServiceBasedController {
-    private final int maxPageSize = 100;
+    public static final int MAX_PAGE_SIZE = 100;
 
     @GetMapping("/categories")
     Paged<List<Category.Dto>> listCategories(@RequestParam Optional<Integer> limit,
@@ -36,16 +36,16 @@ public class CategoriesController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
-        var categoryPage = this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null);
+        var categoryPage = this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), null);
 
         return new Paged<>(
             categoryPage.getSize(),
             categoryPage.getNumber() + 1,
             categoryPage.getTotalPages(),
-            this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), null)
+            this.categoryService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), null)
                 .stream()
                 .map(Category::toDto)
                 .toList());
@@ -68,11 +68,9 @@ public class CategoriesController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
         }
         if (option.get().getLabel() == Category.CategoryLabel.EXTERNAL
-            && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
+                && !option.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "only the owner may delete an external category");
         }
-
-        var deleted = this.categoryService.delete(id);
 
         var entriesList = this.entryService.listByCategoryId(id);
 
@@ -97,7 +95,7 @@ public class CategoriesController extends ServiceBasedController {
                         CategoryMessageTemplates.CATEGORY_DELETED);
             }
         }
-
+        var deleted = this.categoryService.delete(id);
         return deleted.map(Category::toDto);
     }
 
@@ -136,9 +134,6 @@ public class CategoriesController extends ServiceBasedController {
         }
 
         var patched = this.categoryService.update(dto.id().get(), dto);
-        if (patched.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "category does not exist");
-        }
 
         return patched.get().toDto();
     }
