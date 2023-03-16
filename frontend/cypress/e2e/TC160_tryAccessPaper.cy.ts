@@ -1,8 +1,9 @@
 /// <reference types="cypress"/>
-describe('TC100: Create entry', () => {
+describe('TC 160: Trying to access the content of a research paper as a non-reviewer', () => {
 
     before(() => {
-        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max' + '&family_name=Mustermann&email=ichwill@nichtmehr.sob')
+        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max'
+            + '&family_name=Mustermann&email=ichwill@nichtmehr.sob')
             .then((response) => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
@@ -18,23 +19,29 @@ describe('TC100: Create entry', () => {
             .get('input[aria-label="max_score"]').type("5")
             .get('input[aria-label="score_step_size"]').type("1")
             .get('button[type="submit"]').click()
-    })
 
-
-    it('TC100: Create entry', () => {
-        cy
-            //.visit('http://localhost:8080/categories/1')
             .visit('http://localhost:8080')
-            .get('a[href="/categories"]').click()
-            .get('')
-            .contains('First Conference').click()
+            .get('a[href="/categories/1"]').click()
             .get('button[aria-label="Submit Paper"]').click()
             .get('input[aria-label="entry_title"]').type("Good Paper")
             .get('input[aria-label="authors"]').type("Donald Duck, Gustav Gans")
             .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
             .get('input[aria-label="open_slots"]').type("3")
             .get('button[type="submit"]').click()
-            .get('a[href="/categories/1/entries/1"]').should('be.visible')
+    })
+
+
+    it('TC150_tryAccessPaper', () => {
+        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=BBB&given_name=Mortgage'
+            + '&family_name=Backed&email=securities@2008.gb')
+            .then((response) => {
+                const cookieString = response.headers["set-cookie"][0];
+                cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
+            })
+        cy.visit('http://localhost:8080')
+            .get('a[href="/categories"]').click()
+            .get('a[href="/1"]').click()
+
     })
 
 })
