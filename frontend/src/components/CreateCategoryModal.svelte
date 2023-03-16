@@ -114,6 +114,7 @@
             .then(resp => {
                 if (resp.status === 500) {
                     triggerNotification()
+                    hide()
                 }
                 else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
@@ -148,7 +149,7 @@
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
     </svelte:fragment>
-    <form class="grid gap-y-6" on:submit|preventDefault|once={() => finishCreation()}>
+    <form class="grid gap-y-6" on:submit|preventDefault|once={() => {finishCreation();createCategory();}}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name</Heading>
             <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
@@ -183,9 +184,7 @@
             <Heading size="md" tag="h4">Score Step Size</Heading>
             <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
         </div>
-        <Button color="primary"
-                on:click={() => {finishCreation();createCategory();}}
-                size="xs" type="submit">
+        <Button color="primary" size="xs" type="submit">
             Save
         </Button>
     </form>
