@@ -1033,10 +1033,51 @@ public class DirectRequestsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(requestsPatch.size()))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(1))
-                .andExpect(jsonPath("$.content").isArray());
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(requestsPatch.size() / (double) DirectRequestsController.MAX_PAGE_SIZE)))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(requestsPatch.size())));
 
         for (int i = 0; i < requestsPatch.size(); i++) {
+            DirectRequest r = requestsPatch.get(i);
+
+            action.andExpect(jsonPath("$.content[" + i + "].first.id").value(r.getId()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.state").value(r.getState().toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.reviewer_id").value(userId.toString()));
+            action.andExpect(jsonPath("$.content[" + i + "].first.direct_request_process_id")
+                    .value(r.getDirectRequestProcessId()));
+        }
+    }
+
+    @Test
+    @Order(1)
+    void listRequestsByResearcherBadLimit() throws Exception {
+        mockMvc.perform(
+                get("/api/requests")
+                        .param("limit", String.valueOf(0))
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(1)
+    void listRequestsByResearcherWithLimit() throws Exception {
+        int limit = 5;
+        var action = mockMvc.perform(
+                get("/api/requests")
+                        .param("limit", String.valueOf(limit))
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page_size").value(limit))
+                .andExpect(jsonPath("$.current_page").value(1))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(requestsPatch.size() / (double) DirectRequestsController.MAX_PAGE_SIZE)))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(limit)));
+
+        for (int i = 0; i < limit; i++) {
             DirectRequest r = requestsPatch.get(i);
 
             action.andExpect(jsonPath("$.content[" + i + "].first.id").value(r.getId()));
