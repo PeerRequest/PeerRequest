@@ -1,6 +1,5 @@
 /// <reference types="cypress"/>
 
-// for some reason, "Good Paper" is listed as a paper submitted by Mortgage Backed.
 describe('TC 160: Trying to access the content of a research paper as a non-reviewer', () => {
 
     before(() => {
@@ -39,7 +38,7 @@ describe('TC 160: Trying to access the content of a research paper as a non-revi
 
 
     it('TC150_tryAccessPaper', () => {
-        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=BBB&given_name=Mortgage' + '&family_name=Backed&email=securities@2008.gb')
+        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID2&user_name=BBB&given_name=Mortgage' + '&family_name=Backed&email=securities@2008.gb')
             .then((response) => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
@@ -48,7 +47,7 @@ describe('TC 160: Trying to access the content of a research paper as a non-revi
             .get('a[href="/categories"]').click()
             .get('a[aria-label="category_name"]')
             .contains('First Conference').click()
-            .get('a[aria-label="paper_name"]')
+            .get('[aria-label="paper_name"]')
             .contains('Good Paper')
             .should('not.have.attr', 'href')
     })

@@ -46,8 +46,8 @@
         Are you sure?
     </div>
     <div class="justify-center gap-x-16 w-full flex">
-        <Button aria-label="Yes delete" class="mb-4 h-8" color="primary" on:click={() => deleteObject()} size="lg">Yes</Button>
-        <Button aria-label="No do not delete" class="mb-4 h-8" color="red" on:click={() => hide()} size="lg">No</Button>
+        <Button aria-label="Confirm deletion" class="mb-4 h-8" color="primary" on:click={() => deleteObject()} size="lg">Yes</Button>
+        <Button aria-label="No deletion" class="mb-4 h-8" color="red" on:click={() => hide()} size="lg">No</Button>
     </div>
 
 </Modal>
