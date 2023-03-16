@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
-import com.peerrequest.app.data.repos.EntryRepository;
 import com.peerrequest.app.services.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -69,8 +68,6 @@ public class DirectRequestsControllerTest {
     private static DirectRequest requestUserNotInvolved;
     private static DirectRequestProcess userDrpRequests;
     private static DirectRequestProcess userDrpDelete;
-    @Autowired
-    private EntryRepository entryRepository;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -151,7 +148,7 @@ public class DirectRequestsControllerTest {
         userDrpDelete = drpService.create(
                 DirectRequestProcess.builder()
                         .entryId(userEntryDelete.getId())
-                        .openSlots(ThreadLocalRandom.current().nextInt(0, 11))
+                        .openSlots(0)
                         .build().toDto());
 
 
@@ -1223,5 +1220,48 @@ public class DirectRequestsControllerTest {
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(1)
+    void notifyOpenSlotsFailBadEntryId() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + -1L + "/process/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void notifyOpenSlotsFailNotAllowed() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(1)
+    void notifyOpenSlotsFailNoDrp() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId()
+                        + "/process/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void notifyOpenSlotsNoOpenSlots() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpDelete.getEntryId()
+                        + "/process/notify")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
     }
 }
