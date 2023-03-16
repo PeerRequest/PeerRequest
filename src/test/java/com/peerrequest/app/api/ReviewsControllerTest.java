@@ -359,7 +359,7 @@ public class ReviewsControllerTest {
     @Order(2)
     void patchReviewAsResearcherFailNotAllowed() throws Exception {
         int index = 0;
-        Entry entry = listReviews.get(index).entry;
+        final Entry entry = listReviews.get(index).entry;
         Review review = listReviews.get(index).review;
 
         JSONObject patch = new JSONObject();
@@ -385,7 +385,7 @@ public class ReviewsControllerTest {
     @Order(2)
     void patchReviewAsResearcherFailReviewerIdSet() throws Exception {
         int index = 0;
-        Entry entry = listReviews.get(index).entry;
+        final Entry entry = listReviews.get(index).entry;
         Review review = listReviews.get(index).review;
 
         JSONObject patch = new JSONObject();
@@ -406,7 +406,7 @@ public class ReviewsControllerTest {
     @Order(2)
     void patchReviewAsResearcherFailEntryIdSet() throws Exception {
         int index = 0;
-        Entry entry = listReviews.get(index).entry;
+        final Entry entry = listReviews.get(index).entry;
         Review review = listReviews.get(index).review;
 
         JSONObject patch = new JSONObject();
@@ -427,7 +427,7 @@ public class ReviewsControllerTest {
     @Order(2)
     void patchReviewAsResearcherFailDocumentIdSet() throws Exception {
         int index = 0;
-        Entry entry = listReviews.get(index).entry;
+        final Entry entry = listReviews.get(index).entry;
         Review review = listReviews.get(index).review;
 
         JSONObject patch = new JSONObject();
@@ -901,11 +901,11 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void createMessageReviewerFailIdSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
 
         JSONObject toPost = new JSONObject();
-        toPost.put("id",-1L);
+        toPost.put("id", -1L);
         toPost.put("timestamp", ZonedDateTime.now());
         toPost.put("content", "content");
 
@@ -922,11 +922,11 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void createMessageReviewerFailReviewIdSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
 
         JSONObject toPost = new JSONObject();
-        toPost.put("review_id",-1L);
+        toPost.put("review_id", -1L);
         toPost.put("timestamp", ZonedDateTime.now());
         toPost.put("content", "content");
 
@@ -943,11 +943,11 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void createMessageReviewerFailCreatorIdSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
 
         JSONObject toPost = new JSONObject();
-        toPost.put("creator_id","c");
+        toPost.put("creator_id", "c");
         toPost.put("timestamp", ZonedDateTime.now());
         toPost.put("content", "content");
 
@@ -1084,8 +1084,8 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void patchMessageFailReviewIdSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
         Message message = reviewMessageReviewer.messages.get(1);
 
         JSONObject toPost = new JSONObject();
@@ -1106,8 +1106,8 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void patchMessageFailCreatorIdSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
         Message message = reviewMessageReviewer.messages.get(1);
 
         JSONObject toPost = new JSONObject();
@@ -1128,8 +1128,8 @@ public class ReviewsControllerTest {
     @Test
     @Order(2)
     void patchMessageFailTimestampSet() throws Exception {
-        Entry entry = reviewMessageReviewer.entry;
-        Review review = reviewMessageReviewer.review;
+        final Entry entry = reviewMessageReviewer.entry;
+        final Review review = reviewMessageReviewer.review;
         Message message = reviewMessageReviewer.messages.get(1);
 
         JSONObject toPost = new JSONObject();
