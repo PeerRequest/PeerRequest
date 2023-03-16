@@ -523,6 +523,7 @@ public class DirectRequestsControllerTest {
 
         assertTrue("entry was not deleted", directRequestService.get(request.getId()).isEmpty());
     }
+
     @Test
     @Order(2)
     void deleteDirectRequestFailBadEntryId() throws Exception {
@@ -754,6 +755,7 @@ public class DirectRequestsControllerTest {
                         .secure(true))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     @Order(2)
     void postDirectRequestFailStateSet() throws Exception {
