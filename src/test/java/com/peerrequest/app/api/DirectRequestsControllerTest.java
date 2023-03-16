@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peerrequest.app.PeerRequestBackend;
 import com.peerrequest.app.data.*;
+import com.peerrequest.app.data.repos.EntryRepository;
 import com.peerrequest.app.services.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ public class DirectRequestsControllerTest {
     private static DirectRequest requestUserNotInvolved;
     private static DirectRequestProcess userDrpRequests;
     private static DirectRequestProcess userDrpDelete;
+    @Autowired
+    private EntryRepository entryRepository;
 
     @BeforeAll
     static void setUp(@Autowired CategoryService categoryService, @Autowired EntryService entryService,
@@ -209,7 +212,7 @@ public class DirectRequestsControllerTest {
             entries.add(e);
             entriesClaimOpenSlot.add(e);
 
-            var p = drpService.create(
+            drpService.create(
                     DirectRequestProcess.builder()
                             .entryId(e.getId())
                             .openSlots(10)
@@ -235,7 +238,7 @@ public class DirectRequestsControllerTest {
             var p = drpService.create(
                     DirectRequestProcess.builder()
                     .entryId(e.getId())
-                    .openSlots(0)
+                    .openSlots(i == (drpsSize - 2) ? 3 : 0)
                     .build().toDto());
             drpPatch.add(p);
 
@@ -1116,7 +1119,7 @@ public class DirectRequestsControllerTest {
 
     @Test
     @Order(2)
-    void claimOpenSlotNoRequest(@Autowired ReviewService reviewService) throws Exception {
+    void claimOpenSlot(@Autowired ReviewService reviewService) throws Exception {
         Entry entry = entriesClaimOpenSlot.get(0);
 
         mockMvc.perform(
@@ -1128,6 +1131,87 @@ public class DirectRequestsControllerTest {
 
         assertTrue("review was not created", reviewService.getReviewerIdsByEntryId(entry.getId()).stream()
                 .anyMatch(string -> string.equals(userId.toString())));
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotDeclinedClaim(@Autowired ReviewService reviewService) throws Exception {
+        DirectRequestProcess drp = drpPatch.get(drpPatch.size() - 2);
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/"
+                        + drp.getEntryId() + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isOk());
+
+        assertTrue("review was not created", reviewService.getReviewerIdsByEntryId(drp.getEntryId()).stream()
+                .anyMatch(string -> string.equals(userId.toString())));
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailBadEntryId() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + -1L
+                        + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailNoDrp() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + entryWithoutDrp.getId()
+                        + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailResearcherClaims() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailReviewerClaims() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(drpPatch.size() / 3).getEntryId() + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailRequestedUserClaims() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(0).getEntryId() + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(2)
+    void claimOpenSlotFailNoOpenSlots() throws Exception {
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/claim")
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isConflict());
     }
 
     @Test
