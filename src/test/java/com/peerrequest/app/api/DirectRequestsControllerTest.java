@@ -256,7 +256,7 @@ public class DirectRequestsControllerTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void createDirectRequestProcess() throws Exception {
         int openSlots = 2;
         JSONObject toPost = new JSONObject();
@@ -340,7 +340,7 @@ public class DirectRequestsControllerTest {
     void patchDirectRequestProcess() throws Exception {
         int openSlots = 3;
         JSONObject patch = new JSONObject();
-        patch.put("open_slots", 3);
+        patch.put("open_slots", openSlots);
 
         mockMvc.perform(
                 patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
@@ -353,6 +353,81 @@ public class DirectRequestsControllerTest {
                 .andExpect(jsonPath("$.id").value(userDrpRequests.getId()))
                 .andExpect(jsonPath("$.entry_id").value(userDrpRequests.getEntryId()))
                 .andExpect(jsonPath("$.open_slots").value(openSlots));
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestProcessFailBadEntryId() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("open_slots", 3);
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + -1L + "/process")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestProcessFailNotAllowed() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("open_slots", 3);
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + entryWithoutDrp.getId() + "/process")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestProcessFailNoOpenSlots() throws Exception {
+        JSONObject patch = new JSONObject();
+        mockMvc.perform(
+                        patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                                + "/process")
+                                .content(patch.toString())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .session(session)
+                                .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestProcessFailBadOpenSlots() throws Exception {
+        JSONObject patch = new JSONObject();
+        patch.put("open_slots", -1);
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId() + "/process")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Order(2)
+    void patchDirectRequestProcessFailNoDrp() throws Exception {
+        int openSlots = 3;
+        JSONObject patch = new JSONObject();
+        patch.put("open_slots", openSlots);
+
+        mockMvc.perform(
+                patch("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId() + "/process")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
     }
 
     @Test

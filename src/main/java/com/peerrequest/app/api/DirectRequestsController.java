@@ -103,7 +103,8 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         if (dto.openSlots().get() < 0) {
-            throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "open slots value must be greater than 0");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "open slots value must be greater than 0");
         }
         var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
         if (directRequestProcess.isEmpty()) {
