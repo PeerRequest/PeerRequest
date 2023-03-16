@@ -985,12 +985,12 @@ public class DirectRequestsControllerTest {
         patch.put("state", DirectRequest.RequestState.DECLINED.toString());
 
         mockMvc.perform(
-                        patch("/api/categories/" + category.getId() + "/entries/"
-                                + drpPatch.get(0).getEntryId() + "/process/requests")
-                                .content(patch.toString())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .session(session)
-                                .secure(true))
+                patch("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(0).getEntryId() + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isBadRequest());
     }
 
@@ -999,12 +999,12 @@ public class DirectRequestsControllerTest {
     void patchDirectRequestFailNoState() throws Exception {
         JSONObject patch = new JSONObject();
         mockMvc.perform(
-                        patch("/api/categories/" + category.getId() + "/entries/"
-                                + drpPatch.get(2).getEntryId() + "/process/requests")
-                                .content(patch.toString())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .session(session)
-                                .secure(true))
+                patch("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(2).getEntryId() + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isBadRequest());
     }
 
@@ -1014,12 +1014,12 @@ public class DirectRequestsControllerTest {
         JSONObject patch = new JSONObject();
         patch.put("state", DirectRequest.RequestState.PENDING.toString());
         mockMvc.perform(
-                        patch("/api/categories/" + category.getId() + "/entries/"
-                                + drpPatch.get(2).getEntryId() + "/process/requests")
-                                .content(patch.toString())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .session(session)
-                                .secure(true))
+                patch("/api/categories/" + category.getId() + "/entries/"
+                        + drpPatch.get(2).getEntryId() + "/process/requests")
+                        .content(patch.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isBadRequest());
     }
 
