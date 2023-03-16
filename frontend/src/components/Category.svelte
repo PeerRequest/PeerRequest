@@ -1,5 +1,5 @@
 <script>
-    import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
+    import {A, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
 
     export let category = null;
@@ -34,7 +34,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem >
+            <A href="/categories/{category.id}">{category.name}</A>
         </TableBodyCell>
         <TableBodyCell>{map_type(category.label)}</TableBodyCell>
         <TableBodyCell>{category.year}</TableBodyCell>

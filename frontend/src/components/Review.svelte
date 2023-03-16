@@ -1,5 +1,5 @@
 <script>
-    import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
+    import {A, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
     import {onMount} from "svelte";
 
@@ -74,22 +74,19 @@
         {:else }
             {#if show_reviewer && reviewer != null}
                 <TableBodyCell>
-                    <BreadcrumbItem>
                         {reviewer.firstName + " " + reviewer.lastName}
-                    </BreadcrumbItem>
                 </TableBodyCell>
             {/if}
 
             {#if show_paper}
                 <TableBodyCell>
-                    <BreadcrumbItem
-                            href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">{paper.name}</BreadcrumbItem>
+                    <A href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">{paper.name}</A>
                 </TableBodyCell>
             {/if}
 
             {#if show_category}
                 <TableBodyCell>
-                    <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                    <A href="/categories/{category.id}">{category.name}</A>
                 </TableBodyCell>
             {/if}
 
