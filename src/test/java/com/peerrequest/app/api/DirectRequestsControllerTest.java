@@ -523,6 +523,50 @@ public class DirectRequestsControllerTest {
 
         assertTrue("entry was not deleted", directRequestService.get(request.getId()).isEmpty());
     }
+    @Test
+    @Order(2)
+    void deleteDirectRequestFailBadEntryId() throws Exception {
+        mockMvc.perform(
+                delete("/api/categories/" + category.getId() + "/entries/" + -1L
+                        + "/process/requests/" + requestUserNotInvolved.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void deleteDirectRequestFailNotAllowed() throws Exception {
+        mockMvc.perform(
+                delete("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/requests/" + requestUserNotInvolved.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(2)
+    void deleteDirectRequestFailBadRequestId() throws Exception {
+        mockMvc.perform(
+                delete("/api/categories/" + category.getId() + "/entries/" +  userDrpDelete.getEntryId()
+                        + "/process/requests/" + -1L)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void deleteDirectRequestFailNotPending() throws Exception {
+        var request = userRequestedOthers.get(userRequestedOthers.size() - 1);
+        mockMvc.perform(
+                delete("/api/categories/" + category.getId() + "/entries/" +  userDrpRequests.getEntryId()
+                        + "/process/requests/" + request.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @Order(1)
