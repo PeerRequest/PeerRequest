@@ -664,10 +664,10 @@ public class DirectRequestsControllerTest {
     @Order(1)
     void listDirectRequestsByEntryFailNoDrp() throws Exception {
         mockMvc.perform(
-                        get("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId()
-                                + "/process/requests")
-                                .session(session)
-                                .secure(true))
+                get("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId()
+                        + "/process/requests")
+                        .session(session)
+                        .secure(true))
                 .andExpect(status().isNotFound());
     }
 
@@ -690,6 +690,148 @@ public class DirectRequestsControllerTest {
                 .andExpect(jsonPath("$.state").value(DirectRequest.RequestState.PENDING.toString()))
                 .andExpect(jsonPath("$.reviewer_id").value(reviewerId))
                 .andExpect(jsonPath("$.direct_request_process_id").value(userDrpRequests.getId()));
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailBadEntryId() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", UUID.randomUUID().toString());
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + -1L
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailNotAllowed() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", UUID.randomUUID().toString());
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailNoDrp() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", UUID.randomUUID().toString());
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userEntryCreateDrp.getId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailIdSet() throws Exception {
+        String reviewerId = UUID.randomUUID().toString();
+        JSONObject toPost = new JSONObject();
+        toPost.put("id", -1L);
+        toPost.put("reviewer_id", reviewerId);
+
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @Order(2)
+    void postDirectRequestFailStateSet() throws Exception {
+        String reviewerId = UUID.randomUUID().toString();
+        JSONObject toPost = new JSONObject();
+        toPost.put("state", DirectRequest.RequestState.DECLINED.toString());
+        toPost.put("reviewer_id", reviewerId);
+
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailDrpIdSet() throws Exception {
+        String reviewerId = UUID.randomUUID().toString();
+        JSONObject toPost = new JSONObject();
+        toPost.put("direct_request_process_id", -1L);
+        toPost.put("reviewer_id", reviewerId);
+
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailNoReviewerId() throws Exception {
+        JSONObject toPost = new JSONObject();
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailSelfRequest() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", userId.toString());
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(2)
+    void postDirectRequestFailAlreadyRequested() throws Exception {
+        JSONObject toPost = new JSONObject();
+        toPost.put("reviewer_id", userRequestedOthers.get(0).getReviewerId());
+        mockMvc.perform(
+                post("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toPost.toString())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isConflict());
     }
 
     @Test

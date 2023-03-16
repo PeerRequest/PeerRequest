@@ -244,7 +244,7 @@ public class DirectRequestsController extends ServiceBasedController {
         var directRequestProcess = this.directRequestProcessService.getByEntry(entryId);
 
         if (directRequestProcess.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "request process does not exist");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "request process does not exist");
         }
 
         if (request.id().isPresent()) {
@@ -269,7 +269,7 @@ public class DirectRequestsController extends ServiceBasedController {
 
         for (var reviewer :
                 this.directRequestService.listByDirectRequestProcessId(directRequestProcess.get().getId())) {
-            if (reviewer.getReviewerId().equals(user.getAttribute("sub"))) {
+            if (reviewer.getReviewerId().equals(request.reviewerId().get())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "user is already requested for this entry");
             }
         }
