@@ -205,7 +205,6 @@ public class ReviewsControllerTest {
         Entry entry = listReviews.get(0).entry;
         mockMvc.perform(
                 get("/api/categories/" + entry.getCategoryId() + "/entries/" + -1L + "/reviews")
-                        .param("limit", String.valueOf(0))
                         .session(session)
                         .secure(true))
                 .andExpect(status().isNotFound());
@@ -217,7 +216,6 @@ public class ReviewsControllerTest {
         Entry entry = reviewMessageReviewer.entry;
         mockMvc.perform(
                 get("/api/categories/" + entry.getCategoryId() + "/entries/" + entry.getId() + "/reviews")
-                        .param("limit", String.valueOf(0))
                         .session(session)
                         .secure(true))
                 .andExpect(status().isForbidden());
@@ -1183,7 +1181,7 @@ public class ReviewsControllerTest {
 
     @Test
     @Order(1)
-    void listReviewsByReviewerWithLimit() throws Exception {
+    void listReviewsByReviewerWithLimit(@Autowired ReviewService reviewService) throws Exception {
         int limit = 5;
         List<EntityWrapper> wrappers = listReviewsByReviewer;
         var action = mockMvc.perform(

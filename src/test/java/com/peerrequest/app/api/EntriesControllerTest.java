@@ -180,7 +180,9 @@ public class EntriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page_size").value(EntriesController.MAX_PAGE_SIZE))
                 .andExpect(jsonPath("$.current_page").value(1))
-                .andExpect(jsonPath("$.last_page").value(3))
+                .andExpect(jsonPath("$.last_page").value(
+                        Math.ceil(internalEntries.size() / (double) EntriesController.MAX_PAGE_SIZE)
+                ))
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(EntriesController.MAX_PAGE_SIZE)));
 
