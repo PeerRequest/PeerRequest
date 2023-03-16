@@ -136,14 +136,14 @@ class CategoriesControllerTest {
                     .session(session)
                     .secure(true))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.page_size").value(CategoriesController.maxPageSize))
+            .andExpect(jsonPath("$.page_size").value(CategoriesController.MAX_PAGE_SIZE))
             .andExpect(jsonPath("$.current_page").value(1))
             .andExpect(jsonPath("$.last_page").value(
-                    Math.ceil(totalCategories.size() / (double) CategoriesController.maxPageSize)))
+                    Math.ceil(totalCategories.size() / (double) CategoriesController.MAX_PAGE_SIZE)))
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content", hasSize(CategoriesController.maxPageSize)));
+            .andExpect(jsonPath("$.content", hasSize(CategoriesController.MAX_PAGE_SIZE)));
 
-        List<Category> list = totalCategories.stream().limit(CategoriesController.maxPageSize).toList();
+        List<Category> list = totalCategories.stream().limit(CategoriesController.MAX_PAGE_SIZE).toList();
         for (int i = 0; i < list.size(); i++) {
             Category c = list.get(i);
 

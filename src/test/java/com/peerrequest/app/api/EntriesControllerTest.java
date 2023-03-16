@@ -182,13 +182,13 @@ public class EntriesControllerTest {
                                 .session(session)
                                 .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page_size").value(EntriesController.maxPageSize))
+                .andExpect(jsonPath("$.page_size").value(EntriesController.MAX_PAGE_SIZE))
                 .andExpect(jsonPath("$.current_page").value(1))
                 .andExpect(jsonPath("$.last_page").value(3))
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(EntriesController.maxPageSize)));
+                .andExpect(jsonPath("$.content", hasSize(EntriesController.MAX_PAGE_SIZE)));
 
-        List<Entry> list = internalEntries.stream().limit(EntriesController.maxPageSize).toList();
+        List<Entry> list = internalEntries.stream().limit(EntriesController.MAX_PAGE_SIZE).toList();
         for (int i = 0; i < list.size(); i++) {
             Entry e = list.get(i);
 
@@ -585,7 +585,7 @@ public class EntriesControllerTest {
                         .session(session)
                         .secure(true))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page_size").value(EntriesController.maxPageSize))
+                .andExpect(jsonPath("$.page_size").value(EntriesController.MAX_PAGE_SIZE))
                 .andExpect(jsonPath("$.current_page").value(1))
                 .andExpect(jsonPath("$.last_page").value(1))
                 .andExpect(jsonPath("$.content").isArray())
