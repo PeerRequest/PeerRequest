@@ -256,10 +256,11 @@
 
                 <div class="lg:w-[50%] md:w-[100%]  mt-7">
                     {#if reviews !== null}
-                        <Reviews show_reviewer=true>
+                        <Reviews show_reviewer=true show_review_button=true>
                             {#each reviews as r}
                                 <Review
                                         show_reviewer=true
+                                        show_review_button=true
                                         bind:review={r}
                                         category_id={category.id}
                                         paper={entry}
