@@ -64,6 +64,8 @@ public class DirectRequestsControllerTest {
     private static MockHttpSession session;
     private static Entry userEntryCreateDrp;
     private static Entry entryWithoutDrp;
+    private static Entry entryUserNotInvolved;
+    private static DirectRequest requestUserNotInvolved;
     private static DirectRequestProcess userDrpRequests;
     private static DirectRequestProcess userDrpDelete;
 
@@ -171,6 +173,27 @@ public class DirectRequestsControllerTest {
                         .categoryId(category.getId())
                         .build().toDto());
         entries.add(entryWithoutDrp);
+
+        // create entry with drp and requests, but user is not involved
+        entryUserNotInvolved = entryService.create(
+                Entry.builder()
+                        .researcherId(UUID.randomUUID().toString())
+                        .name("Not User Entry Create Direct Request Process")
+                        .authors("Alan Turing")
+                        .documentId(documentService.create(document).getId())
+                        .categoryId(category.getId())
+                        .build().toDto());
+        var drpUserNotInvolved = drpService.create(
+                DirectRequestProcess.builder()
+                        .entryId(entryUserNotInvolved.getId())
+                        .openSlots(0)
+                        .build().toDto());
+        requestUserNotInvolved = directRequestService.create(
+                DirectRequest.builder()
+                        .state(DirectRequest.RequestState.ACCEPTED)
+                        .reviewerId(UUID.randomUUID().toString())
+                        .directRequestProcessId(drpUserNotInvolved.getId())
+                        .build().toDto());
 
 
         // create nine entries, drps with open slot but no requests for currently signed-in user - to claim open slots
@@ -445,6 +468,40 @@ public class DirectRequestsControllerTest {
                 .andExpect(jsonPath("$.state").value(request.getState().toString()))
                 .andExpect(jsonPath("$.reviewer_id").value(request.getReviewerId()))
                 .andExpect(jsonPath("$.direct_request_process_id").value(request.getDirectRequestProcessId()));
+    }
+
+    @Test
+    @Order(1)
+    void getDirectRequestFailBadEntryId() throws Exception {
+        DirectRequest request = userRequestedOthers.get(
+                ThreadLocalRandom.current().nextInt(0, userRequestedOthers.size()));
+        mockMvc.perform(
+                get("/api/categories/" + category.getId() + "/entries/" + -1L + "/process/requests/" + request.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void getDirectRequestFailBadRequestId() throws Exception {
+        mockMvc.perform(
+                get("/api/categories/" + category.getId() + "/entries/" + userDrpRequests.getEntryId()
+                        + "/process/requests/" + -1L)
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(1)
+    void getDirectRequestFailNotAllowed() throws Exception {
+        mockMvc.perform(
+                get("/api/categories/" + category.getId() + "/entries/" + entryUserNotInvolved.getId()
+                        + "/process/requests/" + requestUserNotInvolved.getId())
+                        .session(session)
+                        .secure(true))
+                .andExpect(status().isForbidden());
     }
 
     @Test
