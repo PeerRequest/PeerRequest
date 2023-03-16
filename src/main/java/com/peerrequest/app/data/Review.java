@@ -28,11 +28,9 @@ public class Review {
     private Long id;
     @Column(name = "reviewer_id", nullable = false, length = 40)
     @Getter
-    @Setter
     private String reviewerId;
     @Column(name = "entry_id", nullable = false)
     @Getter
-    @Setter
     private Long entryId;
     @Column(name = "review_document_id")
     @Getter
