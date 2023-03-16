@@ -79,7 +79,8 @@
             <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
         </ResponsiveBreadCrumb>
         <Heading class="mb-4" tag="h2">Conferences</Heading>
-        <Button class="mb-4"
+        <Button aria-label="Create Category"
+                class="mb-4"
                 outline
                 on:click={() => {show_create_category_modal = true}}
                 size="xs">
