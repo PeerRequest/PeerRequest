@@ -173,15 +173,15 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input bind:value={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" bind:value={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input bind:value={maxScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" bind:value={maxScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
         </div>
         <Button color="primary"
                 on:click={() => {finishCreation();createCategory();}}
