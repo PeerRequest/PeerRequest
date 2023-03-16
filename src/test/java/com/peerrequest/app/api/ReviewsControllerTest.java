@@ -160,6 +160,10 @@ public class ReviewsControllerTest {
         }
     }
 
+    @AfterEach
+    void tearDown() {
+    }
+
     @Test
     @Order(1)
     void listReviews() throws Exception {
