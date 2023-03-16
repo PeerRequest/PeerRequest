@@ -40,7 +40,8 @@ describe('TC 160: Trying to access the content of a research paper as a non-revi
             })
         cy.visit('http://localhost:8080')
             .get('a[href="/categories"]').click()
-            .get('a[href="/1"]').click()
+            .get('[href="/categories/1"]')
+            .contains('First Conference').click()
 
     })
 

@@ -23,10 +23,9 @@ describe('TC100: Create entry', () => {
 
     it('TC100: Create entry', () => {
         cy
-            //.visit('http://localhost:8080/categories/1')
             .visit('http://localhost:8080')
             .get('a[href="/categories"]').click()
-            .get('')
+            .get('[href="/categories/1"]')
             .contains('First Conference').click()
             .get('button[aria-label="Submit Paper"]').click()
             .get('input[aria-label="entry_title"]').type("Good Paper")
@@ -34,7 +33,7 @@ describe('TC100: Create entry', () => {
             .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
             .get('input[aria-label="open_slots"]').type("3")
             .get('button[type="submit"]').click()
-            .get('a[href="/categories/1/entries/1"]').should('be.visible')
+            .get('[href="/categories/1/entries/1"]').should('be.visible')
     })
 
 })
