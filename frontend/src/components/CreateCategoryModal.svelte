@@ -5,7 +5,8 @@
         CloseButton,
         Heading,
         Radio,
-        Toast
+        Toast,
+        Helper
     } from "flowbite-svelte" ;
 
     let current_user = {
@@ -174,16 +175,27 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input aria-label="min_score" bind:value={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
         </div>
+        {#if minScore >= maxScore}
+            <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                Minimal Score can not be higher or equal the Maximal Score
+            </Helper>
+        {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" bind:value={maxScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+            <input aria-label="score_step_size" bind:value={scoreStepSize} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
+
         </div>
+        {#if scoreStepSize > maxScore - minScore}
+            <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                Score Step Size can not be higher that the difference of Minimal and Maximal Score
+            </Helper>
+        {/if}
         <Button color="primary" size="xs" type="submit">
             Save
         </Button>
