@@ -22,7 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 @ApiControllerPrefix
 public class DirectRequestsController extends ServiceBasedController {
 
-    private final int maxPageSize = 100;
+    public static final int MAX_PAGE_SIZE = 100;
 
     /**
      * Gets a directRequestProcess.
@@ -197,10 +197,10 @@ public class DirectRequestsController extends ServiceBasedController {
         }
 
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         var option = this.directRequestProcessService.getByEntry(entryId);
@@ -211,7 +211,7 @@ public class DirectRequestsController extends ServiceBasedController {
         DirectRequest filterDirectRequest = new DirectRequest(null, null, null, option.get().getId());
 
         var directRequestPage = this.directRequestService.list(page.map(p -> p - 1).orElse(0),
-                limit.orElse(maxPageSize), filterDirectRequest.toDto());
+                limit.orElse(MAX_PAGE_SIZE), filterDirectRequest.toDto());
         return new Paged<>(
             directRequestPage.getSize(),
             directRequestPage.getNumber() + 1,
@@ -377,12 +377,12 @@ public class DirectRequestsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         DirectRequest filterDirectRequest = new DirectRequest(null, null, user.getAttribute("sub"), null);
 
-        var requestPage = this.directRequestService.list(page.orElse(0), limit.orElse(maxPageSize),
+        var requestPage = this.directRequestService.list(page.orElse(0), limit.orElse(MAX_PAGE_SIZE),
                 filterDirectRequest.toDto());
 
         List<Pair<DirectRequest.Dto, Entry.Dto>> pairList = new ArrayList<>();
