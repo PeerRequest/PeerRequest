@@ -38,12 +38,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewsController extends ServiceBasedController {
 
     public static final String DELETE_REVIEW_DOCUMENT = "";
-    private final int maxPageSize = 100;
-    private final EntryRepository entryRepository;
+    public static final int MAX_PAGE_SIZE = 100;
+    public static final int MESSAGES_MAX_PAGE_SIZE = 100;
 
-    public ReviewsController(EntryRepository entryRepository) {
-        this.entryRepository = entryRepository;
-    }
+    public ReviewsController(EntryRepository entryRepository) {}
 
     @GetMapping("/categories/{categoryId}/entries/{entryId}/reviews")
     Paged<List<Review.Dto>> listReviews(@AuthenticationPrincipal OAuth2User user,
@@ -56,20 +54,20 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         Review.Dto filterReview = new Review.Dto(null, null, Optional.of(entryId),
             null, null, null, null, null, null, null, null, null);
 
-        var reviewPage = this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
+        var reviewPage = this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE),
             filterReview);
 
         return new Paged<>(
             reviewPage.getSize(),
             reviewPage.getNumber() + 1,
             reviewPage.getTotalPages(),
-            this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize), filterReview)
+            this.reviewService.list(page.map(p -> p - 1).orElse(0), limit.orElse(MAX_PAGE_SIZE), filterReview)
                 .stream()
                 .map(Review::toDto).toList());
     }
@@ -93,12 +91,10 @@ public class ReviewsController extends ServiceBasedController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id is required");
         }
 
+        boolean isAnswersSet = false;
         try {
             checkAuthReviewer(this.reviewService.get(dto.id().get()), user);
-            if (dto.answersFromAuthors() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "you may not change answers_from_authors");
-            }
+            isAnswersSet = dto.answersFromAuthors() != null;
         } catch (ResponseStatusException r) {
             checkAuthResearcher(this.entryService.get(entryId), user);
             if (dto.confidenceLevel() != null
@@ -111,6 +107,11 @@ public class ReviewsController extends ServiceBasedController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "you may only change answers_from_authors");
             }
+        }
+
+        if (isAnswersSet) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "you may not change answers_from_authors");
         }
 
         if (dto.reviewerId().isPresent()) {
@@ -143,18 +144,11 @@ public class ReviewsController extends ServiceBasedController {
         var entry = this.entryService.get(entryId);
         checkAuthReviewerOrResearcher(review, entry, user);
 
-        if (review.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review does not exist");
-        }
-
-        if (review.get().getReviewDocumentId() == null) {
+        Optional<Document> document;
+        if (review.get().getReviewDocumentId() == null
+                || review.get().getReviewDocumentId().isEmpty()
+                || (document = this.documentService.get(review.get().getReviewDocumentId())).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review document does not exist");
-        }
-
-        var document = this.documentService.get(review.get().getReviewDocumentId());
-
-        if (document.isEmpty()) {
-            throw new RuntimeException("review document does not exist");
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -189,7 +183,7 @@ public class ReviewsController extends ServiceBasedController {
             var document = this.documentService.create(stored.toDto());
             documentId = document.getId();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "document upload went wrong");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "review document upload went wrong");
         }
 
         var updateReview = Review.fromDto(review.get().toDto(), review.get().getReviewerId(),
@@ -204,9 +198,10 @@ public class ReviewsController extends ServiceBasedController {
         var review = this.reviewService.get(reviewId);
         checkAuthReviewer(review, user);
 
-        var response = this.documentService.delete(review.get().getReviewDocumentId());
 
-        if (response.isEmpty()) {
+        if (review.get().getReviewDocumentId() == null
+                || review.get().getReviewDocumentId().isEmpty()
+                || this.documentService.get(review.get().getReviewDocumentId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "review document does not exist");
         }
 
@@ -254,17 +249,17 @@ public class ReviewsController extends ServiceBasedController {
         checkAuthReviewerOrResearcher(this.reviewService.get(reviewId), this.entryService.get(entryId), user);
 
         if (limit.isPresent()) {
-            if (limit.get() < 0) {
+            if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MESSAGES_MAX_PAGE_SIZE));
         }
 
         Message.Dto messageFilter = new Message.Dto(Optional.empty(),
             Optional.of(reviewId), Optional.empty(), null, null);
 
-        var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0), limit.orElse(maxPageSize),
-            messageFilter);
+        var messagePage = this.reviewService.listMessages(page.map(p -> p - 1).orElse(0),
+                limit.orElse(MESSAGES_MAX_PAGE_SIZE), messageFilter);
         return new Paged<>(
             messagePage.getSize(),
             messagePage.getNumber() + 1,
@@ -357,12 +352,11 @@ public class ReviewsController extends ServiceBasedController {
             if (limit.get() <= 0) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "limit must be greater than 0");
             }
-            limit = Optional.of(Math.min(limit.get(), maxPageSize));
+            limit = Optional.of(Math.min(limit.get(), MAX_PAGE_SIZE));
         }
 
         var reviewPage = this.reviewService.listByReviewerId(page.map(p -> p - 1).orElse(0),
-            Math.min(limit.orElse(maxPageSize), maxPageSize),
-            user.getAttribute("sub"));
+            limit.orElse(MAX_PAGE_SIZE), user.getAttribute("sub"));
 
         List<Pair<Review.Dto, Entry.Dto>> pairList = new ArrayList<>();
 
@@ -400,7 +394,7 @@ public class ReviewsController extends ServiceBasedController {
         }
         if (!entry.get().getResearcherId().equals(user.getAttribute("sub"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "you may not have the permission to access this reviews");
+                "you may not have the permission to access this review");
         }
     }
 

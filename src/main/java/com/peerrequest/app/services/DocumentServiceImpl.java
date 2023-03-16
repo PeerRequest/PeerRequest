@@ -47,16 +47,4 @@ public class DocumentServiceImpl implements DocumentService {
         repo.delete(document);
         return Optional.of(document);
     }
-
-    @Override
-    public Optional<List<Byte>> data(String id) {
-        // TODO: implement
-        throw new RuntimeException("not implemented yet");
-    }
-
-    @Override
-    public void store(String id, List<Byte> data) throws Exception {
-        // TODO: implement
-        throw new RuntimeException("not implemented yet");
-    }
 }
