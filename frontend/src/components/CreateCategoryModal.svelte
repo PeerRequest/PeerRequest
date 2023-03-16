@@ -54,6 +54,7 @@
         counter = 3;
         timeout();
     }
+
     function timeout() {
         if (--counter > 0)
             return setTimeout(timeout, 1000);
@@ -98,7 +99,7 @@
             year: new_category_year,
             label: new_category_type,
             name: new_category_name,
-            deadline: (new_category_deadline === undefined? "" : new_category_deadline + "T00:00:00+01:00"),
+            deadline: (new_category_deadline === undefined ? "" : new_category_deadline + "T00:00:00+01:00"),
             min_score: minScore,
             max_score: maxScore,
             score_step_size: scoreStepSize
@@ -114,8 +115,7 @@
             .then(resp => {
                 if (resp.status === 500) {
                     triggerNotification()
-                }
-                else if (resp.status < 200 || resp.status >= 300) {
+                } else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
@@ -132,9 +132,15 @@
 
 </script>
 
-<Toast simple={true} color="red" class="mb-2 absolute w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
+<Toast aria-label="Category already exists" bind:open={show_conference_notification} class="mb-2 absolute w-[20vw] bottom-0 right-[40vw] z-50" color="red"
+       simple={true}>
     <svelte:fragment slot="icon">
-        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+             xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  fill-rule="evenodd"></path>
+        </svg>
         <span class="sr-only">Error icon</span>
     </svelte:fragment>
     Conference already exists!
@@ -181,7 +187,8 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required
+                   type=number>
         </div>
         <Button color="primary"
                 on:click={() => {finishCreation();createCategory();}}
