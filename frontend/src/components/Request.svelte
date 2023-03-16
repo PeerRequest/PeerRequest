@@ -1,6 +1,6 @@
 <script>
     import {
-        BreadcrumbItem, Button,
+        A, Button,
         TableBodyCell,
         TableBodyRow,
         Toast
@@ -24,6 +24,7 @@
         counter = 6;
         timeout();
     }
+
     function timeout() {
         if (--counter > 0)
             return setTimeout(timeout, 1000);
@@ -78,7 +79,7 @@
 
     function getReviewToPaper(paper) {
         let review_id = ""
-        reviews.forEach( pair => {
+        reviews.forEach(pair => {
             if (paper.id === pair.second.id) {
                 review_id = pair.first.id;
             }
@@ -94,17 +95,32 @@
 </script>
 
 {#if request_state === "ACCEPTED"}
-    <Toast color="green" class="mb-2 fixed max-w-fit w-[40vw] bottom-0 right-[35vw]" bind:open={show_request_notification}>
+    <Toast color="green" class="mb-2 fixed max-w-fit w-[40vw] bottom-0 right-[35vw]"
+           bind:open={show_request_notification}>
         <svelte:fragment slot="icon">
-            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            <svg aria-hidden="true"
+                 class="w-5 h-5"
+                 fill="currentColor"
+                 viewBox="0 0 20 20"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"></path>
+            </svg>
             <span class="sr-only">Check icon</span>
         </svelte:fragment>
         You have accepted the review request
     </Toast>
 {:else }
-    <Toast color="red" class="mb-2 fixed max-w-fit w-[40vw] bottom-0 right-[35vw]" bind:open={show_request_notification}>
+    <Toast color="red" class="mb-2 fixed max-w-fit w-[40vw] bottom-0 right-[35vw]"
+           bind:open={show_request_notification}>
         <svelte:fragment slot="icon">
-            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clip-rule="evenodd"></path>
+            </svg>
             <span class="sr-only">Error icon</span>
         </svelte:fragment>
         You have declined the review request
@@ -113,9 +129,9 @@
 <TableBodyRow>
     <TableBodyCell>
         {#if accepted && reviews !== null}
-            <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}/reviews/{getReviewToPaper(entry)}">{entry.name}</BreadcrumbItem>
+            <A href="categories/{entry.category_id}/entries/{entry.id}/reviews/{getReviewToPaper(entry)}">{entry.name}</A>
         {:else }
-            <BreadcrumbItem href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</BreadcrumbItem>
+            <A href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</A>
         {/if}
     </TableBodyCell>
     {#if pending}

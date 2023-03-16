@@ -1,11 +1,11 @@
 <script>
-    import {BreadcrumbItem, TableBodyCell, TableBodyRow} from "flowbite-svelte";
+    import {A, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
     import {onMount} from "svelte";
 
     export let error;
     export let review = {
-        reviewer_id:""
+        reviewer_id: ""
     };
     export let category_id = "";
     let category = null;
@@ -16,6 +16,7 @@
     export let show_category = false;
     export let show_paper = false;
     export let show_reviewer = false;
+    export let show_review_button = false;
 
     let reviewer = null;
 
@@ -71,28 +72,30 @@
                 </TableBodyCell>
             {/each}
         {:else }
-            <TableBodyCell>
-                <BreadcrumbItem href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">Review
-                    #{review.id}</BreadcrumbItem>
-            </TableBodyCell>
-
             {#if show_reviewer && reviewer != null}
                 <TableBodyCell>
-                    <BreadcrumbItem>
                         {reviewer.firstName + " " + reviewer.lastName}
-                    </BreadcrumbItem>
                 </TableBodyCell>
             {/if}
 
             {#if show_paper}
                 <TableBodyCell>
-                    <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+                    <A href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">{paper.name}</A>
                 </TableBodyCell>
             {/if}
 
             {#if show_category}
                 <TableBodyCell>
-                    <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                    <A href="/categories/{category.id}">{category.name}</A>
+                </TableBodyCell>
+            {/if}
+
+            {#if show_review_button}
+                <TableBodyCell>
+                    <Button href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}" outline size="xs">Go
+                        to
+                        Review
+                    </Button>
                 </TableBodyCell>
             {/if}
         {/if}

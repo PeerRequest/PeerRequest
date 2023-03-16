@@ -1,9 +1,6 @@
 <script>
   import PdfViewer from "./PdfViewer.svelte";
-  import {Button, Label, TabItem, Tabs} from "flowbite-svelte";
-  import ReviewForm from "./ReviewForm.svelte";
-  import PdfUploader from "./PdfUploader.svelte";
-  import MessageBoard from "./MessageBoard.svelte";
+  import {Button} from "flowbite-svelte";
 
   export let document;
 
@@ -12,7 +9,6 @@
 
 <style>
   #pdfContainer {
-    /*@apply w-[50%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;*/
     @apply w-[100%] h-full drop-shadow-lg border-4 border-pdf-bg bg-pdf-bg rounded-xl overflow-hidden;
   }
 
