@@ -25,7 +25,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.annotation.DirtiesContext;
@@ -44,9 +43,6 @@ import org.springframework.util.ResourceUtils;
 class CategoriesControllerTest {
     @Autowired
     CategoryService categoryService;
-
-    @MockBean
-    JavaMailSender mailSender;
 
     @MockBean
     UserService userService;
