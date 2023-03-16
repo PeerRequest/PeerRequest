@@ -28,17 +28,14 @@ public class Message {
 
     @Column(name = "review_id", nullable = false)
     @Getter
-    @Setter
     private Long reviewId;
 
     @Column(name = "creator_id", nullable = false, length = 40)
     @Getter
-    @Setter
     private String creatorId;
 
     @Column(name = "timestamp", nullable = false)
     @Getter
-    @Setter
     private ZonedDateTime timeStamp;
 
     @Column(name = "content", nullable = false)
