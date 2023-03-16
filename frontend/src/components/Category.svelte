@@ -34,7 +34,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+            <BreadcrumbItem href="/categories/{category.id}">{category.name}</BreadcrumbItem >
         </TableBodyCell>
         <TableBodyCell>{map_type(category.label)}</TableBodyCell>
         <TableBodyCell>{category.year}</TableBodyCell>
