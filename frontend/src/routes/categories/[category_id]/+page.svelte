@@ -268,9 +268,8 @@
                     {/if}
                 </div>
 
-                <Button class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
-                    Submit
-                    Paper
+                <Button aria-label="Submit Paper" class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
+                    Submit Paper
                 </Button>
             </div>
 

@@ -57,22 +57,4 @@ describe('Categories', () => {
             .get('a[href="/categories/3"]').should('be.visible')
     })
 
-
-    /*
-    it('TC 200: Attempt to create a second category with the same parameters as an existing category', () => {
-        cy
-            .get('button[aria-label="Create Category"]').click()
-            .get('input[id="conference_name"]').type("Example Conference")
-            .get('input[id="conference_year"').type("2023")
-            .get('input[value="INTERNAL"]').click()
-            .get('input[aria-label="min_score"]').type("1")
-            .get('input[aria-label="max_score"]').type("5")
-            .get('input[aria-label="score_step_size"]').type("1")
-            .get('button[type="submit"]').should('throw', Error)
-    })
-
-
-
-*/
-
 })

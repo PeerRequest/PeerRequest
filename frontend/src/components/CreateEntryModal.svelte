@@ -190,17 +190,17 @@
     <form class="grid gap-y-6" enctype="multipart/form-data" on:submit|preventDefault|once={() => createEntry()}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4"> Enter Paper Title</Heading>
-            <input bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
+            <input aria-label="entry_title" bind:value={name} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_title required
                    type=text>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4">Enter Paper Authors</Heading>
-            <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
+            <input aria-label="authors" bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
 
         <div class="flex flex-row justify-between items-center">
-            <Fileupload {...fileuploadprops} bind:value={fileInput}
+            <Fileupload aria-label="file_input" {...fileuploadprops} bind:value={fileInput}
                         inputClass="annotations_file_input"
                         required
                         size="lg"
@@ -209,7 +209,7 @@
 
         <div class="flex flex-row justify-between items-center">
             <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
-            <input bind:value={open_slots}
+            <input aria-label="open_slots" bind:value={open_slots}
                    class="justify-end rounded-lg"
                    id=selected_open_slots
                    min=0
