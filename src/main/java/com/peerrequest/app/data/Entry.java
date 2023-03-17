@@ -3,13 +3,11 @@ package com.peerrequest.app.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 /**
  * Represents an Entry.
@@ -92,23 +90,6 @@ public class Entry {
                 Optional.of(getDocumentId()),
                 Optional.ofNullable(getCategoryId())
         );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Entry entry = (Entry) o;
-        return id != null && Objects.equals(id, entry.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
     }
 
     /**

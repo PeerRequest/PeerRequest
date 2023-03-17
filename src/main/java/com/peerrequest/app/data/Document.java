@@ -8,12 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -61,23 +59,6 @@ public class Document {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
                 getFile() == null ? Optional.empty() : Optional.of(getFile()),
                 getName() == null ? Optional.empty() : Optional.of(getName()));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Document document = (Document) o;
-        return id != null && Objects.equals(id, document.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
     }
 
     /**

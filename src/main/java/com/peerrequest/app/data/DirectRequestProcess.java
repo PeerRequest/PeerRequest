@@ -3,13 +3,11 @@ package com.peerrequest.app.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Check;
 
 
@@ -70,23 +68,6 @@ public class DirectRequestProcess {
     public DirectRequestProcess.Dto toDto() {
         return new DirectRequestProcess.Dto(getId() == null ? Optional.empty() : Optional.of(getId()),
                 getEntryId() == null ? Optional.empty() : Optional.of(getEntryId()), Optional.of(getOpenSlots()));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        DirectRequestProcess directRequestProcess = (DirectRequestProcess) o;
-        return id != null && Objects.equals(id, directRequestProcess.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
     }
 
     /**

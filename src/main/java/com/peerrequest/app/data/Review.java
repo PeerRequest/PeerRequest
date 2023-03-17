@@ -3,13 +3,11 @@ package com.peerrequest.app.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 /**
  * Represents a Review.
@@ -127,24 +125,6 @@ public class Review {
             getOtherComments(),
             getScore());
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Review review = (Review) o;
-        return id != null && Objects.equals(id, review.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
 
     /**
      * Represents the confidence level of a reviewer on the subject of the entry.
