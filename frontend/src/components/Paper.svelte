@@ -1,10 +1,10 @@
 <script>
-    import {BreadcrumbItem, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
+    import {A, Button, TableBodyCell, TableBodyRow} from "flowbite-svelte";
     import Skeleton from "svelte-skeleton-loader"
     import {createEventDispatcher, onMount} from "svelte";
     import Cookies from "js-cookie";
     import {goto} from "$app/navigation";
-    import {element} from "svelte/internal";
+
 
     export let href;
     export let paper = null;
@@ -27,7 +27,7 @@
 
     function loadCategory() {
         category = null;
-        if (paper === null ||  paper.category_id === undefined) {
+        if (paper === null || paper.category_id === undefined) {
             return
         }
         fetch("/api/categories/" + paper.category_id)
@@ -45,7 +45,7 @@
 
     function loadDirectRequestProcess() {
         process = null;
-        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+        if (paper === null || paper.category_id === undefined || paper.id === undefined) {
             return
         }
         fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process")
@@ -65,7 +65,7 @@
 
     function claimSlot() {
         clickedClaim = "LOADING"
-        if (paper === null ||  paper.category_id === undefined || paper.id === undefined) {
+        if (paper === null || paper.category_id === undefined || paper.id === undefined) {
             return
         }
         return fetch("/api/categories/" + paper.category_id + "/entries/" + paper.id + "/process/claim", {
@@ -111,18 +111,17 @@
     {:else }
         <TableBodyCell>
             {#if current_user !== null && current_user.id === paper.researcher_id }
-                <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</BreadcrumbItem>
+                <A href="/categories/{paper.category_id}/entries/{paper.id}">{paper.name}</A>
             {:else if isReviewer && review_id !== ""}
-                <BreadcrumbItem href="/categories/{paper.category_id}/entries/{paper.id}/reviews/{review_id}">{paper.name}</BreadcrumbItem>
+                <A href="/categories/{paper.category_id}/entries/{paper.id}/reviews/{review_id}">{paper.name}</A>
             {:else }
-                <BreadcrumbItem>{paper.name}</BreadcrumbItem>
+                {paper.name}
             {/if}
         </TableBodyCell>
 
         {#if show_category && category !== null}
             <TableBodyCell>
-                <BreadcrumbItem
-                        href="/categories/{category.id}">{category.name}</BreadcrumbItem>
+                <A href="/categories/{category.id}">{category.name}</A>
             </TableBodyCell>
         {/if}
 
@@ -137,7 +136,8 @@
             {#if slots !== null}
                 <TableBodyCell>{slots}</TableBodyCell>
                 <TableBodyCell>
-                    <Button disabled={slots<=0 || current_user.id === paper.researcher_id || isReviewer} outline size="xs"
+                    <Button disabled={slots<=0 || current_user.id === paper.researcher_id || isReviewer} outline
+                            size="xs"
                             on:click|once={slots > 0
                             ? () => {
                                 claimSlot();
