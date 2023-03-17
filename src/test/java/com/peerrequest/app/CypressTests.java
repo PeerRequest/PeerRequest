@@ -1,11 +1,18 @@
 package com.peerrequest.app;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.UserService;
+import java.util.List;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,10 +41,19 @@ public class CypressTests {
         return Mockito.mock(JavaMailSender.class);
     }
 
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
     @Bean
     @Primary
     public UserService userService() {
-        return Mockito.mock(UserService.class);
+        var mock = Mockito.mock(UserService.class);
+
+        var mockUsers = List.of(new User("1", "Helma", "Gunter", "helma@gunter.de"));
+        // der Aufruf UserService::getUsers() gibt nun immer mockUsers zurück.
+        when(mock.getUsers()).thenReturn(mockUsers);
+        // der Aufruf UserService::list() gibt nun für alle Parameter eine Page mit  mockUsers zurück.
+        when(mock.list(any())).thenReturn(new PageImpl<User>(mockUsers, Pageable.ofSize(1), mockUsers.size()));
+
+        return mock;
     }
 
     @Bean

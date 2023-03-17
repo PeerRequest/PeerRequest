@@ -65,10 +65,12 @@ describe('Requests', () => {
             .get('button[aria-label="Edit Requests"]').click()
             .get('button[aria-label="Add Reviewer"]').click()
             .get('[aria-label="search_for_reviewer"]').click()
-            .type("Helma Gunter{enter}")
+            .type("Helma{enter}")
+            //.type("Helma Gunter{enter}")
             .get('[aria-label="click_to_add_reviewer"]')
             .contains("Helma Gunter").click()
             .get('button[type="submit"]').click()
+            .wait(1000)
 
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
@@ -78,7 +80,8 @@ describe('Requests', () => {
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
             .visit('http://localhost:8080')
-            .get('a[aria-label="pending_requests"]')
+            .wait(1000)
+            .get('a[aria-label="pending_request"]')
             .contains("Good Paper")
             .should('be.visible')
 
