@@ -36,7 +36,7 @@ import org.springframework.util.ResourceUtils;
 /**
  * This test class tests the endpoints of the {@link EntriesController} class.
  */
-@SpringBootTest(properties = {"spring.mail.from=mail", "spring.load=false"})
+@SpringBootTest(properties = {"spring.mail.from=mail"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = PeerRequestBackend.class)
 @ActiveProfiles("test")
