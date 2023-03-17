@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
-@SpringBootTest(properties = {"spring.mail.from=mail", "spring.load=false"})
+@SpringBootTest(properties = {"spring.mail.from=mail"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = PeerRequestBackend.class)
 @ActiveProfiles("test")
