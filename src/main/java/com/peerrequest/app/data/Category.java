@@ -12,13 +12,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.TimeZoneStorageType;
 
@@ -112,23 +110,6 @@ public class Category {
     public Dto toDto() {
         return new Dto(getId() == null ? Optional.empty() : Optional.of(getId()), Optional.of(getResearcherId()),
             getName(), getYear(), getLabel(), getDeadline(), getMinScore(), getMaxScore(), getScoreStepSize());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Category category = (Category) o;
-        return id != null && Objects.equals(id, category.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
     }
 
     /**
