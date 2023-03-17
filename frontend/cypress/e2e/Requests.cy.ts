@@ -1,7 +1,7 @@
 /// <reference types="cypress"/>
 describe('Requests', () => {
     before(() => {
-        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max' + '&family_name=Mustermann&email=ichwill@nichtmehr.sob')
+        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max&family_name=Mustermann&email=ichwill@nichtmehr.sob')
             .then((response) => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
@@ -36,7 +36,7 @@ describe('Requests', () => {
     })
 
     beforeEach(() => {
-        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max' + '&family_name=Mustermann&email=ichwill@nichtmehr.sob')
+        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID&user_name=AAA&given_name=Max&family_name=Mustermann&email=ichwill@nichtmehr.sob')
             .then((response) => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
@@ -74,17 +74,32 @@ describe('Requests', () => {
 
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
-            .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma' + '&family_name=Gunter&email=helma@gunter.de')
+            .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
             .then((response) => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
             .visit('http://localhost:8080')
-            .wait(1000)
+            //.wait(1000)
             .get('a[aria-label="pending_request"]')
             .contains("Good Paper")
             .should('be.visible')
+    })
 
+    it('TC250: Accept a request', () => {
+        cy
+            .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
+            .then((response) => {
+                const cookieString = response.headers["set-cookie"][0];
+                cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
+            })
+            .visit('http://localhost:8080')
+            .get('a[aria-label="pending_request"]')
+            .contains("Good Paper").click()
+            .wait(1000)
+            .get('a[aria-label="accepted_request"]')
+            .contains("Good Paper")
+            .should('be.visible')
     })
 
 })
