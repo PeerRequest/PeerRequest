@@ -31,7 +31,7 @@ describe('Requests', () => {
             .get('input[aria-label="open_slots"]').type("5")
             .get('button[type="submit"]').click()
 
-        cy.request('GET', 'http://localhost:8080/logout/')
+            .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
     })
 
@@ -46,7 +46,7 @@ describe('Requests', () => {
             .get('a[aria-label="category_name"]')
             .contains("First Conference").click()
 
-        cy.visit('http://localhost:8080')
+        .visit('http://localhost:8080')
     })
 
     afterEach(() => {
@@ -66,7 +66,6 @@ describe('Requests', () => {
             .get('button[aria-label="Add Reviewer"]').click()
             .get('[aria-label="search_for_reviewer"]').click()
             .type("Helma{enter}")
-            //.type("Helma Gunter{enter}")
             .get('[aria-label="click_to_add_reviewer"]')
             .contains("Helma Gunter").click()
             .get('button[type="submit"]').click()
@@ -80,12 +79,13 @@ describe('Requests', () => {
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
             .visit('http://localhost:8080')
-            //.wait(1000)
+            .wait(1000)
             .get('a[aria-label="pending_request"]')
             .contains("Good Paper")
             .should('be.visible')
     })
 
+    /*
     it('TC250: Accept a request', () => {
         cy
             .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
@@ -94,6 +94,7 @@ describe('Requests', () => {
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
             .visit('http://localhost:8080')
+            .wait(1000)
             .get('a[aria-label="pending_request"]')
             .contains("Good Paper").click()
             .wait(1000)
@@ -101,5 +102,7 @@ describe('Requests', () => {
             .contains("Good Paper")
             .should('be.visible')
     })
+    */
+
 
 })

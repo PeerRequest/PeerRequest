@@ -48,9 +48,7 @@ public class CypressTests {
         var mock = Mockito.mock(UserService.class);
 
         var mockUsers = List.of(new User("1", "Helma", "Gunter", "helma@gunter.de"));
-        // der Aufruf UserService::getUsers() gibt nun immer mockUsers zurück.
         when(mock.getUsers()).thenReturn(mockUsers);
-        // der Aufruf UserService::list() gibt nun für alle Parameter eine Page mit  mockUsers zurück.
         when(mock.list(any())).thenReturn(new PageImpl<User>(mockUsers, Pageable.ofSize(1), mockUsers.size()));
 
         return mock;
