@@ -3,13 +3,11 @@ package com.peerrequest.app.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 /**
  * Represents a Direct Request.
@@ -81,24 +79,6 @@ public class DirectRequest {
                 getReviewerId() == null ? Optional.empty() : Optional.of(getReviewerId()),
                 getDirectRequestProcessId() == null ? Optional.empty() : Optional.of(getDirectRequestProcessId()));
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        DirectRequest directRequest = (DirectRequest) o;
-        return id != null && Objects.equals(id, directRequest.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
 
     /**
      * Represents the states of a request.

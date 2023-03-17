@@ -3,13 +3,11 @@ package com.peerrequest.app.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 /**
  * Represents a Review.
@@ -28,11 +26,9 @@ public class Review {
     private Long id;
     @Column(name = "reviewer_id", nullable = false, length = 40)
     @Getter
-    @Setter
     private String reviewerId;
     @Column(name = "entry_id", nullable = false)
     @Getter
-    @Setter
     private Long entryId;
     @Column(name = "review_document_id")
     @Getter
@@ -129,24 +125,6 @@ public class Review {
             getOtherComments(),
             getScore());
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Review review = (Review) o;
-        return id != null && Objects.equals(id, review.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
-    }
-
 
     /**
      * Represents the confidence level of a reviewer on the subject of the entry.
