@@ -14,7 +14,8 @@
         TableBodyCell,
         TableBodyRow,
         TableHead,
-        TableHeadCell
+        TableHeadCell,
+        Helper
     } from "flowbite-svelte";
     import {onMount} from "svelte";
     import Cookies from "js-cookie";
@@ -43,6 +44,9 @@
     let current_user;
     let path = $page.url.pathname;
     let open_slots = 0;
+    let allowedExtensions =
+        /(\.pdf)$/i;
+    let isPdf = true;
 
     let fileuploadprops = {
         id: "annotations_file_input",
@@ -58,9 +62,6 @@
     }
 
     function createEntry() {
-        const input = document.getElementById(fileuploadprops.id);
-        file = input.files[0];
-        console.log(file);
         const formData = new FormData();
         formData.append("authors", authors);
         formData.append("name", name);
@@ -154,6 +155,18 @@
             .catch(err => console.log(err));
     }
 
+    function selectPdf() {
+        const input = document.getElementById(fileuploadprops.id);
+        file = input.files[0];
+        if (allowedExtensions.exec(file.name)) {
+            isPdf = true;
+        }
+        else {
+            isPdf = false;
+            file = null;
+        }
+    }
+
     function loadUsers() {
         users = null;
         fetch("/api/users")
@@ -195,7 +208,7 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="sm" tag="h4">Enter Paper Authors</Heading>
-            <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg" id=entered_entry_authors
+            <input bind:value={authors} class="min-w-[13.5rem] w-full rounded-lg placeholder-gray-500 placeholder-opacity-50" id=entered_entry_authors
                    placeholder="(Optional)" type=text>
         </div>
 
@@ -204,8 +217,14 @@
                         inputClass="annotations_file_input"
                         required
                         size="lg"
+                        on:change={() => selectPdf()}
             />
         </div>
+        {#if !isPdf}
+            <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                Only PDF files accepted!
+            </Helper>
+        {/if}
 
         <div class="flex flex-row justify-between items-center">
             <Heading class="mr-3" size="sm" tag="h4">Choose Open Slots</Heading>
@@ -263,9 +282,15 @@
             </Table>
         </div>
         <Footer class="bottom-0 left-0 z-20 w-full">
-            <Button class="w-full" color="primary" size="sm" type="submit">
-                Finish Submission
-            </Button>
+            {#if isPdf}
+                <Button class="w-full" color="primary" size="sm" type="submit" >
+                    Finish Submission
+                </Button>
+            {:else }
+                <Button class="w-full" color="primary" size="sm" type="submit" disabled>
+                    Finish Submission
+                </Button>
+            {/if}
         </Footer>
     </form>
 </Modal>

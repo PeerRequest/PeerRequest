@@ -5,7 +5,8 @@
         CloseButton,
         Heading,
         Radio,
-        Toast
+        Toast,
+        Helper
     } from "flowbite-svelte" ;
 
     let current_user = {
@@ -114,6 +115,7 @@
             .then(resp => {
                 if (resp.status === 500) {
                     triggerNotification()
+                    hide()
                 }
                 else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
@@ -132,7 +134,7 @@
 
 </script>
 
-<Toast simple={true} color="red" class="mb-2 absolute w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
+<Toast simple={true} color="red" class="mb-2 fixed w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
     <svelte:fragment slot="icon">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
         <span class="sr-only">Error icon</span>
@@ -148,7 +150,7 @@
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
     </svelte:fragment>
-    <form class="grid gap-y-6" on:submit|preventDefault|once={() => finishCreation()}>
+    <form class="grid gap-y-6" on:submit|preventDefault|once={() => {finishCreation();createCategory();}}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name</Heading>
             <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
@@ -173,19 +175,28 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input aria-label="min_score" bind:value={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
         </div>
+        {#if minScore >= maxScore}
+            <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                <br>The minimum score cannot be greater than <br> or equal to the maximum score.
+            </Helper>
+        {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" bind:value={maxScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required type=number>
+            <input aria-label="score_step_size" bind:value={scoreStepSize} min={1} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
+
         </div>
-        <Button color="primary"
-                on:click={() => {finishCreation();createCategory();}}
-                size="xs" type="submit">
+        {#if scoreStepSize > maxScore - minScore}
+            <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                <br>The score step size cannot be greater than <br> the difference between the minimum and maximum scores.
+            </Helper>
+        {/if}
+        <Button color="primary" size="xs" type="submit">
             Save
         </Button>
     </form>

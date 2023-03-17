@@ -22,6 +22,7 @@
     export let review_id = "";
     let authors = "";
     let clickedClaim = "Start Review"
+    let reviews = null;
 
     const dispatch = createEventDispatcher();
 
@@ -83,9 +84,27 @@
                 } else {
                     loadDirectRequestProcess()
                     dispatch("claimSlot");
-                    goto(href);
+                    reviews = null;
+                    fetch("/api/reviews")
+                        .then(resp => resp.json())
+                        .then(resp => {
+                            if (resp.status < 200 || resp.status >= 300) {
+                                error = "" + resp.status + ": " + resp.message;
+                                console.log(error);
+                            } else {
+                                reviews = resp.content;
+                                reviews.forEach(checkReview)
+                            }
+                        })
+                        .catch(err => console.log(err))
                 }
             })
+    }
+
+    function checkReview(r) {
+        if (r.second.id === paper.id) {
+            goto(href + "/reviews/" + r.first.id)
+        }
     }
 
 

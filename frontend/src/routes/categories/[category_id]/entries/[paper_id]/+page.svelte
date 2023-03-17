@@ -175,7 +175,7 @@
 {#if error !== null}
     <Error error={error}/>
 {:else}
-    {#if (entry === null)}
+    {#if (entry === null || category === null)}
         LOADING
     {:else}
         <Container>
