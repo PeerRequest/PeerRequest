@@ -5,7 +5,8 @@
         CloseButton,
         Heading,
         Radio,
-        Toast
+        Toast,
+        Helper
     } from "flowbite-svelte" ;
 
     let current_user = {
@@ -104,6 +105,13 @@
             max_score: maxScore,
             score_step_size: scoreStepSize
         };
+
+        for (const property in data) {
+            if (property === undefined) {
+                return
+            }
+        }
+
         return fetch("/api/categories", {
             method: "POST",
             headers: {
@@ -115,7 +123,9 @@
             .then(resp => {
                 if (resp.status === 500) {
                     triggerNotification()
-                } else if (resp.status < 200 || resp.status >= 300) {
+                    hide()
+                }
+                else if (resp.status < 200 || resp.status >= 300) {
                     error = "" + resp.status + ": " + resp.message;
                     console.log(error);
                 } else {
@@ -132,8 +142,8 @@
 
 </script>
 
-<Toast aria-label="Category already exists" bind:open={show_conference_notification} class="mb-2 absolute w-[20vw] bottom-0 right-[40vw] z-50" color="red"
-       simple={true}>
+
+<Toast aria-label="Category already exists" simple={true} color="red" class="mb-2 fixed w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
     <svelte:fragment slot="icon">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
              xmlns="http://www.w3.org/2000/svg">
@@ -154,7 +164,7 @@
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
     </svelte:fragment>
-    <form class="grid gap-y-6" on:submit|preventDefault|once={() => finishCreation()}>
+    <form class="grid gap-y-6" on:submit|preventDefault|once={() => {finishCreation();createCategory();}}>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4"> Name</Heading>
             <input bind:value={new_category_name} class="min-w-[13.5rem] w-full rounded-lg" id=conference_name required
@@ -179,20 +189,27 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input aria-label="min_score" bind:value={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
         </div>
+        {#if minScore >= maxScore}
+            <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                <br>The minimum score cannot be greater than <br> or equal to the maximum score.
+            </Helper>
+        {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" bind:value={maxScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input aria-label="score_step_size" bind:value={scoreStepSize} class="w-full rounded-lg" required
-                   type=number>
+            <input aria-label="score_step_size" bind:value={scoreStepSize} min={1} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
         </div>
-        <Button color="primary"
-                on:click={() => {finishCreation();createCategory();}}
-                size="xs" type="submit">
+        {#if scoreStepSize > maxScore - minScore}
+            <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                <br>The score step size cannot be greater than <br> the difference between the minimum and maximum scores.
+            </Helper>
+        {/if}
+        <Button color="primary" size="xs" type="submit">
             Save
         </Button>
     </form>

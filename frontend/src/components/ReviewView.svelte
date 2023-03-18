@@ -1,5 +1,5 @@
 <script>
-    import {Button, Fileupload, Label, TabItem, Tabs} from "flowbite-svelte";
+    import {Button, Fileupload, Label, TabItem, Tabs, Helper} from "flowbite-svelte";
     import ReviewForm from "./ReviewForm.svelte";
     import MessageBoard from "./MessageBoard.svelte";
     import ConfirmDeletionModal from "./ConfirmDeletionModal.svelte";
@@ -32,16 +32,19 @@
 
     let fileInput = null;
     let file;
-    let upload_state = "";
+    let upload_state = "Upload";
     let fileuploadprops = {
         id: "annotations_file_input",
         accept: ".pdf,application/pdf"
     };
+    let allowedExtensions =
+        /(\.pdf)$/i;
+    let isPdf = true;
     let show_confirm_deletion_modal = false
 
     function loadReviewDocument() {
         if (pdf_document === null){
-            upload_state = "";
+            upload_state = "Upload";
         }
         pdf_document = null;
         fetch("/api" + path + "/document")
@@ -53,7 +56,7 @@
                         console.log(error);
                     } else {
                         pdf_document = window.URL.createObjectURL(resp);
-                        upload_state = "done"
+                        upload_state = "Done"
                     }
                 }
             })
@@ -61,8 +64,8 @@
     }
 
     function uploadReviewPdf() {
-        if (upload_state === "uploading" || upload_state === "done") return;
-        upload_state = "uploading";
+        if (upload_state === "Uploading..." || upload_state === "Done") return;
+        upload_state = "Uploading...";
         const input = document.getElementById(fileuploadprops.id);
         file = input.files[0];
         console.log(file);
@@ -83,9 +86,21 @@
             })
             .catch(err => {
                     console.log(err)
-                    upload_state = "failed"
+                    upload_state = "Failed"
                 }
             )
+    }
+
+    function selectPdf() {
+        upload_state = "Upload"
+        const input = document.getElementById(fileuploadprops.id);
+        file = input.files[0];
+        if (allowedExtensions.exec(file.name)) {
+            isPdf = true;
+        }
+        else {
+            isPdf = false;
+        }
     }
 
     onMount(() => {
@@ -98,7 +113,7 @@
     })
 
     $: if (!show_confirm_deletion_modal) {
-        upload_state = ""
+        upload_state = "Upload"
         loadReviewDocument()
     }
 </script>
@@ -172,21 +187,26 @@
                         {#if IsUserReviewer}
                             <Fileupload {...fileuploadprops} bind:value={fileInput}
                                         inputClass="my-auto annotations_file_input"
-                                        on:change={() => upload_state = ""}
+                                        on:change={() => selectPdf()}
                                         size="lg" required
                             />
-                            <Button disabled={!fileInput}
+                            <Button disabled={!fileInput || !isPdf}
                                     on:click={() => uploadReviewPdf()} outline
-                                    color={upload_state === "done" ? "green" : (upload_state === "failed" ? "red" : "blue")}>
-                                {upload_state === "done" ? "Done" : (upload_state === "failed" ? "Failed" : "Upload")}
+                                    color={upload_state === "Done" ? "green" : (upload_state === "Failed" ? "red" : "blue")}>
+                                {upload_state}
                             </Button>
-                            {#if pdf_document !== null}
+                            {#if pdf_document !== null && upload_state !== "Uploading..."}
                                 <Button color="red" outline class="ml-3" on:click={() => show_confirm_deletion_modal = true}>
                                     Delete
                                 </Button>
                             {/if}
                         {/if}
                     </div>
+                    {#if !isPdf}
+                        <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
+                            Only PDF files accepted!
+                        </Helper>
+                    {/if}
                     {#if pdf_document !== null}
                         <div class="flex w-full h-[50vh]">
                             <PaperView document="{pdf_document}"/>
