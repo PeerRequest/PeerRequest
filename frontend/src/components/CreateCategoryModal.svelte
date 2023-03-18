@@ -55,6 +55,7 @@
         counter = 3;
         timeout();
     }
+
     function timeout() {
         if (--counter > 0)
             return setTimeout(timeout, 1000);
@@ -99,11 +100,18 @@
             year: new_category_year,
             label: new_category_type,
             name: new_category_name,
-            deadline: (new_category_deadline === undefined? "" : new_category_deadline + "T00:00:00+01:00"),
+            deadline: (new_category_deadline === undefined ? "" : new_category_deadline + "T00:00:00+01:00"),
             min_score: minScore,
             max_score: maxScore,
             score_step_size: scoreStepSize
         };
+
+        for (const property in data) {
+            if (property === undefined) {
+                return
+            }
+        }
+
         return fetch("/api/categories", {
             method: "POST",
             headers: {
@@ -134,9 +142,15 @@
 
 </script>
 
-<Toast simple={true} color="red" class="mb-2 fixed w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
+
+<Toast aria-label="Category already exists" simple={true} color="red" class="mb-2 fixed w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
     <svelte:fragment slot="icon">
-        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+             xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  fill-rule="evenodd"></path>
+        </svg>
         <span class="sr-only">Error icon</span>
     </svelte:fragment>
     Conference already exists!
@@ -190,6 +204,7 @@ Maximum score is the maximal value the score can have."  bind:value={maxScore} m
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
+
             <input aria-label="score_step_size" title="The score step size is the increment of scores the reviewer can give to the papers of this conference.
 Example: With a score step size of 1 in the range of 0 to 3 the reviewer can give the scores 0, 1, 2, 3"  bind:value={scoreStepSize} min={1} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
 

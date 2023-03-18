@@ -231,12 +231,12 @@
                    min=0
                    type=number>
         </div>
-        <Button color="primary">
+        <Button aria-label="Add Reviewer" color="primary">
             <Chevron>Add Reviewer</Chevron>
         </Button>
         <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" on:show={() => apply_query("")}>
             <div class="p-3" slot="header">
-                <Search on:input={(e) => apply_query(e.target.value)} on:keyup={(e) => apply_query(e.target.value)}
+                <Search aria-label="search_for_reviewer" on:input={(e) => apply_query(e.target.value)} on:keyup={(e) => apply_query(e.target.value)}
                         size="md"/>
             </div>
             {#if users !== null}
@@ -245,7 +245,7 @@
                         ((u.firstName.toLowerCase().includes(query.toLowerCase())) ||
                             u.lastName.toLowerCase().includes(query.toLowerCase())))) as u}
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
-                        <span class="cursor-pointer" on:click={() => addReviewer(u) }>
+                        <span aria-label="click_to_add_reviewer" class="cursor-pointer" on:click={() => addReviewer(u) }>
                           {u.firstName + " " + u.lastName}
                         </span>
                     </li>

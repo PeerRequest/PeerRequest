@@ -129,9 +129,9 @@
 <TableBodyRow>
     <TableBodyCell>
         {#if accepted && reviews !== null}
-            <A href="categories/{entry.category_id}/entries/{entry.id}/reviews/{getReviewToPaper(entry)}">{entry.name}</A>
+            <A aria-label="accepted_request" href="categories/{entry.category_id}/entries/{entry.id}/reviews/{getReviewToPaper(entry)}">{entry.name}</A>
         {:else }
-            <A href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</A>
+            <A aria-label="pending_request" href="categories/{entry.category_id}/entries/{entry.id}">{entry.name}</A>
         {/if}
     </TableBodyCell>
     {#if pending}

@@ -240,7 +240,8 @@
                         </Button>
                     </div>
 
-                    <Button class="mb-4"
+                    <Button aria-label="Edit Requests"
+                            class="mb-4"
                             color="primary"
                             on:click={() => show_add_reviewer_modal = true}
                             size="sm">

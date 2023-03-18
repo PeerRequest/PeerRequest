@@ -258,19 +258,18 @@
                 <div class="justify-start gap-x-4 flex">
                     {#if map_type(category.label) === "Internal" ||
                     map_type(category.label) === "External" && category.researcher_id === current_user.id}
-                        <Button class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
+                        <Button aria-label="Edit Conference" class="mx-auto lg:m-0 h-8" size="xs" outline on:click={() => show_edit_modal = true}>
                             Edit Conference
                         </Button>
-                        <Button class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
+                        <Button aria-label="Delete Conference" class="mx-auto lg:m-0 h-8" color="red" size="xs" outline
                                 on:click={() => show_confirm_deletion_modal = true}>
                             Delete Conference
                         </Button>
                     {/if}
                 </div>
 
-                <Button class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
-                    Submit
-                    Paper
+                <Button aria-label="Submit Paper" class="mb-4 h-8" color="primary" on:click={() => show_create_entry_modal = true} size="xs">
+                    Submit Paper
                 </Button>
             </div>
 
