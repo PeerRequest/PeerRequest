@@ -52,6 +52,16 @@ describe('Entries', () => {
             .get('a[aria-label="paper_name"]')
             .contains("Good Paper")
             .should('be.visible')
+        cy
+            .get('button[aria-label="Submit Paper"]').click()
+            .get('input[aria-label="entry_title"]').type("Delete Paper")
+            .get('input[aria-label="authors"]').type("Sarah Smith")
+            .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
+            .get('input[aria-label="open_slots"]').type("3")
+            .get('button[type="submit"]').click()
+            .get('a[aria-label="paper_name"]')
+            .contains("Good Paper")
+            .should('be.visible')
     })
 
     it('TC120: Edit an entry', () => {
@@ -66,6 +76,17 @@ describe('Entries', () => {
             .contains('Authors: Kaori Chihiro')
             .should('be.visible')
     });
+
+    it('TC140: Delete an entry', () => {
+        cy
+            .get('a[aria-label="paper_name"]')
+            .contains("Delete Paper").click()
+            .get('button[aria-label="delete_paper"]').click()
+            .get('button[aria-label="Confirm deletion"]').click()
+            .get('a[aria-label="paper_name"]')
+            .contains('Delete Paper')
+            .should('not.exist')
+    })
 
     it('TC150: Download a research paper', () => {
         cy
