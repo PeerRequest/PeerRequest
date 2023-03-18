@@ -185,7 +185,7 @@ Minimum score is the minimal value the score can have." bind:value={minScore} ma
         {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" title="The score is the rating a reviewer the reviewer can give to the papers of this conference.
+            <input aria-label="max_score" title="The score is the rating the reviewer can give to the papers of this conference.
 Maximum score is the maximal value the score can have."  bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
