@@ -175,7 +175,7 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input aria-label="min_score" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" title="The score is the rating a reviewer gives to the paper" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
         </div>
         {#if minScore >= maxScore}
             <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
@@ -184,11 +184,12 @@
         {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" title="The score is the rating a reviewer gives to the paper"  bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
-            <input aria-label="score_step_size" bind:value={scoreStepSize} min={1} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="score_step_size" title="The score step size is the increment of scores the reviewer can give.
+Example: With a score step size of 1 in the range of 0 to 3 the reviewer can give the scores 0, 1, 2, 3"  bind:value={scoreStepSize} min={1} max={maxScore-minScore} class="w-full rounded-lg" required type=number>
 
         </div>
         {#if scoreStepSize > maxScore - minScore}
