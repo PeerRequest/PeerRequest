@@ -175,7 +175,8 @@
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Minimum Score</Heading>
-            <input aria-label="min_score" title="The score is the rating a reviewer gives to the paper" bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
+            <input aria-label="min_score" title="The score is the rating a reviewer gives to the paper.
+Minimum score is the minimal value the score can have." bind:value={minScore} max={maxScore - 1} class="w-full rounded-lg" required type=number>
         </div>
         {#if minScore >= maxScore}
             <Helper class="text-red-500" visable={false}><span class="font-medium text-red-500">Warning!</span>
@@ -184,7 +185,8 @@
         {/if}
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Maximum Score</Heading>
-            <input aria-label="max_score" title="The score is the rating a reviewer gives to the paper"  bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
+            <input aria-label="max_score" title="The score is the rating a reviewer gives to the paper.
+Maximum score is the maximal value the score can have."  bind:value={maxScore} min={minScore} class="w-full rounded-lg" required type=number>
         </div>
         <div class="flex flex-row justify-between items-center">
             <Heading size="md" tag="h4">Score Step Size</Heading>
