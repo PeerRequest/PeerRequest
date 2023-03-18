@@ -104,6 +104,13 @@
             max_score: maxScore,
             score_step_size: scoreStepSize
         };
+
+        for (const property in data) {
+            if (property === undefined) {
+                return
+            }
+        }
+
         return fetch("/api/categories", {
             method: "POST",
             headers: {
