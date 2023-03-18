@@ -30,6 +30,7 @@ describe('Requests', () => {
             .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
             .get('input[aria-label="open_slots"]').type("5")
             .get('button[type="submit"]').click()
+            .wait(3000)
 
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
@@ -46,7 +47,7 @@ describe('Requests', () => {
             .get('a[aria-label="category_name"]')
             .contains("First Conference").click()
 
-        .visit('http://localhost:8080')
+            .visit('http://localhost:8080')
     })
 
     afterEach(() => {
@@ -55,7 +56,7 @@ describe('Requests', () => {
     })
 
 
-    it('TC240: Send a request', () => {
+    it('TC240: Send a request & TC250: Accept a request', () => {
         cy
             .get('a[href="/categories"]').click()
             .get('a[aria-label="category_name"]')
@@ -78,31 +79,16 @@ describe('Requests', () => {
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
+            .wait(4000)
             .visit('http://localhost:8080')
-            .wait(1000)
             .get('a[aria-label="pending_request"]')
             .contains("Good Paper")
             .should('be.visible')
-    })
-
-    /*
-    it('TC250: Accept a request', () => {
-        cy
-            .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
-            .then((response) => {
-                const cookieString = response.headers["set-cookie"][0];
-                cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
-            })
-            .visit('http://localhost:8080')
-            .wait(1000)
-            .get('a[aria-label="pending_request"]')
-            .contains("Good Paper").click()
-            .wait(1000)
+            .get('button[aria-label="accept_request"]').click()
+            .wait(5000)
             .get('a[aria-label="accepted_request"]')
             .contains("Good Paper")
             .should('be.visible')
     })
-    */
-
 
 })
