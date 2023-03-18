@@ -34,7 +34,7 @@
         {/each}
     {:else }
         <TableBodyCell>
-            <A href="/categories/{category.id}">{category.name}</A>
+            <A aria-label="category_name" href="/categories/{category.id}">{category.name}</A>
         </TableBodyCell>
         <TableBodyCell>{map_type(category.label)}</TableBodyCell>
         <TableBodyCell>{category.year}</TableBodyCell>
