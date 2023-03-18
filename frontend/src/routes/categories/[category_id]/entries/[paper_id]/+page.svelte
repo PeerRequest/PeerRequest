@@ -194,7 +194,7 @@
             <div class="flex flex-row w-full justify-between">
                 <Heading tag="h2">
                     {entry.name}
-                    <Badge class="text-lg font-semibold ml-2"><a href={document} rel="noreferrer"
+                    <Badge class="text-lg font-semibold ml-2" aria-label="download_paper"><a href={document} rel="noreferrer"
                                                                  target="_blank" download>Download</a>
                     </Badge>
                 </Heading>

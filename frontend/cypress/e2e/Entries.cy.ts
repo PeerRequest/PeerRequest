@@ -67,6 +67,13 @@ describe('Entries', () => {
             .should('be.visible')
     });
 
+    it('TC150: Download a research paper', () => {
+        cy
+            .get('a[aria-label="paper_name"]')
+            .contains("Good Paper").click()
+            .get('span[aria-label="download_paper"]').get('a').should('have.attr', 'href')
+    });
+
     it('TC160: Try to access a paper as a user without permission', () => {
         cy.request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
