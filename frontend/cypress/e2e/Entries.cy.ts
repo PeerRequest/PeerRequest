@@ -54,6 +54,19 @@ describe('Entries', () => {
             .should('be.visible')
     })
 
+    it('TC120: Edit an entry', () => {
+        cy
+            .get('a[aria-label="paper_name"]')
+            .contains("Good Paper").click()
+            .get('button[aria-label="edit_paper"]').click()
+            .get('input[aria-label="edit_paper_authors"]').type("{selectall}{backspace}Kaori Chihiro")
+            .get('button[type="submit"]').click()
+            .wait(2000)
+            .get('div[aria-label="paper_authors"]')
+            .contains('Authors: Kaori Chihiro')
+            .should('be.visible')
+    });
+
     it('TC160: Try to access a paper as a user without permission', () => {
         cy.request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')

@@ -212,7 +212,7 @@
                     {/if}
                 </Secondary>
                 <Secondary>
-                    <div class="w-[50%] overflow-x-auto">
+                    <div class="w-[50%] overflow-x-auto" aria-label="paper_authors">
                         {#if entry.authors === "undefined"}
                         {:else }
                             <h1 class="font-extrabold">Authors:</h1> {entry.authors}
@@ -225,13 +225,17 @@
             {#if current_user !== null && current_user.id === entry.researcher_id}
                 <div class="w-full flex justify-between mt-4">
                     <div class="justify-start gap-x-4 flex">
-                        <Button class="mb-4"
+                        <Button
+                                aria-label="edit_paper"
+                                class="mb-4"
                                 outline
                                 on:click={() => show_edit_modal = true}
                                 size="xs">
                             Edit Paper
                         </Button>
-                        <Button class="mb-4"
+                        <Button
+                                aria-label="delete_paper"
+                                class="mb-4"
                                 outline
                                 color="red"
                                 on:click={() => show_confirm_deletion_modal = true}
