@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.UserService;
 import java.util.List;
+import java.util.Optional;
+
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,6 +52,8 @@ public class CypressTests {
         var mockUsers = List.of(new User("1", "Helma", "Gunter", "helma@gunter.de"));
         when(mock.getUsers()).thenReturn(mockUsers);
         when(mock.list(any())).thenReturn(new PageImpl<User>(mockUsers, Pageable.ofSize(1), mockUsers.size()));
+
+        when(mock.get("1")).thenReturn(Optional.of(mockUsers.get(0)));
 
         return mock;
     }
