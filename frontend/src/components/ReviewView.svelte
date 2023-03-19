@@ -185,12 +185,12 @@
                 <div class="flex grid">
                     <div class="flex flex-row justify-between items-center">
                         {#if IsUserReviewer}
-                            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                            <Fileupload aria-label="review_file_input"  {...fileuploadprops} bind:value={fileInput}
                                         inputClass="my-auto annotations_file_input"
                                         on:change={() => selectPdf()}
                                         size="lg" required
                             />
-                            <Button disabled={!fileInput || !isPdf}
+                            <Button aria-label="upload_pdf"  disabled={!fileInput || !isPdf}
                                     on:click={() => uploadReviewPdf()} outline
                                     color={upload_state === "Done" ? "green" : (upload_state === "Failed" ? "red" : "blue")}>
                                 {upload_state}
