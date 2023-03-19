@@ -80,7 +80,7 @@
 
             {#if show_paper}
                 <TableBodyCell>
-                    <A href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">{paper.name}</A>
+                    <A aria-label="review_to_paper" href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}">{paper.name}</A>
                 </TableBodyCell>
             {/if}
 
