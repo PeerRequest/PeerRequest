@@ -145,7 +145,7 @@
         </div>
         <h1 class="text-xs mx-2 mb-2">{calculateDate(commentedTime)}</h1>
         {#if !editable}
-            <Textarea bind:value={text}
+            <Textarea aria-label="comment_text" bind:value={text}
                       class="my-1 font-normal text-gray-700 mx-2 border-none break-all h-fit" type=text disabled/>
         {:else }
             <Textarea bind:value={text}
