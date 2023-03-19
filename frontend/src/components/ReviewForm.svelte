@@ -126,41 +126,41 @@
     </svelte:fragment>
     Save successful
 </Toast>
-<Button color="primary" class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
+<Button aria-label="save_review_form" color="primary" class="w-full mb-2" on:click={() => editReviewForm()}> Save Changes</Button>
 <Label>Score: {edited_score} / {maxScore}</Label>
-<Range bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}"
+<Range aria-label="score_range" bind:value={edited_score} id="score" max={maxScore} min={minScore} step="{category.score_step_size}"
        disabled={!reviewerUser}/>
 
 <div class="my-4"></div>
 
 <Label class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
 <ButtonGroup>
-    <Button color="red" outline={confidence !== 0} on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
-    <Button color="yellow" outline={confidence !== 1} on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
-    <Button color="green" outline={confidence !== 2} on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
+    <Button aria-label="low_confidence" color="red" outline={confidence !== 0} on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
+    <Button aria-label="mid_confidence" color="yellow" outline={confidence !== 1} on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
+    <Button aria-label="high_confidence" color="green" outline={confidence !== 2} on:click={() => confidence = 2} disabled={!reviewerUser}>High</Button>
 </ButtonGroup>
 <hr class="my-4">
 
 <Label class="mb-2" for="summary">Summary of the paper</Label>
-<Textarea bind:value={edited_summary} placeholder="Summary of the paper" rows="4" disabled={!reviewerUser}/>
+<Textarea aria-label="paper_summary" bind:value={edited_summary} placeholder="Summary of the paper" rows="4" disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="weaknesses">Main weaknesses</Label>
-<Textarea bind:value={edited_main_weaknesses} placeholder="Main weaknesses" rows="4" disabled={!reviewerUser}/>
+<Textarea aria-label="main_weakness" bind:value={edited_main_weaknesses} placeholder="Main weaknesses" rows="4" disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="strengths">Main strengths</Label>
-<Textarea bind:value={edited_main_strengths} name="strengths" placeholder="Main strengths" rows="4"
+<Textarea aria-label="main_strength" bind:value={edited_main_strengths} name="strengths" placeholder="Main strengths" rows="4"
           disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="other_comments">Other comments</Label>
-<Textarea bind:value={edited_other_comments} name="other_comments" placeholder="Other comments" rows="4"
+<Textarea aria-label="other_comments" bind:value={edited_other_comments} name="other_comments" placeholder="Other comments" rows="4"
           disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="questions">Open questions for the authors</Label>
-<Textarea bind:value={edited_questions_for_authors} name="questions" placeholder="Open questions for the authors"
+<Textarea aria-label="questions_for_authors" bind:value={edited_questions_for_authors} name="questions" placeholder="Open questions for the authors"
           rows="4"
           disabled={!reviewerUser}/>
 
 <Label class="mb-2" for="answers">Answers from the authors</Label>
-<Textarea bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
+<Textarea aria-label="answers_from_authors" bind:value={edited_answers_the_authors} name="answers" placeholder="Answers from the authors" rows="4"
           disabled={reviewerUser}/>
 
