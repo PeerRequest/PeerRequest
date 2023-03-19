@@ -140,12 +140,12 @@
                 {#if isLoading}
                     Loading
                 {:else }
-                    <Button pill class="!p-2" outline
+                    <Button aria-label="accept_request" pill class="!p-2" outline
                             on:click|once={() => updateRequest("ACCEPTED")}>
                         Accept
                     </Button>
 
-                    <Button pill class="!p-2" outline color="red"
+                    <Button aria-label="decline_request" pill class="!p-2" outline color="red"
                             on:click|once={() => updateRequest("DECLINED")}>
                         Decline
                     </Button>
