@@ -60,8 +60,9 @@ describe('Entries', () => {
             .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
             .get('input[aria-label="open_slots"]').type("3")
             .get('button[type="submit"]').click()
+            .wait(200)
             .get('a[aria-label="paper_name"]')
-            .contains("Good Paper")
+            .contains("Delete Paper")
             .should('be.visible')
     })
 
