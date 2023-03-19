@@ -208,7 +208,7 @@
                         </Helper>
                     {/if}
                     {#if pdf_document !== null}
-                        <div class="flex w-full h-[50vh]">
+                        <div aria-label="review_pdf_view" class="flex w-full h-[50vh]">
                             <PaperView document="{pdf_document}"/>
                         </div>
                     {/if}
