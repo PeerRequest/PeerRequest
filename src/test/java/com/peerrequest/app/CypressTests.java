@@ -7,7 +7,6 @@ import com.peerrequest.app.model.User;
 import com.peerrequest.app.services.UserService;
 import java.util.List;
 import java.util.Optional;
-
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
