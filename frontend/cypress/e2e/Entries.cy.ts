@@ -31,6 +31,7 @@ describe('Entries', () => {
             })
             .visit('http://localhost:8080')
             .get('a[href="/categories"]').click()
+            .wait(500)
             .get('a[aria-label="category_name"]')
             .contains("First Conference").click()
     })
@@ -98,12 +99,14 @@ describe('Entries', () => {
     it('TC160: Try to access a paper as a user without permission', () => {
         cy.request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
-        cy.request('GET', 'http://localhost:8080/test/auth/login?user_id=userID2&user_name=BBB&given_name=Lisa' + '&family_name=Mueller&email=lisamueller@mail.com')
-            .then((response) => {
-                const cookieString = response.headers["set-cookie"][0];
+            .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
+            .then((resp) => {
+                const cookieString = resp.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
+        cy.wait(1000)
         cy.visit('http://localhost:8080')
+            .wait(1000)
             .get('a[href="/categories"]').click()
             .get('a[aria-label="category_name"]')
             .contains('First Conference').click()
