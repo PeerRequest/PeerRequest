@@ -74,7 +74,7 @@
         {:else }
             {#if show_reviewer && reviewer != null}
                 <TableBodyCell>
-                        {reviewer.firstName + " " + reviewer.lastName}
+                    <A aria-label="reviewer"> {reviewer.firstName + " " + reviewer.lastName}</A>
                 </TableBodyCell>
             {/if}
 
