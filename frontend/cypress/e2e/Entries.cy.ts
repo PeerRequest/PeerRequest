@@ -53,17 +53,6 @@ describe('Entries', () => {
             .get('a[aria-label="paper_name"]')
             .contains("Good Paper")
             .should('be.visible')
-        cy
-            .get('button[aria-label="Submit Paper"]').click()
-            .get('input[aria-label="entry_title"]').type("Delete Paper")
-            .get('input[aria-label="authors"]').type("Sarah Smith")
-            .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
-            .get('input[aria-label="open_slots"]').type("3")
-            .get('button[type="submit"]').click()
-            .wait(200)
-            .get('a[aria-label="paper_name"]')
-            .contains("Delete Paper")
-            .should('be.visible')
     })
 
     it('TC120: Edit an entry', () => {
@@ -80,6 +69,17 @@ describe('Entries', () => {
     });
 
     it('TC140: Delete an entry', () => {
+        cy
+            .get('button[aria-label="Submit Paper"]').click()
+            .get('input[aria-label="entry_title"]').type("Delete Paper")
+            .get('input[aria-label="authors"]').type("Sarah Smith")
+            .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
+            .get('input[aria-label="open_slots"]').type("3")
+            .get('button[type="submit"]').click()
+            .wait(200)
+            .get('a[aria-label="paper_name"]')
+            .contains("Delete Paper")
+            .should('be.visible')
         cy
             .get('a[aria-label="paper_name"]')
             .contains("Delete Paper").click()
