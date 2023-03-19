@@ -142,4 +142,20 @@ describe('Reviews', () => {
             .get('[aria-label="comment_text"]').should('have.value',"How did i get here?")
 
     });
+
+    it('TC520 Deleting comments a message board', () => {
+        cy.get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .click("bottom")
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper").click()
+            .wait(200)
+            .get('[aria-label="messageboard"]').click()
+            .wait(2000)
+            .get('[aria-label="comment_text"]')
+            .get('[aria-label="delete_comment"').click()
+            .get('button[aria-label="Confirm deletion"]').click()
+            .get('[aria-label="comment_text"]').should('not.exist')
+    });
 })
