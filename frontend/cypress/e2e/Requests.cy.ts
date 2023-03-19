@@ -56,7 +56,8 @@ describe('Requests', () => {
     })
 
 
-    it('TC240: Send a request & TC250: Accept a request & TC280: Change number of review slots', () => {
+    it('TC240: Send a request & TC250: Accept a request & TC280: Change number of review slots & ' +
+        'TC340: Display reviews as reviewer', () => {
         cy
             .get('a[href="/categories"]').click()
             .get('a[aria-label="category_name"]')
@@ -89,6 +90,13 @@ describe('Requests', () => {
             .get('button[aria-label="accept_request"]').click()
             .wait(5000)
             .get('a[aria-label="accepted_request"]')
+            .contains("Good Paper")
+            .should('be.visible')
+
+            .get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .get('[aria-label="review_to_paper"]')
             .contains("Good Paper")
             .should('be.visible')
     })
