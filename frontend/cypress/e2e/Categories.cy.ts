@@ -108,6 +108,19 @@ describe('Categories', () => {
             .get('[aria-label="Category already exists"]', {timeout: 1000}).should('be.visible')
     })
 
+    it('TC 210: Try to edit a category to match an existing one', () => {
+        cy.get('a[aria-label="category_name"]')
+            .contains("Example Conference").click()
+            .get('button[aria-label="Edit Conference"]').click()
+            .get('input[aria-label="edit_category_name"').type("{selectall}{backspace}First Conference")
+            .get('input[aria-label="edit_category_year"').type("{selectall}{backspace}2023")
+            .get('input[aria-label="edit_category_min_score"').type("{selectall}{backspace}1")
+            .get('input[aria-label="edit_category_max_score"').type("{selectall}{backspace}5")
+            .get('input[aria-label="edit_category_step_size"').type("{selectall}{backspace}1")
+            .get('button[type="submit"]').click()
+            .get('[aria-label="Edited Category already exists"]', {timeout: 1000}).should('be.visible')
+    })
+
     it('TC 220: Delete a category', () => {
         cy
             .get('a[aria-label="category_name"]')

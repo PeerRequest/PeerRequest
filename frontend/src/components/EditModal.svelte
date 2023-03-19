@@ -44,6 +44,7 @@
 
     let edited_paper_name = null;
     let edited_authors = null;
+    let edited_exists = false;
     function editCategory() {
         let data = {
             id: conference.id,
@@ -66,7 +67,7 @@
             .then((response) => response.json())
             .then((response) => {
                 if (response.status === 500) {
-                    triggerNotification();
+                    triggerNotification()
                 }
                 else if (response.status < 200 || response.status >= 300) {
                     error = "" + response.status + ": " + response.message;
@@ -128,7 +129,7 @@
 
 </script>
 
-<Toast aria-label="Edited Category already exists" simple={true} color="red" class="mb-2 fixed w-[20vw] bottom-0 right-[40vw] z-50" bind:open={show_conference_notification}>
+<Toast aria-label="Edited Category already exists" simple={true} color="red" class="mb-2 fixed h-[10vh] w-[20vw] bottom-0 right-[40vw] z-[100]" bind:open={show_conference_notification}>
     <svelte:fragment slot="icon">
         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
              xmlns="http://www.w3.org/2000/svg">
