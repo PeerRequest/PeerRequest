@@ -37,11 +37,15 @@
     });
 
     const scrollToBottom = async (node) => {
-        node.scroll({top: node.scrollHeight, behavior: 'smooth'});
+        if (node !== null) {
+            node.scroll({top: node.scrollHeight, behavior: 'smooth'});
+        }
     };
 
     const scrollToTop = async (node) => {
-        node.scroll({top: 0, behavior: 'smooth'});
+        if (node !== null) {
+            node.scroll({top: 0, behavior: 'smooth'});
+        }
     };
 
     const submitComment = (e) => {
@@ -131,7 +135,7 @@
 
             </div>
             <form on:submit={submitComment}>
-                <input bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment"
+                <input aria-label="comment_input" bind:value={comment} class="w-full rounded-lg" id="input-text" placeholder="Enter comment"
                        type="text">
                 {#if comment.length >= 250}
                     <Helper class="mt-2 text-red-500" visable={false}><span class="font-medium">Warning!</span> Only
