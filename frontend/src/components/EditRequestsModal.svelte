@@ -225,7 +225,7 @@
     <div class="flex grid gap-y-6 w-full">
         <div class="flex flex-row justify-between items-center">
             <Heading class="mr-3" size="sm" tag="h4">Open Slots</Heading>
-            <input bind:value={slots}
+            <input aria-label="edit_open_slots" bind:value={slots}
                    class="justify-end rounded-lg"
                    id=selected_open_slots
                    min=0

@@ -56,7 +56,8 @@ describe('Requests', () => {
     })
 
 
-    it('TC240: Send a request & TC250: Accept a request', () => {
+    it('TC240: Send a request & TC250: Accept a request & TC280: Change number of review slots & ' +
+        'TC340: Display reviews as reviewer', () => {
         cy
             .get('a[href="/categories"]').click()
             .get('a[aria-label="category_name"]')
@@ -64,6 +65,7 @@ describe('Requests', () => {
             .get('a[aria-label="paper_name"]')
             .contains("Good Paper").click()
             .get('button[aria-label="Edit Requests"]').click()
+            .get('input[aria-label="edit_open_slots"').type("5")
             .get('button[aria-label="Add Reviewer"]').click()
             .get('[aria-label="search_for_reviewer"]').click()
             .type("Helma{enter}")
@@ -89,6 +91,24 @@ describe('Requests', () => {
             .wait(5000)
             .get('a[aria-label="accepted_request"]')
             .contains("Good Paper")
+            .should('be.visible')
+
+            .get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper")
+            .should('be.visible')
+    })
+
+    it('TC330: Display reviews as researcher', () => {
+        cy
+            .get('a[href="/categories"]').click()
+            .get('a[aria-label="category_name"]')
+            .contains("First Conference").click()
+            .get('a[aria-label="paper_name"]')
+            .contains("Good Paper").click()
+            .get('a[aria-label="go_to_review"]')
             .should('be.visible')
     })
 
