@@ -242,8 +242,7 @@
             {#if users !== null}
                 {#each users.filter(u => !reviewers.includes(u) &&
                     (query === "" ||
-                        ((u.firstName.toLowerCase().includes(query.toLowerCase())) ||
-                            u.lastName.toLowerCase().includes(query.toLowerCase())))) as u}
+                        (u.firstName + " " + u.lastName).toLowerCase().includes(query.toLowerCase()))) as u}
                     <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600 font-semibold">
                         <span aria-label="click_to_add_reviewer" class="cursor-pointer" on:click={() => addReviewer(u) }>
                           {u.firstName + " " + u.lastName}
