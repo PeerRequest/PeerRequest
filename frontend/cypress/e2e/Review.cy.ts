@@ -30,7 +30,9 @@ describe('Reviews', () => {
             .get('input[aria-label="file_input"]').selectFile("../public/lorem_ipsum.pdf")
             .get('input[aria-label="open_slots"]').type("5")
             .get('button[type="submit"]').click()
-            .wait(3000)
+            .wait(1000)
+            .get('a[aria-label="paper_name"]')
+            .contains("Good Paper").click()
 
             // create request
             .get('button[aria-label="Edit Requests"]').click()
@@ -47,8 +49,10 @@ describe('Reviews', () => {
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
             .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
+            .wait(500)
             .then((response) => {
-                cy.wait(1000)
+                console.log(response)
+                cy.wait(500)
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
@@ -58,6 +62,7 @@ describe('Reviews', () => {
             .visit('http://localhost:8080')
             .get('a[aria-label="pending_request"]')
             .get('button[aria-label="accept_request"]').click()
+            .wait(2000)
 
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
@@ -76,5 +81,35 @@ describe('Reviews', () => {
         cy.request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
     })
-    
+
+    it('TC480: Edit Review Form as a Reviewer', () => {
+        cy.get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .click("bottom")
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper").click()
+            .wait(200)
+            .get('button[aria-label="mid_confidence"]').click()
+            .get('[aria-label="paper_summary"]').type("Paper Summary")
+            .get('[aria-label="main_weakness"]').type("Fatal weakness")
+            .get('[aria-label="main_strength"]').type("Great Strength")
+            .get('[aria-label="other_comments"]').type("First")
+            .get('[aria-label="questions_for_authors"]').type("What is a question?")
+            .get('button[aria-label="save_review_form"]').click()
+
+            .get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper").click()
+            .wait(200)
+
+            .get('[aria-label="selected_confidence"]').contains("MEDIUM")
+            .get('[aria-label="paper_summary"]').should('have.value',"Paper Summary")
+            .get('[aria-label="main_weakness"]').should('have.value',"Fatal weakness")
+            .get('[aria-label="main_strength"]').should('have.value',"Great Strength")
+            .get('[aria-label="other_comments"]').should('have.value',"First")
+            .get('[aria-label="questions_for_authors"]').should('have.value',"What is a question?")
+    });
 })
