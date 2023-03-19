@@ -211,7 +211,7 @@
                         <BreadcrumbItem href="/categories">Conferences</BreadcrumbItem>
                         <BreadcrumbItem>{category.name}</BreadcrumbItem>
                     </ResponsiveBreadCrumb>
-                    <div class="flex flex-row">
+                    <div class="flex flex-row" aria-label="category_header">
                         <Heading tag="h2">
                             {category.name} {category.year}
                         </Heading>

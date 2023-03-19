@@ -18,6 +18,7 @@ describe('Categories', () => {
             .get('input[aria-label="max_score"]').type("5")
             .get('input[aria-label="score_step_size"]').type("1")
             .get('button[type="submit"]').click()
+            .wait(500)
 
             .visit('http://localhost:8080')
             .get('a[href="/categories"]').click()
@@ -29,6 +30,7 @@ describe('Categories', () => {
             .get('input[aria-label="max_score"]').type("5")
             .get('input[aria-label="score_step_size"]').type("1")
             .get('button[type="submit"]').click()
+            .wait(500)
 
         cy.request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
@@ -66,6 +68,23 @@ describe('Categories', () => {
             .should('be.visible')
     })
 
+    it('TC190: Edit a category ', () => {
+        cy.get('a[aria-label="category_name"]')
+            .contains("Delete Conference").click()
+            .get('button[aria-label="Edit Conference"]').click()
+            .get('input[aria-label="edit_category_name"').type("{selectall}{backspace}Delete Edited Conference")
+            .get('input[aria-label="edit_category_year"').type("{selectall}{backspace}2025")
+            .get('input[aria-label="edit_category_min_score"').type("{selectall}{backspace}42")
+            .get('input[aria-label="edit_category_max_score"').type("{selectall}{backspace}666")
+            .get('input[aria-label="edit_category_step_size"').type("{selectall}{backspace}5")
+            .get('button[type="submit"]').click()
+            .wait(250)
+            .get('div[aria-label="category_header"]')
+            .contains("Delete Edited Conference 2025")
+            .should('be.visible')
+
+    });
+
     it('TC 200: Try to create a duplicate category', () => {
         cy
             .get('button[aria-label="Create Category"]').click()
@@ -92,11 +111,11 @@ describe('Categories', () => {
     it('TC 220: Delete a category', () => {
         cy
             .get('a[aria-label="category_name"]')
-            .contains("Delete Conference").click()
+            .contains("Delete Edited Conference").click()
             .get('button[aria-label="Delete Conference"]').click()
             .get('button[aria-label="Confirm deletion"]').click()
             .get('a[aria-label="category_name"]')
-            .contains('Delete Conference')
+            .contains('Delete Edited Conference')
             .should('not.exist')
     })
 

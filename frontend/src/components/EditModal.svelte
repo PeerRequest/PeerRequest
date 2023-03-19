@@ -128,29 +128,29 @@
             <div class="grid gap-y-6">
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Name</Heading>
-                    <input bind:value="{edited_category_name}" class="min-w-[27rem] w-full rounded-lg" required
+                    <input aria-label="edit_category_name" bind:value="{edited_category_name}" class="min-w-[27rem] w-full rounded-lg" required
                            type=text>
                 </div>
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Year</Heading>
-                    <input bind:value={edited_category_year} class="w-full rounded-lg" required type=number>
+                    <input aria-label="edit_category_year" bind:value={edited_category_year} class="w-full rounded-lg" required type=number>
                 </div>
 
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4"> Deadline</Heading>
-                    <input bind:value={edited_category_deadline} class="w-full rounded-lg" type=date>
+                    <input aria-label="edit_category_deadline" bind:value={edited_category_deadline} class="w-full rounded-lg" type=date>
                 </div>
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4">Minimum Score</Heading>
-                    <input bind:value={edited_min_score} class="w-full rounded-lg" required type=number>
+                    <input aria-label="edit_category_min_score" bind:value={edited_min_score} class="w-full rounded-lg" required type=number>
                 </div>
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4">Maximum Score</Heading>
-                    <input bind:value={edited_max_score} class="w-full rounded-lg" required type=number>
+                    <input aria-label="edit_category_max_score" bind:value={edited_max_score} class="w-full rounded-lg" required type=number>
                 </div>
                 <div class="flex flex-row justify-between items-center">
                     <Heading size="md" tag="h4">Score Step Size</Heading>
-                    <input bind:value={edited_score_step_size} class="w-full rounded-lg" required type=number>
+                    <input aria-label="edit_category_step_size" bind:value={edited_score_step_size} class="w-full rounded-lg" required type=number>
                 </div>
                 <Button color="primary" size="xs" type="submit">
                     Save
