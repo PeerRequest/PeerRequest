@@ -76,6 +76,7 @@ describe('Requests', () => {
             .clearCookie('JSESSIONID')
             .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
             .then((response) => {
+                cy.wait(1000)
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
