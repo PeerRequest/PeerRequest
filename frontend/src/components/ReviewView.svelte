@@ -136,7 +136,7 @@
     </div>
     <div class="p-4 w-[100%] lg:w-[50%] mx-5 overflow-auto">
         <Tabs style="underline">
-            <TabItem open>
+            <TabItem aria-label="review_form" open>
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
                          style="enable-background:new 0 0 243.317 243.317;" viewBox="0 0 243.317 243.317" x="0px"
@@ -157,7 +157,7 @@
                 <ReviewForm category="{category}" review="{review}"
                             reviewerUser="{IsUserReviewer}"/>
             </TabItem>
-            <TabItem>
+            <TabItem aria-label="review_pdf">
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" style="enable-background:new 0 0 87.881 87.881;"
                          viewBox="0 0 87.881 87.881" x="0px"
@@ -185,12 +185,12 @@
                 <div class="flex grid">
                     <div class="flex flex-row justify-between items-center">
                         {#if IsUserReviewer}
-                            <Fileupload {...fileuploadprops} bind:value={fileInput}
+                            <Fileupload aria-label="review_file_input"  {...fileuploadprops} bind:value={fileInput}
                                         inputClass="my-auto annotations_file_input"
                                         on:change={() => selectPdf()}
                                         size="lg" required
                             />
-                            <Button disabled={!fileInput || !isPdf}
+                            <Button aria-label="upload_pdf"  disabled={!fileInput || !isPdf}
                                     on:click={() => uploadReviewPdf()} outline
                                     color={upload_state === "Done" ? "green" : (upload_state === "Failed" ? "red" : "blue")}>
                                 {upload_state}
@@ -208,13 +208,13 @@
                         </Helper>
                     {/if}
                     {#if pdf_document !== null}
-                        <div class="flex w-full h-[50vh]">
+                        <div aria-label="review_pdf_view" class="flex w-full h-[50vh]">
                             <PaperView document="{pdf_document}"/>
                         </div>
                     {/if}
                 </div>
             </TabItem>
-            <TabItem>
+            <TabItem aria-label="messageboard">
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">

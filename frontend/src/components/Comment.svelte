@@ -131,11 +131,11 @@
             {#if is_commenter}
 
                 <div class="flex justify-end gap-1 mr-3.5">
-                    <Button pill size="xs" class="!p-2 w-20 h-7 bg-white" outline on:click={() => editable = true}>
+                    <Button aria-label="edit_comment" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline on:click={() => editable = true}>
                         Edit
                     </Button>
 
-                    <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
+                    <Button aria-label="delete_comment"  color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                             on:click={() => deleteComment()}>
                         Delete
                     </Button>
@@ -145,7 +145,7 @@
         </div>
         <h1 class="text-xs mx-2 mb-2">{calculateDate(commentedTime)}</h1>
         {#if !editable}
-            <Textarea bind:value={text}
+            <Textarea aria-label="comment_text" bind:value={text}
                       class="my-1 font-normal text-gray-700 mx-2 border-none break-all h-fit" type=text disabled/>
         {:else }
             <Textarea bind:value={text}
