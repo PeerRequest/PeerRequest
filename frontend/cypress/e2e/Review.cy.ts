@@ -126,4 +126,20 @@ describe('Reviews', () => {
             .get('[aria-label="review_pdf_view"]').should('be.visible')
 
     });
+
+    it('TC510 Adding comments to a message board', () => {
+        cy.get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .click("bottom")
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper").click()
+            .wait(200)
+            .get('[aria-label="messageboard"]').click()
+            .wait(2000)
+            .get('[aria-label="comment_input"]').type("How did i get here?{enter}")
+            .wait(1000)
+            .get('[aria-label="comment_text"]').should('have.value',"How did i get here?")
+
+    });
 })
