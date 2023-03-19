@@ -18,7 +18,7 @@
 </script>
 
 <div class="flex items-center lg:order-2 p-3" >
-    <Button class="py-1 px-4 h-12 max-w-xl" color="primary" id="avatar_with_name" pill>
+    <Button aria-label="userpill" class="py-1 px-4 h-12 max-w-xl" color="primary" id="avatar_with_name" pill>
         <span class="hidden md:inline">{current_user.first_name + " " + current_user.last_name}</span>
         <span class="md:hidden">{current_user.first_name.toLocaleUpperCase().charAt(0) + current_user.last_name.toLocaleUpperCase().charAt(0)}</span>
     </Button>
@@ -27,12 +27,12 @@
             <span class="block text-sm text-gray-900 dark:text-white"> {current_user.first_name + " " + current_user.last_name} </span>
             <span class="block flex-wrap text-sm font-medium"> {current_user.email} </span>
         </div>
-        <a href="/my-papers">
+        <a aria-label="my_papers" href="/my-papers">
             <DropdownItem>
                 My Papers
             </DropdownItem>
         </a>
-        <a href="/my-reviews">
+        <a aria-label="my_reviews" href="/my-reviews">
             <DropdownItem>
                 My Reviews
             </DropdownItem>
