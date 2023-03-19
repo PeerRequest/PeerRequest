@@ -133,7 +133,7 @@
 
 <div class="my-4"></div>
 
-<Label class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
+<Label aria-label="selected_confidence" class="spacing">Confidence: {confidenceLevels[confidence]}</Label>
 <ButtonGroup>
     <Button aria-label="low_confidence" color="red" outline={confidence !== 0} on:click={() => confidence = 0} disabled={!reviewerUser}>Low</Button>
     <Button aria-label="mid_confidence" color="yellow" outline={confidence !== 1} on:click={() => confidence = 1} disabled={!reviewerUser}>Medium</Button>
