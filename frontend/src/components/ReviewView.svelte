@@ -136,7 +136,7 @@
     </div>
     <div class="p-4 w-[100%] lg:w-[50%] mx-5 overflow-auto">
         <Tabs style="underline">
-            <TabItem open>
+            <TabItem aria-label="review_form" open>
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
                          style="enable-background:new 0 0 243.317 243.317;" viewBox="0 0 243.317 243.317" x="0px"
@@ -157,7 +157,7 @@
                 <ReviewForm category="{category}" review="{review}"
                             reviewerUser="{IsUserReviewer}"/>
             </TabItem>
-            <TabItem>
+            <TabItem aria-label="review_pdf">
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" style="enable-background:new 0 0 87.881 87.881;"
                          viewBox="0 0 87.881 87.881" x="0px"
@@ -214,7 +214,7 @@
                     {/if}
                 </div>
             </TabItem>
-            <TabItem>
+            <TabItem aria-label="messageboard">
                 <div class="flex items-center gap-2" slot="title">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
