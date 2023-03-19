@@ -159,7 +159,7 @@
 <Modal bind:open={show} on:hide={() => hide ? hide() : null} permanent={true} size="lg">
     <svelte:fragment slot="header">
         <div class="text-4xl font-extrabold text-gray-900">
-            Create new Conference
+            Create New Conference
         </div>
         <CloseButton class="absolute top-3 right-5"
                      on:click={hide}/>
