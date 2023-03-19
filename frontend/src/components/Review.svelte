@@ -92,7 +92,7 @@
 
             {#if show_review_button}
                 <TableBodyCell>
-                    <Button href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}" outline size="xs">Go
+                    <Button aria-label="go_to_review" href="/categories/{category_id}/entries/{paper.id}/reviews/{review.id}" outline size="xs">Go
                         to
                         Review
                     </Button>
