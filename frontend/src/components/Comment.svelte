@@ -131,11 +131,11 @@
             {#if is_commenter}
 
                 <div class="flex justify-end gap-1 mr-3.5">
-                    <Button pill size="xs" class="!p-2 w-20 h-7 bg-white" outline on:click={() => editable = true}>
+                    <Button aria-label="edit_comment" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline on:click={() => editable = true}>
                         Edit
                     </Button>
 
-                    <Button color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
+                    <Button aria-label="delete_comment"  color="red" pill size="xs" class="!p-2 w-20 h-7 bg-white" outline
                             on:click={() => deleteComment()}>
                         Delete
                     </Button>
