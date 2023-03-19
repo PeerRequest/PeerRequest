@@ -12,7 +12,7 @@ describe('Reviews', () => {
             .get('a[href="/categories"]').click()
             .get('button[aria-label="Create Category"]').click()
             .get('input[id="conference_name"]').type("First Conference")
-            .get('input[id="conference_year"]').type("2023")
+            .get('input[id="conference_year"]').type("2024")
             .get('input[value="INTERNAL"]').click()
             .get('input[aria-label="min_score"]').type("1")
             .get('input[aria-label="max_score"]').type("5")
@@ -49,10 +49,8 @@ describe('Reviews', () => {
             .request('GET', 'http://localhost:8080/logout/')
             .clearCookie('JSESSIONID')
             .request('GET', 'http://localhost:8080/test/auth/login?user_id=1&user_name=test1&given_name=Helma&family_name=Gunter&email=helma@gunter.de')
-            .wait(500)
             .then((response) => {
                 console.log(response)
-                cy.wait(500)
                 const cookieString = response.headers["set-cookie"][0];
                 cy.setCookie('JSESSIONID', cookieString.substring(11, cookieString.length - 18))
             })
@@ -111,5 +109,21 @@ describe('Reviews', () => {
             .get('[aria-label="main_strength"]').should('have.value',"Great Strength")
             .get('[aria-label="other_comments"]').should('have.value',"First")
             .get('[aria-label="questions_for_authors"]').should('have.value',"What is a question?")
+    });
+
+    it('TC490: Reviewing via PDF file', () => {
+        cy.get('button[aria-label="userpill"]').click()
+            .get('a[aria-label="my_reviews"]').click()
+            .wait(200)
+            .click("bottom")
+            .get('[aria-label="review_to_paper"]')
+            .contains("Good Paper").click()
+            .wait(200)
+            .get('[aria-label="review_pdf"]').click()
+            .get('input[aria-label="review_file_input"]').selectFile("../public/lorem_ipsum.pdf")
+            .get('[aria-label="upload_pdf"]').click()
+            .wait(2000)
+            .get('[aria-label="review_pdf_view"]').should('be.visible')
+
     });
 })
